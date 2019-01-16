@@ -1,0 +1,94 @@
+object frMain: TfrMain
+  Left = 0
+  Top = 0
+  Caption = 'String example'
+  ClientHeight = 280
+  ClientWidth = 360
+  Position = DesktopCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object lbDesc: TLabel
+    Align = Top
+    AutoSize = True
+    StyledSettings = [Family, Size, FontColor]
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 4.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 4.000000000000000000
+    Position.X = 4.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 16.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'Basic usage of TBrookString'
+    TabOrder = 0
+  end
+  object btAddNow: TButton
+    Align = Top
+    Cursor = crHandPoint
+    Enabled = False
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 4.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 4.000000000000000000
+    Position.X = 4.000000000000000000
+    Position.Y = 28.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = '&Add now'
+    OnClick = btAddNowClick
+    Left = 16
+    Top = 40
+  end
+  object btShowContent: TButton
+    Align = Top
+    Cursor = crHandPoint
+    Enabled = False
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 4.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 4.000000000000000000
+    Position.X = 4.000000000000000000
+    Position.Y = 61.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Text = '&Show content'
+    OnClick = btShowContentClick
+    Left = 136
+    Top = 40
+  end
+  object btClear: TButton
+    Align = Top
+    Cursor = crHandPoint
+    Enabled = False
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 4.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 4.000000000000000000
+    Position.X = 4.000000000000000000
+    Position.Y = 94.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = '&Clear'
+    OnClick = btClearClick
+    Left = 256
+    Top = 40
+  end
+  object BrookLibraryLoader1: TBrookLibraryLoader
+    OnLoad = BrookLibraryLoader1Load
+    Left = 88
+    Top = 160
+  end
+end

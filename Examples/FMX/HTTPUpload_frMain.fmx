@@ -1,0 +1,149 @@
+object frMain: TfrMain
+  Left = 0
+  Top = 0
+  Caption = 'HTTP upload example'
+  ClientHeight = 220
+  ClientWidth = 360
+  Position = DesktopCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object pnTop: TPanel
+    Align = Top
+    Margins.Left = 6.000000000000000000
+    Margins.Top = 6.000000000000000000
+    Margins.Right = 6.000000000000000000
+    Margins.Bottom = 6.000000000000000000
+    Position.X = 6.000000000000000000
+    Position.Y = 6.000000000000000000
+    Size.Width = 348.000000000000000000
+    Size.Height = 51.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lbPort: TLabel
+      Align = Left
+      AutoSize = True
+      StyledSettings = [Family, Size, FontColor]
+      Margins.Top = 10.000000000000000000
+      Margins.Right = 4.000000000000000000
+      Margins.Bottom = 10.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 39.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Trailing
+      Text = '&Port:'
+      TabOrder = 0
+    end
+    object edPort: TNumberBox
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Left
+      TabOrder = 1
+      Cursor = crIBeam
+      Max = 65535.000000000000000000
+      TextSettings.HorzAlign = Trailing
+      Position.X = 43.000000000000000000
+      Position.Y = 14.000000000000000000
+      Margins.Top = 14.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Margins.Bottom = 14.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 23.000000000000000000
+      Size.PlatformDefault = False
+      OnChange = edPortChange
+      OnChangeTracking = edPortChangeTracking
+    end
+    object btStart: TButton
+      Action = acStart
+      Align = Left
+      Cursor = crHandPoint
+      Enabled = True
+      ImageIndex = -1
+      Margins.Left = 10.000000000000000000
+      Margins.Top = 10.000000000000000000
+      Margins.Bottom = 10.000000000000000000
+      Position.X = 143.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+    end
+    object btStop: TButton
+      Action = acStop
+      Align = Left
+      Cursor = crHandPoint
+      Enabled = False
+      ImageIndex = -1
+      Margins.Left = 10.000000000000000000
+      Margins.Top = 10.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Margins.Bottom = 10.000000000000000000
+      Position.X = 233.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+    end
+  end
+  object lbLink: TLabel
+    Align = Top
+    AutoSize = True
+    Cursor = crHandPoint
+    Enabled = False
+    StyledSettings = [Family, Size]
+    HitTest = True
+    Margins.Left = 6.000000000000000000
+    Margins.Top = 6.000000000000000000
+    Margins.Right = 6.000000000000000000
+    Margins.Bottom = 6.000000000000000000
+    Position.X = 6.000000000000000000
+    Position.Y = 69.000000000000000000
+    Size.Width = 348.000000000000000000
+    Size.Height = 16.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {04040000000000000004000000}
+    TextSettings.FontColor = claBlue
+    TextSettings.WordWrap = False
+    Text = 'http://localhost'
+    TabOrder = 1
+    OnClick = lbLinkClick
+    OnMouseEnter = lbLinkMouseEnter
+    OnMouseLeave = lbLinkMouseLeave
+  end
+  object alMain: TActionList
+    Left = 40
+    Top = 120
+    object acStart: TAction
+      Category = 'HTTP upload'
+      Text = '&Start'
+      ShortCut = 120
+      OnExecute = acStartExecute
+    end
+    object acStop: TAction
+      Category = 'HTTP upload'
+      Text = 'S&top'
+      Enabled = False
+      ShortCut = 121
+      OnExecute = acStopExecute
+    end
+  end
+  object BrookHTTPServer1: TBrookHTTPServer
+    NoFavicon = True
+    OnRequest = BrookHTTPServer1Request
+    OnRequestError = BrookHTTPServer1RequestError
+    OnError = BrookHTTPServer1Error
+    OnStart = BrookHTTPServer1Start
+    OnStop = BrookHTTPServer1Stop
+    Left = 280
+    Top = 120
+  end
+  object BrookLibraryLoader1: TBrookLibraryLoader
+    Left = 152
+    Top = 120
+  end
+end

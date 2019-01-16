@@ -1,0 +1,90 @@
+object frMain: TfrMain
+  Left = 259
+  Height = 160
+  Top = 149
+  Width = 320
+  Caption = 'HTTP cookie example'
+  ClientHeight = 160
+  ClientWidth = 320
+  Position = poDesktopCenter
+  LCLVersion = '1.8.4.0'
+  object lbPort: TLabel
+    Left = 20
+    Height = 15
+    Top = 22
+    Width = 22
+    Caption = 'Port'
+    ParentColor = False
+  end
+  object edPort: TSpinEdit
+    Left = 49
+    Height = 23
+    Top = 17
+    Width = 66
+    MaxValue = 65535
+    OnChange = edPortChange
+    TabOrder = 2
+  end
+  object btStart: TButton
+    Left = 128
+    Height = 25
+    Top = 18
+    Width = 75
+    Action = acStart
+    TabOrder = 0
+  end
+  object btStop: TButton
+    Left = 216
+    Height = 25
+    Top = 18
+    Width = 75
+    Action = acStop
+    TabOrder = 1
+  end
+  object lbLink: TLabel
+    Cursor = crHandPoint
+    Left = 20
+    Height = 15
+    Top = 64
+    Width = 83
+    Caption = 'http://localhost'
+    Enabled = False
+    Font.Color = clBlue
+    Font.Style = [fsUnderline]
+    ParentColor = False
+    ParentFont = False
+    OnClick = lbLinkClick
+    OnMouseEnter = lbLinkMouseEnter
+    OnMouseLeave = lbLinkMouseLeave
+  end
+  object alMain: TActionList
+    left = 48
+    top = 60
+    object acStart: TAction
+      Category = 'HTTP server'
+      Caption = '&Start'
+      OnExecute = acStartExecute
+      ShortCut = 120
+    end
+    object acStop: TAction
+      Category = 'HTTP server'
+      Caption = 'S&top'
+      Enabled = False
+      OnExecute = acStopExecute
+      ShortCut = 121
+    end
+  end
+  object BrookHTTPServer1: TBrookHTTPServer
+    OnRequest = BrookHTTPServer1Request
+    OnRequestError = BrookHTTPServer1RequestError
+    OnError = BrookHTTPServer1Error
+    OnStart = BrookHTTPServer1Start
+    OnStop = BrookHTTPServer1Stop
+    left = 248
+    top = 60
+  end
+  object BrookLibraryLoader1: TBrookLibraryLoader
+    left = 136
+    top = 60
+  end
+end

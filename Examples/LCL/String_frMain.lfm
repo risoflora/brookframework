@@ -1,0 +1,62 @@
+object frMain: TfrMain
+  Left = 248
+  Height = 240
+  Top = 154
+  Width = 390
+  Caption = 'String example'
+  ClientHeight = 240
+  ClientWidth = 390
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poDesktopCenter
+  LCLVersion = '1.8.4.0'
+  object lbDesc: TLabel
+    Left = 10
+    Height = 17
+    Top = 10
+    Width = 370
+    Align = alTop
+    Alignment = taCenter
+    AutoSize = False
+    BorderSpacing.Around = 10
+    Caption = 'This example show a basic usage of TBrookString'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object btAddNow: TButton
+    Left = 16
+    Height = 25
+    Top = 40
+    Width = 112
+    Caption = '&Add now'
+    Enabled = False
+    OnClick = btAddNowClick
+    TabOrder = 0
+  end
+  object btShowContent: TButton
+    Left = 136
+    Height = 25
+    Top = 40
+    Width = 112
+    Caption = '&Show content'
+    Enabled = False
+    OnClick = btShowContentClick
+    TabOrder = 1
+  end
+  object btClear: TButton
+    Left = 256
+    Height = 25
+    Top = 40
+    Width = 112
+    Caption = '&Clear'
+    Enabled = False
+    OnClick = btClearClick
+    TabOrder = 2
+  end
+  object BrookLibraryLoader1: TBrookLibraryLoader
+    OnLoad = BrookLibraryLoader1Load
+    left = 64
+    top = 96
+  end
+end

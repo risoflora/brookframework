@@ -1,0 +1,108 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{4B06BA79-AD47-43AE-84FD-2E76EEC02B63}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="hellohttpsrv.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="httpauth.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="httpcookies.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="httprouter.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="httpuploads.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="stringbuffer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="stringmap.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="hellohttpsrv">
+        <MSBuild Projects="hellohttpsrv.dproj"/>
+    </Target>
+    <Target Name="hellohttpsrv:Clean">
+        <MSBuild Projects="hellohttpsrv.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="hellohttpsrv:Make">
+        <MSBuild Projects="hellohttpsrv.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="httpauth">
+        <MSBuild Projects="httpauth.dproj"/>
+    </Target>
+    <Target Name="httpauth:Clean">
+        <MSBuild Projects="httpauth.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="httpauth:Make">
+        <MSBuild Projects="httpauth.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="httpcookies">
+        <MSBuild Projects="httpcookies.dproj"/>
+    </Target>
+    <Target Name="httpcookies:Clean">
+        <MSBuild Projects="httpcookies.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="httpcookies:Make">
+        <MSBuild Projects="httpcookies.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="httprouter">
+        <MSBuild Projects="httprouter.dproj"/>
+    </Target>
+    <Target Name="httprouter:Clean">
+        <MSBuild Projects="httprouter.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="httprouter:Make">
+        <MSBuild Projects="httprouter.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="httpuploads">
+        <MSBuild Projects="httpuploads.dproj"/>
+    </Target>
+    <Target Name="httpuploads:Clean">
+        <MSBuild Projects="httpuploads.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="httpuploads:Make">
+        <MSBuild Projects="httpuploads.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="stringbuffer">
+        <MSBuild Projects="stringbuffer.dproj"/>
+    </Target>
+    <Target Name="stringbuffer:Clean">
+        <MSBuild Projects="stringbuffer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="stringbuffer:Make">
+        <MSBuild Projects="stringbuffer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="stringmap">
+        <MSBuild Projects="stringmap.dproj"/>
+    </Target>
+    <Target Name="stringmap:Clean">
+        <MSBuild Projects="stringmap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="stringmap:Make">
+        <MSBuild Projects="stringmap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httprouter;httpuploads;stringbuffer;stringmap"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httprouter:Clean;httpuploads:Clean;stringbuffer:Clean;stringmap:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httprouter:Make;httpuploads:Make;stringbuffer:Make;stringmap:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

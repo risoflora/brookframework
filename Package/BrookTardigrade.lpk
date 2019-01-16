@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <Name Value="BrookTardigrade"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="Silvio Clecio (silvioprog)"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <IncludeFiles Value="../Source"/>
+        <OtherUnitFiles Value="../Source"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Description Value="Brook is microframework which helps to develop web Pascal applications."/>
+    <License Value="Copyright (c) 2012-2018 Silvio Clecio &lt;silvioprog@gmail.com>
+
+This file is part of Brook framework.
+
+Brook framework is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Brook framework is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with Brook framework.  If not, see &lt;http://www.gnu.org/licenses/>."/>
+    <Version Major="5"/>
+    <Files Count="19">
+      <Item1>
+        <Filename Value="../Source/libsagui.pas"/>
+        <UnitName Value="libsagui"/>
+      </Item1>
+      <Item2>
+        <Filename Value="../Source/Platform.pas"/>
+        <UnitName Value="Platform"/>
+      </Item2>
+      <Item3>
+        <Filename Value="../Source/Marshalling.pas"/>
+        <UnitName Value="Marshalling"/>
+      </Item3>
+      <Item4>
+        <Filename Value="../Source/FPC300Fixes.pas"/>
+        <UnitName Value="FPC300Fixes"/>
+      </Item4>
+      <Item5>
+        <Filename Value="../Source/BrookDefines.inc"/>
+        <Type Value="Include"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../Source/BrookLibraryLoader.pas"/>
+        <UnitName Value="BrookLibraryLoader"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../Source/BrookUtility.pas"/>
+        <UnitName Value="BrookUtility"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../Source/BrookHandledClasses.pas"/>
+        <UnitName Value="BrookHandledClasses"/>
+      </Item8>
+      <Item9>
+        <Filename Value="../Source/BrookString.pas"/>
+        <UnitName Value="BrookString"/>
+      </Item9>
+      <Item10>
+        <Filename Value="../Source/BrookStringMap.pas"/>
+        <UnitName Value="BrookStringMap"/>
+      </Item10>
+      <Item11>
+        <Filename Value="../Source/BrookHTTPExtra.pas"/>
+        <UnitName Value="BrookHTTPExtra"/>
+      </Item11>
+      <Item12>
+        <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
+        <UnitName Value="BrookHTTPAuthentication"/>
+      </Item12>
+      <Item13>
+        <Filename Value="../Source/BrookHTTPUploads.pas"/>
+        <UnitName Value="BrookHTTPUploads"/>
+      </Item13>
+      <Item14>
+        <Filename Value="../Source/BrookHTTPRequest.pas"/>
+        <UnitName Value="BrookHTTPRequest"/>
+      </Item14>
+      <Item15>
+        <Filename Value="../Source/BrookHTTPResponse.pas"/>
+        <UnitName Value="BrookHTTPResponse"/>
+      </Item15>
+      <Item16>
+        <Filename Value="../Source/BrookHTTPEntryPoints.pas"/>
+        <UnitName Value="BrookHTTPEntryPoints"/>
+      </Item16>
+      <Item17>
+        <Filename Value="../Source/BrookHTTPRouter.pas"/>
+        <UnitName Value="BrookHTTPRouter"/>
+      </Item17>
+      <Item18>
+        <Filename Value="../Source/BrookHTTPServer.pas"/>
+        <UnitName Value="BrookHTTPServer"/>
+      </Item18>
+      <Item19>
+        <Filename Value="BrookIDEIntegration.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="BrookIDEIntegration"/>
+      </Item19>
+    </Files>
+    <RequiredPkgs Count="1">
+      <Item1>
+        <PackageName Value="IDEIntf"/>
+      </Item1>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>

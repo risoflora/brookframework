@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectGroup FileVersion="1">
+    <Targets Count="7">
+      <Target0 FileName="HTTPServer_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target0>
+      <Target1 FileName="HTTPAuth_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target1>
+      <Target2 FileName="HTTPUpload_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target2>
+      <Target3 FileName="HTTPCookie_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target3>
+      <Target4 FileName="HTTPRouter_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target4>
+      <Target5 FileName="String_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target5>
+      <Target6 FileName="StringMap_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target6>
+    </Targets>
+  </ProjectGroup>
+</CONFIG>

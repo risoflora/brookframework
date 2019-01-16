@@ -1,0 +1,96 @@
+object frMain: TfrMain
+  Left = 0
+  Top = 0
+  Caption = 'String map example'
+  ClientHeight = 240
+  ClientWidth = 320
+  Position = DesktopCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object pnTop: TPanel
+    Align = Top
+    Size.Width = 320.000000000000000000
+    Size.Height = 36.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object btAdd: TButton
+      Align = Left
+      Cursor = crHandPoint
+      Margins.Left = 6.000000000000000000
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Position.X = 6.000000000000000000
+      Position.Y = 6.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 24.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Add'
+      OnClick = btAddClick
+    end
+    object btRemove: TButton
+      Align = Left
+      Cursor = crHandPoint
+      Enabled = False
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Position.X = 92.000000000000000000
+      Position.Y = 6.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 24.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Remove'
+      OnClick = btRemoveClick
+    end
+    object btClear: TButton
+      Align = Left
+      Cursor = crHandPoint
+      Enabled = False
+      Margins.Top = 6.000000000000000000
+      Margins.Right = 6.000000000000000000
+      Margins.Bottom = 6.000000000000000000
+      Position.X = 178.000000000000000000
+      Position.Y = 6.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 24.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Clear'
+      OnClick = btClearClick
+    end
+  end
+  object grMap: TGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 320.000000000000000000
+    Size.Height = 204.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    RowCount = 0
+    Options = [AlternatingRowBackground, ColumnResize, ColumnMove, ColLines, RowLines, RowSelect, Tabs, Header, AutoDisplacement]
+    OnGetValue = grMapGetValue
+    Viewport.Width = 316.000000000000000000
+    Viewport.Height = 179.000000000000000000
+    object coKey: TStringColumn
+      Header = 'Key'
+      Size.Width = 120.000000000000000000
+    end
+    object coValue: TStringColumn
+      Header = 'Value'
+      Size.Width = 120.000000000000000000
+    end
+  end
+  object BrookLibraryLoader1: TBrookLibraryLoader
+    Left = 88
+    Top = 104
+  end
+end

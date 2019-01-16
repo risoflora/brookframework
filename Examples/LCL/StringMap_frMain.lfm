@@ -1,0 +1,83 @@
+object frMain: TfrMain
+  Left = 254
+  Height = 240
+  Top = 137
+  Width = 320
+  Caption = 'String map example'
+  ClientHeight = 240
+  ClientWidth = 320
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  Position = poDesktopCenter
+  LCLVersion = '1.8.4.0'
+  object pnTop: TPanel
+    Left = 0
+    Height = 40
+    Top = 0
+    Width = 320
+    Align = alTop
+    ClientHeight = 40
+    ClientWidth = 320
+    TabOrder = 0
+    object btAdd: TButton
+      Cursor = crHandPoint
+      Left = 7
+      Height = 26
+      Top = 7
+      Width = 75
+      Align = alLeft
+      BorderSpacing.Around = 6
+      Caption = 'Add'
+      OnClick = btAddClick
+      TabOrder = 0
+    end
+    object btRemove: TButton
+      Cursor = crHandPoint
+      Left = 88
+      Height = 26
+      Top = 7
+      Width = 75
+      Align = alLeft
+      BorderSpacing.Around = 6
+      Caption = 'Remove'
+      Enabled = False
+      OnClick = btRemoveClick
+      TabOrder = 1
+    end
+    object btClear: TButton
+      Cursor = crHandPoint
+      Left = 169
+      Height = 26
+      Top = 7
+      Width = 75
+      Align = alLeft
+      BorderSpacing.Around = 6
+      Caption = 'Clear'
+      Enabled = False
+      OnClick = btClearClick
+      TabOrder = 2
+    end
+  end
+  object veMap: TValueListEditor
+    Left = 0
+    Height = 200
+    Top = 40
+    Width = 320
+    Align = alClient
+    AlternateColor = clSkyBlue
+    AutoEdit = False
+    FixedCols = 0
+    RowCount = 2
+    TabOrder = 1
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goThumbTracking]
+    ColWidths = (
+      64
+      252
+    )
+  end
+  object BrookLibraryLoader1: TBrookLibraryLoader
+    left = 98
+    top = 125
+  end
+end
