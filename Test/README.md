@@ -32,5 +32,5 @@ If you do not get the message `OK` in front the test, then probably it failed.
 
 You have two options:
 
-1. Open issue at [new issue](https://github.com/silvioprog/brookframework/issues/new) page;
+1. Open issue at [new issue](https://github.com/risoflora/brookframework/issues/new) page;
 2. Fork the project, fix the bug and open a pull-request ([more about fork/PR](https://guides.github.com/activities/forking)).
