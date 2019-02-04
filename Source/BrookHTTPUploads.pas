@@ -100,7 +100,7 @@ type
     procedure First(out AUpload: TBrookHTTPUpload); virtual;
     procedure Next(out AUpload: TBrookHTTPUpload); virtual;
     function IsEOF: Boolean; virtual;
-    property EOF: Boolean read IsEOF;
+    property EOF: Boolean read IsEOF; {FI:C110}
     property Count: Integer read GetCount;
   end;
 
