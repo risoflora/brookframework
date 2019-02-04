@@ -685,7 +685,7 @@ begin
 end;
 
 class function SgLib.Load(const AName: TFileName): TLibHandle;
-begin
+begin //FI:C101
   GCS.Acquire;
   try
     if AName = '' then
@@ -846,7 +846,7 @@ begin
 end;
 
 class function SgLib.Unload: TLibHandle;
-begin
+begin //FI:C101
   GCS.Acquire;
   try
     if GHandle = NilHandle then

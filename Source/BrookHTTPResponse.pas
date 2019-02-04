@@ -138,8 +138,9 @@ end;
 {$IFDEF FPC}
  {$PUSH}{$WARN 5024 OFF}
 {$ENDIF}
-class function TBrookHTTPResponse.DoStreamRead(Acls: Pcvoid;
-  Aoffset: cuint64_t; {FI:O804} Abuf: Pcchar; Asize: csize_t): cssize_t;
+class function TBrookHTTPResponse.DoStreamRead(
+  Acls: Pcvoid; Aoffset: cuint64_t; //FI:O804
+  Abuf: Pcchar; Asize: csize_t): cssize_t;
 begin
   Result := TStream(Acls).Read(Abuf^, Asize);
   if Result = 0 then

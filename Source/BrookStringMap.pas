@@ -226,9 +226,9 @@ type
     property Values[const AName: string]: string read GetValue
       write SetValue; default;
     { Indicates the end of map. }
-    property EOF: Boolean read IsEOF; {FI:C110}
+    property EOF: Boolean read IsEOF; //FI:C110
     { Indicates if the map is empty. }
-    property Empty: Boolean read IsEmpty; {FI:C110}
+    property Empty: Boolean read IsEmpty; //FI:C110
     { Clears the list on destroy. }
     property ClearOnDestroy: Boolean read FClearOnDestroy write FClearOnDestroy;
     { Notifies a change in the map. }
