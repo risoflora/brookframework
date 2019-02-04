@@ -658,9 +658,9 @@ class procedure SgLib.CheckVersion;
 begin
   try
     if not Assigned(sg_version) then
-      raise EInvalidOpException.CreateResFmt(@SSgLibInvalid, [GetLastName]);
+      raise EInvalidOpException.CreateFmt(SSgLibInvalid, [GetLastName]);
     if sg_version < SG_VERSION_HEX then
-      raise EInvalidOpException.CreateResFmt(@SSgLibMinVersion, [
+      raise EInvalidOpException.CreateFmt(SSgLibMinVersion, [
         SG_VERSION_MAJOR, SG_VERSION_MINOR, SG_VERSION_PATCH]);
   except
     Unload;
@@ -690,15 +690,15 @@ begin //FI:C101
   GCS.Acquire;
   try
     if AName = '' then
-      raise EArgumentException.CreateRes(@SSgLibEmptyName);
+      raise EArgumentException.Create(SSgLibEmptyName);
     GHandle := SafeLoadLibrary(AName);
     if GHandle = NilHandle then
     begin
 {$IFDEF MSWINDOWS}
       if GetLastError = ERROR_BAD_EXE_FORMAT then
-        raise ESgLibNotLoaded.CreateResFmt(@SSgLibInvalid, [AName]);
+        raise ESgLibNotLoaded.CreateFmt(SSgLibInvalid, [AName]);
 {$ENDIF}
-      raise ESgLibNotLoaded.CreateResFmt(@SSgLibNotLoaded, [AName])
+      raise ESgLibNotLoaded.CreateFmt(SSgLibNotLoaded, [AName])
     end;
     GLastName := AName;
 
@@ -1011,7 +1011,7 @@ end;
 class procedure SgLib.Check;
 begin
   if GHandle = NilHandle then
-    raise ESgLibNotLoaded.CreateResFmt(@SSgLibNotLoaded,
+    raise ESgLibNotLoaded.CreateFmt(SSgLibNotLoaded,
       [IfThen(GLastName = '', SG_LIB_NAME, GLastName)]);
 end;
 

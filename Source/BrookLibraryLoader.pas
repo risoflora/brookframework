@@ -113,13 +113,13 @@ end;
 procedure TBrookLibraryLoader.CheckInactive;
 begin
   if not (csLoading in ComponentState) and Active then
-    raise EInvalidOpException.CreateRes(@SBrookActiveLibLoader);
+    raise EInvalidOpException.Create(SBrookActiveLibLoader);
 end;
 
 procedure TBrookLibraryLoader.CheckUnloaded;
 begin
   if not (csLoading in ComponentState) and SgLib.IsLoaded then
-    raise EInvalidOpException.CreateRes(@SBrookLibraryAlreadyLoaded);
+    raise EInvalidOpException.Create(SBrookLibraryAlreadyLoaded);
 end;
 
 procedure TBrookLibraryLoader.InternalOpen;

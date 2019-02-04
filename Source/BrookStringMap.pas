@@ -275,7 +275,7 @@ constructor TBrookStringMap.Create(AHandle: Pointer);
 begin
   inherited Create;
   if not Assigned(AHandle) then
-    raise EArgumentNilException.CreateResFmt(@SParamIsNil, ['AHandle']);
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AHandle']);
   FHandle := AHandle;
   FClearOnDestroy := True;
 end;

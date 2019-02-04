@@ -337,7 +337,7 @@ end;
 procedure TBrookHTTPRoute.CheckMethods;
 begin
   if FMethods = [rmUnknown] then
-    raise EBrookHTTPRoute.CreateRes(@SBrookRequestNoMethodDefined);
+    raise EBrookHTTPRoute.Create(SBrookRequestNoMethodDefined);
 end;
 
 function TBrookHTTPRoute.GetHandle: Pointer;
@@ -440,7 +440,7 @@ begin
   if FDefault = AValue then
     Exit;
   if AValue and Assigned(FRoutes) and Assigned(FRoutes.FindDefault()) then
-    raise EInvalidOpException.CreateRes(@SBrookDefaultRouteAlreadyExists);
+    raise EInvalidOpException.Create(SBrookDefaultRouteAlreadyExists);
   FDefault := AValue;
 end;
 
@@ -454,7 +454,7 @@ begin
   NP := Brook.FixPath(AValue);
   RT := FRoutes.Find(NP);
   if Assigned(RT) and (RT <> Self) then
-    raise EBrookHTTPRoute.CreateResFmt(@SBrookRouteAlreadyExists,
+    raise EBrookHTTPRoute.CreateFmt(SBrookRouteAlreadyExists,
       [GetNamePath, NP, RT.GetNamePath]);
   FPattern := NP;
   if Assigned(FRoutes.FHandle) then
@@ -467,7 +467,7 @@ end;
 procedure TBrookHTTPRoute.Validate;
 begin
   if FPattern.IsEmpty then
-    raise EBrookHTTPRoute.CreateResFmt(@SBrookEmptyRoutePattern, [GetNamePath]);
+    raise EBrookHTTPRoute.CreateFmt(SBrookEmptyRoutePattern, [GetNamePath]);
 end;
 
 procedure TBrookHTTPRoute.DoMatch(ARoute: TBrookHTTPRoute);
@@ -617,7 +617,7 @@ begin
   if R = 0 then
     Exit;
   if R = EALREADY then
-    raise EBrookHTTPRoutes.CreateResFmt(@SBrookRouteAlreadyExists,
+    raise EBrookHTTPRoutes.CreateFmt(SBrookRouteAlreadyExists,
       [ARoute.GetNamePath, ARoute.Pattern]);
   if R = EINVAL then
     S := Sagui.StrError(R)
@@ -761,13 +761,13 @@ end;
 procedure TBrookHTTPRouter.CheckItems;
 begin
   if FRoutes.Count = 0 then
-    raise EBrookHTTPRoutes.CreateRes(@SBrookNoRoutesDefined);
+    raise EBrookHTTPRoutes.Create(SBrookNoRoutesDefined);
 end;
 
 procedure TBrookHTTPRouter.CheckActive;
 begin
   if (not (csLoading in ComponentState)) and (not Active) then
-    raise EInvalidOpException.CreateRes(@SBrookInactiveRouter);
+    raise EInvalidOpException.Create(SBrookInactiveRouter);
 end;
 
 procedure TBrookHTTPRouter.Loaded;
@@ -931,7 +931,7 @@ procedure TBrookHTTPRouter.Route(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   if not Assigned(ARequest) then
-    raise EArgumentNilException.CreateResFmt(@SParamIsNil, ['ARequest']);
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ARequest']);
   Route(ASender, ARequest.Path, ARequest, AResponse);
 end;
 

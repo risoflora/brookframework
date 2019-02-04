@@ -216,7 +216,7 @@ end;
 procedure TBrookHTTPEntryPoint.Validate;
 begin
   if FName.IsEmpty then
-    raise EBrookHTTPEntryPoint.CreateResFmt(@SBrookEmptyEntryPointName,
+    raise EBrookHTTPEntryPoint.CreateFmt(SBrookEmptyEntryPointName,
       [GetNamePath]);
 end;
 
@@ -258,7 +258,7 @@ begin
   NN := Brook.FixEntryPoint(AValue);
   EP := FList.FindInList(NN);
   if Assigned(EP) and (EP <> Self) then
-    raise EBrookHTTPEntryPoint.CreateResFmt(@SBrookEntryPointAlreadyExists,
+    raise EBrookHTTPEntryPoint.CreateFmt(SBrookEntryPointAlreadyExists,
       [GetNamePath, NN, EP.GetNamePath]);
   FName := NN;
   if Assigned(FList.FHandle) then
@@ -363,7 +363,7 @@ end;
 procedure TBrookHTTPEntryPointList.CheckPrepared;
 begin
   if not Assigned(FHandle) then
-    raise EInvalidPointer.CreateRes(@SBrookEntryPointListUnprepared);
+    raise EInvalidPointer.Create(SBrookEntryPointListUnprepared);
 end;
 
 procedure TBrookHTTPEntryPointList.InternalAdd(AEntryPoint: TBrookHTTPEntryPoint);
@@ -376,7 +376,7 @@ begin
   if R = 0 then
     Exit;
   if R = EALREADY then
-    raise EBrookHTTPEntryPointList.CreateResFmt(@SBrookEntryPointAlreadyExists,
+    raise EBrookHTTPEntryPointList.CreateFmt(SBrookEntryPointAlreadyExists,
       [AEntryPoint.GetNamePath, AEntryPoint.Name]);
   SgLib.CheckLastError(R);
 end;
@@ -505,13 +505,13 @@ end;
 procedure TBrookHTTPEntryPoints.CheckItems;
 begin
   if FList.Count = 0 then
-    raise EBrookHTTPEntryPointList.CreateRes(@SBrookNoEntryPointsDefined);
+    raise EBrookHTTPEntryPointList.Create(SBrookNoEntryPointsDefined);
 end;
 
 procedure TBrookHTTPEntryPoints.CheckActive;
 begin
   if (not (csLoading in ComponentState)) and (not Active) then
-    raise EInvalidOpException.CreateRes(@SBrookInactiveEntryPoints);
+    raise EInvalidOpException.Create(SBrookInactiveEntryPoints);
 end;
 
 procedure TBrookHTTPEntryPoints.Loaded;
@@ -682,7 +682,7 @@ procedure TBrookHTTPEntryPoints.Enter(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   if not Assigned(ARequest) then
-    raise EArgumentNilException.CreateResFmt(@SParamIsNil, ['ARequest']);
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ARequest']);
   Enter(ASender, ARequest.Path, ARequest, AResponse);
 end;
 

@@ -114,19 +114,19 @@ end;
 procedure TBrookHTTPResponse.CheckAlreadySent(Aret: cint);
 begin
   if Aret = EALREADY then
-    raise EBrookHTTPResponse.CreateRes(@SBrookResponseAlreadySent);
+    raise EBrookHTTPResponse.Create(SBrookResponseAlreadySent);
 end;
 
 class procedure TBrookHTTPResponse.CheckStatus(AStatus: Word);
 begin
   if (AStatus < 100) or (AStatus > 599) then
-    raise EArgumentException.CreateResFmt(@SBrookInvalidHTTPStatus, [AStatus]);
+    raise EArgumentException.CreateFmt(SBrookInvalidHTTPStatus, [AStatus]);
 end;
 
 class procedure TBrookHTTPResponse.CheckStream(AStream: TStream);
 begin
   if not Assigned(AStream) then
-    raise EArgumentNilException.CreateResFmt(@SParamIsNil, ['AStream']);
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AStream']);
 end;
 
 function TBrookHTTPResponse.CreateHeaders(AHandle: Pointer): TBrookStringMap;
@@ -217,7 +217,7 @@ begin
     M.ToCString(AFileName), ARendered, AStatus);
   CheckAlreadySent(R);
   if R = ENOENT then
-    raise EFileNotFoundException.CreateRes(@SFileNotFound);
+    raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
 end;
 
@@ -261,7 +261,7 @@ procedure TBrookHTTPResponse.SendAndRedirect(const AValue, ADestination,
   AContentType: string; AStatus: Word);
 begin
   if (AStatus < 300) or (AStatus > 307) then
-    raise EBrookHTTPResponse.CreateResFmt(@SBrookInvalidHTTPStatus, [AStatus]);
+    raise EBrookHTTPResponse.CreateFmt(SBrookInvalidHTTPStatus, [AStatus]);
   FHeaders.AddOrSet('Location', ADestination);
   Send(AValue, AContentType, AStatus);
 end;
@@ -283,7 +283,7 @@ begin
   R := sg_httpres_download(FHandle, M.ToCString(AFileName), AStatus);
   CheckAlreadySent(R);
   if R = ENOENT then
-    raise EFileNotFoundException.CreateRes(@SFileNotFound);
+    raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
 end;
 
@@ -298,7 +298,7 @@ begin
   R := sg_httpres_render(FHandle, M.ToCString(AFileName), AStatus);
   CheckAlreadySent(R);
   if R = ENOENT then
-    raise EFileNotFoundException.CreateRes(@SFileNotFound);
+    raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
 end;
 

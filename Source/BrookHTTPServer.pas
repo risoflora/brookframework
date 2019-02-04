@@ -267,9 +267,9 @@ end;
 procedure TBrookHTTPServerSecurity.Validate;
 begin
   if FPrivateKey.IsEmpty then
-    raise EBrookHTTPServerSecurity.CreateRes(@SBrookEmptyPrivateKey);
+    raise EBrookHTTPServerSecurity.Create(SBrookEmptyPrivateKey);
   if FCertificate.IsEmpty then
-    raise EBrookHTTPServerSecurity.CreateRes(@SBrookEmptyCertificate);
+    raise EBrookHTTPServerSecurity.Create(SBrookEmptyCertificate);
 end;
 
 procedure TBrookHTTPServerSecurity.Clear;
@@ -317,7 +317,7 @@ begin
 {$IFNDEF VER3_0}@{$ENDIF}DoRequestCallback,
 {$IFNDEF VER3_0}@{$ENDIF}DoErrorCallback, Self);
   if not Assigned(FHandle) then
-    raise EInvalidPointer.CreateRes(@SBrookCannotCreateServerHandle);
+    raise EInvalidPointer.Create(SBrookCannotCreateServerHandle);
 end;
 
 procedure TBrookHTTPServer.InternalFreeServerHandle;
@@ -432,7 +432,7 @@ end;
 procedure TBrookHTTPServer.CheckInactive;
 begin
   if (not (csLoading in ComponentState)) and Active then
-    raise EInvalidOpException.CreateRes(@SBrookActiveServer);
+    raise EInvalidOpException.Create(SBrookActiveServer);
 end;
 
 procedure TBrookHTTPServer.Loaded;
@@ -855,7 +855,7 @@ begin
   begin
     FSecurity.Validate;
     if not Assigned(sg_httpsrv_tls_listen2) then
-      raise ENotSupportedException.CreateRes(@SBrookTLSNotAvailable);
+      raise ENotSupportedException.Create(SBrookTLSNotAvailable);
     FActive := sg_httpsrv_tls_listen2(FHandle,
       M.ToCNullableString(FSecurity.PrivateKey),
       M.ToCNullableString(FSecurity.PrivatePassword),

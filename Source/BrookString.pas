@@ -129,7 +129,7 @@ end;
 class procedure TBrookString.CheckEncoding(AEncoding: TEncoding);
 begin
   if not Assigned(AEncoding) then
-    raise EArgumentNilException.CreateResFmt(@SParamIsNil, ['AEncoding']);
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AEncoding']);
 end;
 
 function TBrookString.GetHandle: Pointer;
