@@ -181,7 +181,8 @@ var
   sg_str_printf_va: function(str: Psg_str; const fmt: Pcchar;
     ap: cva_list): cint; cdecl;
 
-  sg_str_printf: function(str: Psg_str; const fmt: Pcchar): cint; cdecl varargs;
+  sg_str_printf: function(str: Psg_str; const fmt: Pcchar): cint; cdecl
+{$IFNDEF _FIXINSIGHT_}varargs{$ENDIF};
 
   sg_str_content: function(str: Psg_str): Pcchar; cdecl;
 
