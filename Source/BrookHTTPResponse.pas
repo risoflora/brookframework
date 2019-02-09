@@ -39,8 +39,7 @@ uses
   Marshalling,
   libsagui,
   BrookHandledClasses,
-  BrookStringMap,
-  BrookHTTPExtra;
+  BrookStringMap;
 
 resourcestring
   SBrookInvalidHTTPStatus = 'Invalid status code: %d.';
@@ -72,7 +71,15 @@ type
       const AContentType: string; AStatus: Word); overload; virtual;
     procedure Send(const ABytes: TBytes; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); overload; virtual;
+    procedure ZSend(const AValue, AContentType: string;
+      AStatus: Word); overload; virtual;
+    procedure ZSend(const AFmt: string; const AArgs: array of const;
+      const AContentType: string; AStatus: Word); overload; virtual;
+    procedure ZSend(const ABytes: TBytes; ASize: NativeUInt;
+      const AContentType: string; AStatus: Word); overload; virtual;
     procedure SendBinary(ABuffer: Pointer; ASize: NativeUInt;
+      const AContentType: string; AStatus: Word); virtual;
+    procedure ZSendBinary(ABuffer: Pointer; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); virtual;
     procedure SendFile(ASize: NativeUInt; AMaxSize, AOffset: UInt64;
       const AFileName: TFileName; ARendered: Boolean; AStatus: Word); virtual;
@@ -144,9 +151,9 @@ class function TBrookHTTPResponse.DoStreamRead(
 begin
   Result := TStream(Acls).Read(Abuf^, Asize);
   if Result = 0 then
-    Exit(sg_httpread_end(False));
-  if Result = -1 then
-    Result := sg_httpread_end(True);
+    Exit(sg_eor(False));
+  if Result < 0 then
+    Result := sg_eor(True);
 end;
 {$IFDEF FPC}
  {$POP}
@@ -190,6 +197,30 @@ begin
   SendBinary(@ABytes[0], ASize, AContentType, AStatus);
 end;
 
+procedure TBrookHTTPResponse.ZSend(const AValue, AContentType: string;
+  AStatus: Word);
+var
+  M: TMarshaller;
+  R: cint;
+begin
+  R := sg_httpres_zsendbinary(FHandle, M.ToCString(AValue), Length(AValue),
+    M.ToCString(AContentType), AStatus);
+  CheckAlreadySent(R);
+  SgLib.CheckLastError(R);
+end;
+
+procedure TBrookHTTPResponse.ZSend(const AFmt: string;
+  const AArgs: array of const; const AContentType: string; AStatus: Word);
+begin
+  Send(Format(AFmt, AArgs), AContentType, AStatus);
+end;
+
+procedure TBrookHTTPResponse.ZSend(const ABytes: TBytes; ASize: NativeUInt;
+  const AContentType: string; AStatus: Word);
+begin
+  ZSendBinary(@ABytes[0], ASize, AContentType, AStatus);
+end;
+
 procedure TBrookHTTPResponse.SendBinary(ABuffer: Pointer; ASize: NativeUInt;
   const AContentType: string; AStatus: Word);
 var
@@ -199,6 +230,20 @@ begin
   CheckStatus(AStatus);
   SgLib.Check;
   R := sg_httpres_sendbinary(FHandle, ABuffer, ASize,
+    M.ToCString(AContentType), AStatus);
+  CheckAlreadySent(R);
+  SgLib.CheckLastError(R);
+end;
+
+procedure TBrookHTTPResponse.ZSendBinary(ABuffer: Pointer; ASize: NativeUInt;
+  const AContentType: string; AStatus: Word);
+var
+  M: TMarshaller;
+  R: cint;
+begin
+  CheckStatus(AStatus);
+  SgLib.Check;
+  R := sg_httpres_zsendbinary(FHandle, ABuffer, ASize,
     M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
@@ -234,7 +279,7 @@ begin
     FCb := {$IFNDEF VER3_0}@{$ENDIF}DoStreamFree
   else
     FCb := nil;
-  R := sg_httpres_sendstream(FHandle, AStream.Size, BROOK_BLOCK_SIZE,
+  R := sg_httpres_sendstream(FHandle, AStream.Size,
 {$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);

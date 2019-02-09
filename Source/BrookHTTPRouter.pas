@@ -123,9 +123,9 @@ type
   protected
     class procedure DoRouteCallback(Acls: Pcvoid;
       Aroute: Psg_route); cdecl; static;
-    class function DoGetSegmentsCallback(Acls: Pcvoid;
+    class function DoSegmentsIterCallback(Acls: Pcvoid;
       const Asegment: Pcchar): cint; cdecl; static;
-    class function DoGetVarsCallback(Acls: Pcvoid;
+    class function DoVarsIterCallback(Acls: Pcvoid;
       const Aname: Pcchar; const Aval: Pcchar): cint; cdecl; static;
     function GetHandle: Pointer; override;
     procedure DoMatch(ARoute: TBrookHTTPRoute); virtual;
@@ -312,7 +312,7 @@ begin
   VRoute.HandleMatch(VRoute);
 end;
 
-class function TBrookHTTPRoute.DoGetSegmentsCallback(Acls: Pcvoid;
+class function TBrookHTTPRoute.DoSegmentsIterCallback(Acls: Pcvoid;
   const Asegment: Pcchar): cint;
 var
   VSegments: ^TArray<string>;
@@ -327,7 +327,7 @@ begin
   Result := 0;
 end;
 
-class function TBrookHTTPRoute.DoGetVarsCallback(Acls: Pcvoid;
+class function TBrookHTTPRoute.DoVarsIterCallback(Acls: Pcvoid;
   const Aname: Pcchar; const Aval: Pcchar): cint;
 begin
   TBrookStringMap(Acls).Add(TMarshal.ToString(Aname), TMarshal.ToString(Aval));
@@ -365,8 +365,8 @@ begin
   if not Assigned(FHandle) then
     Exit(nil);
   SgLib.Check;
-  SgLib.CheckLastError(sg_route_get_segments(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoGetSegmentsCallback, @Result));
+  SgLib.CheckLastError(sg_route_segments_iter(FHandle,
+{$IFNDEF VER3_0}@{$ENDIF}DoSegmentsIterCallback, @Result));
 end;
 
 function TBrookHTTPRoute.GetVariables: TBrookStringMap;
@@ -375,8 +375,8 @@ begin
   FVariables.Clear;
   if not Assigned(FHandle) then
     Exit;
-  SgLib.CheckLastError(sg_route_get_vars(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoGetVarsCallback, FVariables));
+  SgLib.CheckLastError(sg_route_vars_iter(FHandle,
+{$IFNDEF VER3_0}@{$ENDIF}DoVarsIterCallback, FVariables));
 end;
 
 function TBrookHTTPRoute.GetRegexHandle: Pointer;

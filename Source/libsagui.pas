@@ -5,7 +5,7 @@
  *  |___/\__,_|\__, |\__,_|_|
  *             |___/
  *
- *   –– cross-platform library which helps to develop web servers or frameworks.
+ * Cross-platform library which helps to develop web servers or frameworks.
  *
  * Copyright (c) 2016-2018 Silvio Clecio <silvioprog@gmail.com>
  *
@@ -129,7 +129,7 @@ type
   sg_err_cb = procedure(cls: Pcvoid; const err: Pcchar); cdecl;
 
   sg_write_cb = function(handle: Pcvoid; offset: cuint64_t; const buf: Pcchar;
-    size: csize_t): csize_t; cdecl;
+    size: csize_t): cssize_t; cdecl;
 
   sg_read_cb = function(handle: Pcvoid; offset: cuint64_t; buf: Pcchar;
     size: csize_t): cssize_t; cdecl;
@@ -141,29 +141,29 @@ type
   sg_save_as_cb = function(handle: Pcvoid; const path: Pcchar;
     overwritten: cbool): cint; cdecl;
 
-  sg_get_segments_cb = function(cls: Pcvoid; const segment: Pcchar): cint; cdecl;
-
-  sg_get_vars_cb = function(cls: Pcvoid; const name: Pcchar;
-    const val: Pcchar): cint; cdecl;
-
 var
   sg_version: function: cuint; cdecl;
 
   sg_version_str: function: Pcchar; cdecl;
 
+  sg_malloc: function(size: csize_t): Pcvoid; cdecl;
+
   sg_alloc: function(size: csize_t): Pcvoid; cdecl;
 
-  sg_realloc: function(ptr: Pcvoid; size: csize_t): Pointer; cdecl;
+  sg_realloc: function(ptr: Pcvoid; size: csize_t): Pcvoid; cdecl;
 
   sg_free: procedure(ptr: Pcvoid); cdecl;
 
-  sg_strerror: function(errnum: cint; str: Pcchar; len: csize_t): Pcchar; cdecl;
+  sg_strerror: function(errnum: cint; errmsg: Pcchar;
+    errlen: csize_t): Pcchar; cdecl;
 
   sg_is_post: function(const method: Pcchar): cbool; cdecl;
 
   sg_extract_entrypoint: function(const path: Pcchar): Pcchar; cdecl;
 
   sg_tmpdir: function: Pcchar; cdecl;
+
+  sg_eor: function(err: cbool): cssize_t; cdecl;
 
 type
   Psg_str = ^sg_str;
@@ -344,7 +344,7 @@ var
   sg_httpres_set_cookie: function(res: Psg_httpres; const name: Pcchar;
     const val: Pcchar): cint; cdecl;
 
-function sg_httpres_send(res: Psg_httpres; buf: Pcchar;
+function sg_httpres_send(res: Psg_httpres; const val: Pcchar;
   const content_type: Pcchar; status: cuint): cint; cdecl;
 
 var
@@ -358,19 +358,26 @@ function sg_httpres_render(res: Psg_httpres; const filename: Pcchar;
   status: cuint): cint; cdecl;
 
 var
-  sg_httpres_sendfile: function(res: Psg_httpres; size: csize_t;
+  sg_httpres_sendfile: function(res: Psg_httpres; size: cuint64_t;
     max_size: cuint64_t; offset: cuint64_t; const filename: Pcchar;
     rendered: cbool; status: cuint): cint; cdecl;
 
   sg_httpres_sendstream: function(res: Psg_httpres; size: cuint64_t;
-    block_size: csize_t; read_cb: sg_read_cb; handle: Pcvoid;
-    free_cb: sg_free_cb; status: cuint): cint; cdecl;
+    read_cb: sg_read_cb; handle: Pcvoid; free_cb: sg_free_cb;
+    status: cuint): cint; cdecl;
+
+function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
+  const content_type: Pcchar; status: cuint): cint; cdecl;
+
+var
+  sg_httpres_zsendbinary: function(res: Psg_httpres; buf: Pcvoid; size: csize_t;
+    const content_type: Pcchar; status: cuint): cint; cdecl;
 
   sg_httpres_clear: function(res: Psg_httpres): cint; cdecl;
 
 var
   sg_httpsrv_new2: function(auth_cb: sg_httpauth_cb; req_cb: sg_httpreq_cb;
-    err_cb: sg_err_cb; err_cls: Pcvoid): Psg_httpsrv; cdecl;
+    err_cb: sg_err_cb; cls: Pcvoid): Psg_httpsrv; cdecl;
 
   sg_httpsrv_new: function(cb: sg_httpreq_cb; cls: Pcvoid): Psg_httpsrv; cdecl;
 
@@ -431,14 +438,58 @@ var
 
   sg_httpsrv_con_limit: function(srv: Psg_httpsrv): cuint; cdecl;
 
+type
+  PPsg_entrypoint = ^Psg_entrypoint;
+  Psg_entrypoint = ^sg_entrypoint;
+  sg_entrypoint = record
+  end;
+
 var
-  sg_httpread_end: function(err: cbool): cssize_t; cdecl;
+  sg_entrypoint_name: function(entrypoint: Psg_entrypoint): Pcchar; cdecl;
+
+  sg_entrypoint_set_user_data: function(entrypoint: Psg_entrypoint;
+    user_data: Pcvoid): cint; cdecl;
+
+  sg_entrypoint_user_data: function(entrypoint: Psg_entrypoint): Pcvoid; cdecl;
+
+type
+  Psg_entrypoints = ^sg_entrypoints;
+  sg_entrypoints = record
+  end;
+
+  sg_entrypoints_iter_cb = function(cls: Pcvoid;
+    entrypoint: Psg_entrypoint): cint; cdecl;
+
+var
+  sg_entrypoints_new: function: Psg_entrypoints; cdecl;
+
+  sg_entrypoints_free: procedure(entrypoints: Psg_entrypoints); cdecl;
+
+  sg_entrypoints_add: function(entrypoints: Psg_entrypoints; const path: Pcchar;
+    user_data: Pcvoid): cint; cdecl;
+
+  sg_entrypoints_rm: function(entrypoints: Psg_entrypoints;
+    const path: Pcchar): cint; cdecl;
+
+  sg_entrypoints_iter: function(entrypoints: Psg_entrypoints;
+    cb: sg_entrypoints_iter_cb; cls: Pcvoid): cint; cdecl;
+
+  sg_entrypoints_clear: function(entrypoints: Psg_entrypoints): cint; cdecl;
+
+  sg_entrypoints_find: function(entrypoints: Psg_entrypoints;
+    entrypoint: PPsg_entrypoint; const path: Pcchar): cint; cdecl;
 
 type
   PPsg_route = ^Psg_route;
   Psg_route = ^sg_route;
   sg_route = record
   end;
+
+  sg_segments_iter_cb = function(cls: Pcvoid; index: cuint;
+    const segment: Pcchar): cint; cdecl;
+
+  sg_vars_iter_cb = function(cls: Pcvoid; const name: Pcchar;
+    const val: Pcchar): cint; cdecl;
 
   sg_route_cb = procedure(cls: Pcvoid; route: Psg_route); cdecl;
 
@@ -455,10 +506,10 @@ var
 
   sg_route_path: function(route: Psg_route): Pcchar; cdecl;
 
-  sg_route_get_segments: function(route: Psg_route; cb: sg_get_segments_cb;
+  sg_route_segments_iter: function(route: Psg_route; cb: sg_segments_iter_cb;
     cls: Pcvoid): cint; cdecl;
 
-  sg_route_get_vars: function(route: Psg_route; cb: sg_get_vars_cb;
+  sg_route_vars_iter: function(route: Psg_route; cb: sg_vars_iter_cb;
     cls: Pcvoid): cint; cdecl;
 
   sg_route_user_data: function(route: Psg_route): Pcvoid; cdecl;
@@ -506,47 +557,6 @@ var
     user_data: Pcvoid): cint; cdecl;
 
 type
-  PPsg_entrypoint = ^Psg_entrypoint;
-  Psg_entrypoint = ^sg_entrypoint;
-  sg_entrypoint = record
-  end;
-
-var
-  sg_entrypoint_name: function(entrypoint: Psg_entrypoint): Pcchar; cdecl;
-
-  sg_entrypoint_set_user_data: function(entrypoint: Psg_entrypoint;
-    user_data: Pcvoid): cint; cdecl;
-
-  sg_entrypoint_user_data: function(entrypoint: Psg_entrypoint): Pcvoid; cdecl;
-
-type
-  Psg_entrypoints = ^sg_entrypoints;
-  sg_entrypoints = record
-  end;
-
-  sg_entrypoints_iter_cb = function(cls: Pcvoid;
-    entrypoint: Psg_entrypoint): cint; cdecl;
-
-var
-  sg_entrypoints_new: function: Psg_entrypoints; cdecl;
-
-  sg_entrypoints_free: procedure(entrypoints: Psg_entrypoints); cdecl;
-
-  sg_entrypoints_add: function(entrypoints: Psg_entrypoints; const path: Pcchar;
-    user_data: Pcvoid): cint; cdecl;
-
-  sg_entrypoints_rm: function(entrypoints: Psg_entrypoints;
-    const path: Pcchar): cint; cdecl;
-
-  sg_entrypoints_iter: function(entrypoints: Psg_entrypoints;
-    cb: sg_entrypoints_iter_cb; cls: Pcvoid): cint; cdecl;
-
-  sg_entrypoints_clear: function(entrypoints: Psg_entrypoints): cint; cdecl;
-
-  sg_entrypoints_find: function(entrypoints: Psg_entrypoints;
-    entrypoint: PPsg_entrypoint; const path: Pcchar): cint; cdecl;
-
-type
   ESgLibNotLoaded = class(EFileNotFoundException);
 
   TSgLibUnloadCb = procedure(ACls: Pointer); cdecl;
@@ -584,16 +594,16 @@ type
 
 implementation
 
-function sg_httpres_send(res: Psg_httpres; buf: Pcchar;
+function sg_httpres_send(res: Psg_httpres; const val: Pcchar;
   const content_type: Pcchar; status: cuint): cint;
 var
   len: csize_t;
 begin
-  if Assigned(buf) then
-    len := Length(buf)
+  if Assigned(val) then
+    len := Length(val)
   else
     len := 0;
-  Result := sg_httpres_sendbinary(res, buf, len, content_type, status);
+  Result := sg_httpres_sendbinary(res, val, len, content_type, status);
 end;
 
 function sg_httpres_download(res: Psg_httpres; const filename: Pcchar;
@@ -606,6 +616,18 @@ function sg_httpres_render(res: Psg_httpres; const filename: Pcchar;
   status: cuint): cint;
 begin
   Result := sg_httpres_sendfile(res, 0, 0, 0, filename, True, status);
+end;
+
+function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
+  const content_type: Pcchar; status: cuint): cint;
+var
+  len: csize_t;
+begin
+  if Assigned(val) then
+    len := Length(val)
+  else
+    len := 0;
+  Result := sg_httpres_zsendbinary(res, val, len, content_type, status);
 end;
 
 class procedure SgLib.Init;
@@ -707,6 +729,7 @@ begin //FI:C101
 
     CheckVersion;
 
+    sg_malloc := GetProcAddress(GHandle, 'sg_malloc');
     sg_alloc := GetProcAddress(GHandle, 'sg_alloc');
     sg_realloc := GetProcAddress(GHandle, 'sg_realloc');
     sg_free := GetProcAddress(GHandle, 'sg_free');
@@ -714,6 +737,7 @@ begin //FI:C101
     sg_is_post := GetProcAddress(GHandle, 'sg_is_post');
     sg_extract_entrypoint := GetProcAddress(GHandle, 'sg_extract_entrypoint');
     sg_tmpdir := GetProcAddress(GHandle, 'sg_tmpdir');
+    sg_eor := GetProcAddress(GHandle, 'sg_eor');
 
     sg_str_new := GetProcAddress(GHandle, 'sg_str_new');
     sg_str_free := GetProcAddress(GHandle, 'sg_str_free');
@@ -777,6 +801,7 @@ begin //FI:C101
     sg_httpres_sendbinary := GetProcAddress(GHandle, 'sg_httpres_sendbinary');
     sg_httpres_sendfile := GetProcAddress(GHandle, 'sg_httpres_sendfile');
     sg_httpres_sendstream := GetProcAddress(GHandle, 'sg_httpres_sendstream');
+    sg_httpres_zsendbinary := GetProcAddress(GHandle, 'sg_httpres_zsendbinary');
     sg_httpres_clear := GetProcAddress(GHandle, 'sg_httpres_clear');
 
     sg_httpsrv_new2 := GetProcAddress(GHandle, 'sg_httpsrv_new2');
@@ -804,15 +829,25 @@ begin //FI:C101
     sg_httpsrv_set_con_limit := GetProcAddress(GHandle, 'sg_httpsrv_set_con_limit');
     sg_httpsrv_con_limit := GetProcAddress(GHandle, 'sg_httpsrv_con_limit');
 
-    sg_httpread_end := GetProcAddress(GHandle, 'sg_httpread_end');
+    sg_entrypoint_name := GetProcAddress(GHandle, 'sg_entrypoint_name');
+    sg_entrypoint_set_user_data := GetProcAddress(GHandle, 'sg_entrypoint_set_user_data');
+    sg_entrypoint_user_data := GetProcAddress(GHandle, 'sg_entrypoint_user_data');
+
+    sg_entrypoints_new := GetProcAddress(GHandle, 'sg_entrypoints_new');
+    sg_entrypoints_free := GetProcAddress(GHandle, 'sg_entrypoints_free');
+    sg_entrypoints_add := GetProcAddress(GHandle, 'sg_entrypoints_add');
+    sg_entrypoints_rm := GetProcAddress(GHandle, 'sg_entrypoints_rm');
+    sg_entrypoints_iter := GetProcAddress(GHandle, 'sg_entrypoints_iter');
+    sg_entrypoints_clear := GetProcAddress(GHandle, 'sg_entrypoints_clear');
+    sg_entrypoints_find := GetProcAddress(GHandle, 'sg_entrypoints_find');
 
     sg_route_handle := GetProcAddress(GHandle, 'sg_route_handle');
     sg_route_match := GetProcAddress(GHandle, 'sg_route_match');
     sg_route_rawpattern := GetProcAddress(GHandle, 'sg_route_rawpattern');
     sg_route_pattern := GetProcAddress(GHandle, 'sg_route_pattern');
     sg_route_path := GetProcAddress(GHandle, 'sg_route_path');
-    sg_route_get_segments := GetProcAddress(GHandle, 'sg_route_get_segments');
-    sg_route_get_vars := GetProcAddress(GHandle, 'sg_route_get_vars');
+    sg_route_segments_iter := GetProcAddress(GHandle, 'sg_route_segments_iter');
+    sg_route_vars_iter := GetProcAddress(GHandle, 'sg_route_vars_iter');
     sg_route_user_data := GetProcAddress(GHandle, 'sg_route_user_data');
 
     sg_routes_add2 := GetProcAddress(GHandle, 'sg_routes_add2');
@@ -827,18 +862,6 @@ begin //FI:C101
     sg_router_free := GetProcAddress(GHandle, 'sg_router_free');
     sg_router_dispatch2 := GetProcAddress(GHandle, 'sg_router_dispatch2');
     sg_router_dispatch := GetProcAddress(GHandle, 'sg_router_dispatch');
-
-    sg_entrypoint_name := GetProcAddress(GHandle, 'sg_entrypoint_name');
-    sg_entrypoint_set_user_data := GetProcAddress(GHandle, 'sg_entrypoint_set_user_data');
-    sg_entrypoint_user_data := GetProcAddress(GHandle, 'sg_entrypoint_user_data');
-
-    sg_entrypoints_new := GetProcAddress(GHandle, 'sg_entrypoints_new');
-    sg_entrypoints_free := GetProcAddress(GHandle, 'sg_entrypoints_free');
-    sg_entrypoints_add := GetProcAddress(GHandle, 'sg_entrypoints_add');
-    sg_entrypoints_rm := GetProcAddress(GHandle, 'sg_entrypoints_rm');
-    sg_entrypoints_iter := GetProcAddress(GHandle, 'sg_entrypoints_iter');
-    sg_entrypoints_clear := GetProcAddress(GHandle, 'sg_entrypoints_clear');
-    sg_entrypoints_find := GetProcAddress(GHandle, 'sg_entrypoints_find');
 
     Result := GHandle;
   finally
@@ -860,6 +883,7 @@ begin //FI:C101
 
     sg_version := nil;
     sg_version_str := nil;
+    sg_malloc := nil;
     sg_alloc := nil;
     sg_realloc := nil;
     sg_free := nil;
@@ -867,6 +891,7 @@ begin //FI:C101
     sg_is_post := nil;
     sg_extract_entrypoint := nil;
     sg_tmpdir := nil;
+    sg_eor := nil;
 
     sg_str_new := nil;
     sg_str_free := nil;
@@ -930,6 +955,7 @@ begin //FI:C101
     sg_httpres_sendbinary := nil;
     sg_httpres_sendfile := nil;
     sg_httpres_sendstream := nil;
+    sg_httpres_zsendbinary := nil;
     sg_httpres_clear := nil;
 
     sg_httpsrv_new2 := nil;
@@ -957,15 +983,25 @@ begin //FI:C101
     sg_httpsrv_set_con_limit := nil;
     sg_httpsrv_con_limit := nil;
 
-    sg_httpread_end := nil;
+    sg_entrypoint_name := nil;
+    sg_entrypoint_set_user_data := nil;
+    sg_entrypoint_user_data := nil;
+
+    sg_entrypoints_new := nil;
+    sg_entrypoints_free := nil;
+    sg_entrypoints_add := nil;
+    sg_entrypoints_rm := nil;
+    sg_entrypoints_iter := nil;
+    sg_entrypoints_clear := nil;
+    sg_entrypoints_find := nil;
 
     sg_route_handle := nil;
     sg_route_match := nil;
     sg_route_rawpattern := nil;
     sg_route_pattern := nil;
     sg_route_path := nil;
-    sg_route_get_segments := nil;
-    sg_route_get_vars := nil;
+    sg_route_segments_iter := nil;
+    sg_route_vars_iter := nil;
     sg_route_user_data := nil;
     sg_routes_add2 := nil;
     sg_routes_add := nil;
@@ -979,18 +1015,6 @@ begin //FI:C101
     sg_router_free := nil;
     sg_router_dispatch2 := nil;
     sg_router_dispatch := nil;
-
-    sg_entrypoint_name := nil;
-    sg_entrypoint_set_user_data := nil;
-    sg_entrypoint_user_data := nil;
-
-    sg_entrypoints_new := nil;
-    sg_entrypoints_free := nil;
-    sg_entrypoints_add := nil;
-    sg_entrypoints_rm := nil;
-    sg_entrypoints_iter := nil;
-    sg_entrypoints_clear := nil;
-    sg_entrypoints_find := nil;
 
     Result := NilHandle;
   finally
