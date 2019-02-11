@@ -866,9 +866,10 @@ begin
   else
     FActive := sg_httpsrv_listen(FHandle, FPort, FThreaded);
   if not FActive then
-    InternalFreeServerHandle;
-  if Assigned(FOnStart) then
-    FOnStart(Self);
+    InternalFreeServerHandle
+  else
+    if Assigned(FOnStart) then
+      FOnStart(Self);
 end;
 
 procedure TBrookHTTPServer.DoClose;
