@@ -70,6 +70,7 @@ type
     class function GetFileName: TFileName; virtual; abstract;
     procedure Add(const AExt, AType: string); virtual;
     procedure Remove(const AExt: string); virtual;
+    function TryType(const AExt: string; out AType: string): Boolean; virtual;
     function Find(const AExt, ADefType: string): string; overload; virtual;
     function Find(const AExt: string): string; overload; virtual;
     function Count: Integer; virtual;
@@ -210,6 +211,13 @@ procedure TBrookMediaTypes.Remove(const AExt: string);
 begin
   CheckExt(AExt);
   FCache.Remove(NormalizeExt(AExt));
+end;
+
+function TBrookMediaTypes.TryType(const AExt: string;
+  out AType: string): Boolean;
+begin
+  CheckExt(AExt);
+  Result := FCache.TryGetValue(NormalizeExt(AExt), AType);
 end;
 
 function TBrookMediaTypes.Find(const AExt, ADefType: string): string;
