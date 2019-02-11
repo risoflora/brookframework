@@ -92,8 +92,8 @@ type
       AStatus: Word); overload; virtual;
     procedure SendAndRedirect(const AValue, ADestination,
       AContentType: string); overload; virtual;
-    procedure Download(const AFileName: TFileName; AStatus: Word); virtual;
-    procedure Render(const AFileName: TFileName; AStatus: Word); virtual;
+    procedure Download(const AFileName: TFileName); virtual;
+    procedure Render(const AFileName: TFileName); virtual;
     procedure Clear; virtual;
     property Headers: TBrookStringMap read FHeaders;
   end;
@@ -317,30 +317,26 @@ begin
   SendAndRedirect(AValue, ADestination, AContentType, 302);
 end;
 
-procedure TBrookHTTPResponse.Download(const AFileName: TFileName;
-  AStatus: Word);
+procedure TBrookHTTPResponse.Download(const AFileName: TFileName);
 var
   M: TMarshaller;
   R: cint;
 begin
-  CheckStatus(AStatus);
   SgLib.Check;
-  R := sg_httpres_download(FHandle, M.ToCString(AFileName), AStatus);
+  R := sg_httpres_download(FHandle, M.ToCString(AFileName));
   CheckAlreadySent(R);
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
 end;
 
-procedure TBrookHTTPResponse.Render(const AFileName: TFileName;
-  AStatus: Word);
+procedure TBrookHTTPResponse.Render(const AFileName: TFileName);
 var
   M: TMarshaller;
   R: cint;
 begin
-  CheckStatus(AStatus);
   SgLib.Check;
-  R := sg_httpres_render(FHandle, M.ToCString(AFileName), AStatus);
+  R := sg_httpres_render(FHandle, M.ToCString(AFileName));
   CheckAlreadySent(R);
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);

@@ -351,11 +351,11 @@ var
   sg_httpres_sendbinary: function(res: Psg_httpres; buf: Pcvoid; size: csize_t;
     const content_type: Pcchar; status: cuint): cint; cdecl;
 
-function sg_httpres_download(res: Psg_httpres; const filename: Pcchar;
-  status: cuint): cint; cdecl;
+function sg_httpres_download(res: Psg_httpres;
+  const filename: Pcchar): cint; cdecl;
 
-function sg_httpres_render(res: Psg_httpres; const filename: Pcchar;
-  status: cuint): cint; cdecl;
+function sg_httpres_render(res: Psg_httpres;
+  const filename: Pcchar): cint; cdecl;
 
 var
   sg_httpres_sendfile: function(res: Psg_httpres; size: cuint64_t;
@@ -606,16 +606,14 @@ begin
   Result := sg_httpres_sendbinary(res, val, len, content_type, status);
 end;
 
-function sg_httpres_download(res: Psg_httpres; const filename: Pcchar;
-  status: cuint): cint;
+function sg_httpres_download(res: Psg_httpres; const filename: Pcchar): cint;
 begin
-  Result := sg_httpres_sendfile(res, 0, 0, 0, filename, False, status);
+  Result := sg_httpres_sendfile(res, 0, 0, 0, filename, False, 200);
 end;
 
-function sg_httpres_render(res: Psg_httpres; const filename: Pcchar;
-  status: cuint): cint;
+function sg_httpres_render(res: Psg_httpres; const filename: Pcchar): cint;
 begin
-  Result := sg_httpres_sendfile(res, 0, 0, 0, filename, True, status);
+  Result := sg_httpres_sendfile(res, 0, 0, 0, filename, True, 200);
 end;
 
 function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
