@@ -52,7 +52,7 @@ resourcestring
 type
   EBrookMediaTypes = class(Exception);
 
-  TBrookMediaTypes = class
+  TBrookMediaTypes = class abstract
   private
     FCache: TDictionary<string, string>;
   protected
@@ -67,6 +67,7 @@ type
     class function IsText(const AType: string): Boolean; static; inline;
     class function IsExt(const AExt: string): Boolean; static; inline;
     class function NormalizeExt(const AExt: string): string; static; inline;
+    class function GetFileName: TFileName; virtual; abstract;
     procedure Add(const AExt, AType: string); virtual;
     procedure Remove(const AExt: string); virtual;
     function Find(const AExt, ADefType: string): string; overload; virtual;
@@ -92,7 +93,7 @@ type
     procedure Parse; override;
   end;
 
-  TBrookMediaTypesPath = class abstract(TBrookMediaTypes)
+  TBrookMediaTypesPath = class(TBrookMediaTypes)
   private
     FParser: TBrookMediaTypesParser;
     FReader: TBrookTextReader;
@@ -103,17 +104,24 @@ type
   public
     constructor Create(const APath: string); reintroduce; virtual;
     destructor Destroy; override;
+    class function GetFileName: TFileName; override;
     property Reader: TBrookTextReader read FReader;
     property Parser: TBrookMediaTypesParser read FParser;
     property Path: string read FPath {write SetPath};
   end;
 
   TBrookMediaTypesApache = class(TBrookMediaTypesPath)
+  public
+    constructor Create; reintroduce; virtual;
+    class function GetFileName: TFileName; override;
   end;
 
   TBrookMediaTypesNginx = class(TBrookMediaTypesPath)
   protected
     function CreateParser: TBrookMediaTypesParser; override;
+  public
+    constructor Create; reintroduce; virtual;
+    class function GetFileName: TFileName; override;
   end;
 
 {$IFDEF MSWINDOWS}
@@ -128,6 +136,7 @@ type
   TBrookMediaTypesUnix = class(TBrookMediaTypesPath)
   public
     constructor Create; reintroduce; virtual;
+    class function GetFileName: TFileName; override;
   end;
 
 {$ENDIF}
@@ -248,7 +257,7 @@ var
   VPair, VExtensions: TArray<string>;
 begin
   FTypes.Cache.Clear;
-  while not FReader.Eof do
+  while not FReader.EOF do
   begin
     VLine := FReader.Read;
     if (Length(VLine) > 0) and (VLine[1] <> '#') then
@@ -273,7 +282,7 @@ var
   VPair: TArray<string>;
   VLine, VMediaType: string;
 begin
-  while not FReader.Eof do
+  while not FReader.EOF do
   begin
     VLine := Trim(FReader.Read);
     Delete(VLine, Length(VLine), Length(';'));
@@ -318,11 +327,40 @@ begin
   Result := TBrookMediaTypesParser.Create(FReader, Self);
 end;
 
+class function TBrookMediaTypesPath.GetFileName: TFileName;
+begin
+  Result := BROOK_MIME_FILE;
+end;
+
+{ TBrookMediaTypesApache }
+
+constructor TBrookMediaTypesApache.Create;
+begin
+  inherited Create(GetFileName);
+end;
+
+class function TBrookMediaTypesApache.GetFileName: TFileName;
+begin
+  Result :=
+{$IFDEF UNIX}Concat('/etc/', {$ENDIF}BROOK_MIME_FILE{$IFDEF UNIX}){$ENDIF};
+end;
+
 { TBrookMediaTypesNginx }
+
+constructor TBrookMediaTypesNginx.Create;
+begin
+  inherited Create(GetFileName);
+end;
 
 function TBrookMediaTypesNginx.CreateParser: TBrookMediaTypesParser;
 begin
   Result := TBrookMediaTypesParserNginx.Create(FReader, Self);
+end;
+
+class function TBrookMediaTypesNginx.GetFileName: TFileName;
+begin
+  Result :=
+{$IFDEF UNIX}Concat('/etc/nginx/', {$ENDIF}BROOK_MIME_FILE{$IFDEF UNIX}){$ENDIF};
 end;
 
 {$IFDEF UNIX}
@@ -344,13 +382,18 @@ var
 
 begin
   FNs := TArray<TFileName>.Create(
-    Concat('/etc/', BROOK_MIME_FILE)
+    GetFileName
     // Put other 'mime.types' paths here...
   );
   FN := FindFile;
   if Length(FN) = 0 then
     FN := BROOK_MIME_FILE;
   inherited Create(FN);
+end;
+
+class function TBrookMediaTypesUnix.GetFileName: TFileName;
+begin
+  Result := Concat('/etc/', BROOK_MIME_FILE);
 end;
 
 {$ENDIF}
