@@ -13,7 +13,7 @@
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Brook is microframework which helps to develop web Pascal applications."/>
-    <License Value="Copyright (c) 2012-2018 Silvio Clecio &lt;silvioprog@gmail.com>
+    <License Value="Copyright (c) 2012-2019 Silvio Clecio &lt;silvioprog@gmail.com>
 
 This file is part of Brook framework.
 
@@ -30,7 +30,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Brook framework.  If not, see &lt;http://www.gnu.org/licenses/>."/>
     <Version Major="5"/>
-    <Files Count="19">
+    <Files Count="20">
       <Item1>
         <Filename Value="../Source/libsagui.pas"/>
         <UnitName Value="libsagui"/>
@@ -72,42 +72,46 @@ along with Brook framework.  If not, see &lt;http://www.gnu.org/licenses/>."/>
         <UnitName Value="BrookStringMap"/>
       </Item10>
       <Item11>
-        <Filename Value="../Source/BrookHTTPExtra.pas"/>
-        <UnitName Value="BrookHTTPExtra"/>
+        <Filename Value="../Source/BrookReader.pas"/>
+        <UnitName Value="BrookReader"/>
       </Item11>
       <Item12>
-        <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
-        <UnitName Value="BrookHTTPAuthentication"/>
+        <Filename Value="../Source/BrookHTTPExtra.pas"/>
+        <UnitName Value="BrookHTTPExtra"/>
       </Item12>
       <Item13>
-        <Filename Value="../Source/BrookHTTPUploads.pas"/>
-        <UnitName Value="BrookHTTPUploads"/>
+        <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
+        <UnitName Value="BrookHTTPAuthentication"/>
       </Item13>
       <Item14>
-        <Filename Value="../Source/BrookHTTPRequest.pas"/>
-        <UnitName Value="BrookHTTPRequest"/>
+        <Filename Value="../Source/BrookHTTPUploads.pas"/>
+        <UnitName Value="BrookHTTPUploads"/>
       </Item14>
       <Item15>
-        <Filename Value="../Source/BrookHTTPResponse.pas"/>
-        <UnitName Value="BrookHTTPResponse"/>
+        <Filename Value="../Source/BrookHTTPRequest.pas"/>
+        <UnitName Value="BrookHTTPRequest"/>
       </Item15>
       <Item16>
-        <Filename Value="../Source/BrookHTTPEntryPoints.pas"/>
-        <UnitName Value="BrookHTTPEntryPoints"/>
+        <Filename Value="../Source/BrookHTTPResponse.pas"/>
+        <UnitName Value="BrookHTTPResponse"/>
       </Item16>
       <Item17>
-        <Filename Value="../Source/BrookHTTPRouter.pas"/>
-        <UnitName Value="BrookHTTPRouter"/>
+        <Filename Value="../Source/BrookHTTPEntryPoints.pas"/>
+        <UnitName Value="BrookHTTPEntryPoints"/>
       </Item17>
       <Item18>
-        <Filename Value="../Source/BrookHTTPServer.pas"/>
-        <UnitName Value="BrookHTTPServer"/>
+        <Filename Value="../Source/BrookHTTPRouter.pas"/>
+        <UnitName Value="BrookHTTPRouter"/>
       </Item18>
       <Item19>
+        <Filename Value="../Source/BrookHTTPServer.pas"/>
+        <UnitName Value="BrookHTTPServer"/>
+      </Item19>
+      <Item20>
         <Filename Value="BrookIDEIntegration.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="BrookIDEIntegration"/>
-      </Item19>
+      </Item20>
     </Files>
     <RequiredPkgs Count="1">
       <Item1>
