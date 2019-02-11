@@ -42,7 +42,7 @@ uses
   libsagui,
   BrookUtility,
   BrookHandledClasses,
-  BrookHTTPExtra,
+  BrookExtra,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPRouter;
@@ -648,7 +648,7 @@ begin
     ARouter.Route(ASender, APath, ARequest, AResponse)
   else
     AResponse.Send(SBrookRouterNotAssigned, [AEntryPoint],
-      BROOK_CONTENT_TYPE, 500);
+      BROOK_CT_TEXT_PLAIN, 500);
 end;
 
 procedure TBrookHTTPEntryPoints.DoNotFound(ASender: TObject;
@@ -659,7 +659,7 @@ begin
     FOnNotFound(ASender, AEntryPoint, APath, ARequest, AResponse)
   else
     AResponse.Send(SBrookEntryPointNotFound, [AEntryPoint],
-      BROOK_CONTENT_TYPE, 404);
+      BROOK_CT_TEXT_PLAIN, 404);
 end;
 
 procedure TBrookHTTPEntryPoints.Enter(ASender: TObject; const APath: string;

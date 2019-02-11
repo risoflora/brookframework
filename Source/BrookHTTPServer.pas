@@ -40,7 +40,7 @@ uses
   libsagui,
   BrookUtility,
   BrookHandledClasses,
-  BrookHTTPExtra,
+  BrookExtra,
   BrookHTTPAuthentication,
   BrookHTTPRequest,
   BrookHTTPResponse;
@@ -508,7 +508,7 @@ begin
   if Assigned(FOnRequestError) then
     FOnRequestError(ASender, ARequest, AResponse, AException)
   else
-    AResponse.Send(AException.Message, BROOK_CONTENT_TYPE, 500);
+    AResponse.Send(AException.Message, BROOK_CT_TEXT_PLAIN, 500);
 end;
 
 function TBrookHTTPServer.HandleAuthenticate(
@@ -535,7 +535,7 @@ begin
     DoAuthenticateError(Self, AAuthentication, ARequest, AResponse, AException);
   except
     on E: Exception do
-      AResponse.Send(E.Message, BROOK_CONTENT_TYPE, 500);
+      AResponse.Send(E.Message, BROOK_CT_TEXT_PLAIN, 500);
   end;
 end;
 
@@ -558,7 +558,7 @@ begin
     DoRequestError(Self, ARequest, AResponse, AException);
   except
     on E: Exception do
-      AResponse.Send(E.Message, BROOK_CONTENT_TYPE, 500);
+      AResponse.Send(E.Message, BROOK_CT_TEXT_PLAIN, 500);
   end;
 end;
 

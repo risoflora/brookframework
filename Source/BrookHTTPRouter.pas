@@ -43,7 +43,7 @@ uses
   BrookUtility,
   BrookHandledClasses,
   BrookStringMap,
-  BrookHTTPExtra,
+  BrookExtra,
   BrookHTTPRequest,
   BrookHTTPResponse;
 
@@ -531,7 +531,7 @@ procedure TBrookHTTPRoute.SendMethodNotAllowed(const AMethod: string;
   AResponse: TBrookHTTPResponse);
 begin
   AResponse.Send(SBrookRequestMethodNotAllowed, [AMethod],
-    BROOK_CONTENT_TYPE, 405);
+    BROOK_CT_TEXT_PLAIN, 405);
 end;
 
 { TBrookHTTPRoutesEnumerator }
@@ -882,7 +882,7 @@ begin
   if Assigned(FOnNotFound) then
     FOnNotFound(ASender, ARoute, ARequest, AResponse)
   else
-    AResponse.Send(SBrookRouteNotFound, [ARoute], BROOK_CONTENT_TYPE, 404);
+    AResponse.Send(SBrookRouteNotFound, [ARoute], BROOK_CT_TEXT_PLAIN, 404);
 end;
 
 function TBrookHTTPRouter.DispatchRoute(const APath: string;

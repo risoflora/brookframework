@@ -24,7 +24,7 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
-unit BrookHTTPExtra;
+unit BrookExtra;
 
 {$I BrookDefines.inc}
 
@@ -34,7 +34,13 @@ const
   BROOK_POST_BUFFER_SIZE = {$IFDEF CPUARM}1024{~1Kb}{$ELSE}4096{~4kB}{$ENDIF};
   BROOK_PAYLOAD_LIMIT = {$IFDEF CPUARM}1048576{~1MB}{$ELSE}4194304{~4MB}{$ENDIF};
   BROOK_UPLOADS_LIMIT = {$IFDEF CPUARM}16777216{~16MB}{$ELSE}67108864{~64MB}{$ENDIF};
-  BROOK_CONTENT_TYPE = 'text/plain; charset=utf-8';
+
+  BROOK_MIN_BYTES_SIZE = 128;
+  BROOK_BYTES_SIZE = 4096;
+  BROOK_FILE_RIGHTS = 438;
+
+  BROOK_CT_TEXT_PLAIN = 'text/plain; charset=utf-8';
+  BROOK_CT_OCTET_STREAM = 'application/octet-stream';
 
 implementation
 

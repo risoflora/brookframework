@@ -36,27 +36,23 @@ interface
 uses
   RTLConsts,
   SysUtils,
-  Classes;
-
-const
-  BROOK_MIN_BYTES_SIZE = 128;
-  BROOK_BYTES_SIZE = 4096;
-  BROOK_FILE_RIGHTS = 438;
+  Classes,
+  BrookExtra;
 
 type
-  TBrookTextReader = class abstract(TObject)
+  TBrookTextReader = class abstract
   protected
     function GetEncoding: TEncoding; virtual; abstract;
     procedure SetEncoding(AValue: TEncoding); virtual; abstract;
   public
     procedure Reset; virtual; abstract;
     procedure Close; virtual; abstract;
-    function IsEof: Boolean; virtual; abstract;
+    function IsEOF: Boolean; virtual; abstract;
     procedure ReadBytes(out ALine: TBytes); overload; virtual; abstract;
     function ReadBytes: TBytes; overload; virtual; abstract;
     procedure Read(out ALine: string); overload; virtual; abstract;
     function Read: string; overload; virtual; abstract;
-    property Eof: Boolean read IsEof;
+    property EOF: Boolean read IsEOF;
     property Encoding: TEncoding read GetEncoding write SetEncoding;
   end;
 
@@ -87,7 +83,7 @@ type
     destructor Destroy; override;
     procedure Reset; override;
     procedure Close; override;
-    function IsEof: Boolean; override;
+    function IsEOF: Boolean; override;
     procedure ReadBytes(out ALine: TBytes); overload; override;
     function ReadBytes: TBytes; overload; override;
     procedure Read(out ALine: string); overload; override;
@@ -108,7 +104,7 @@ type
     destructor Destroy; override;
     procedure Reset; override;
     procedure Close; override;
-    function IsEof: Boolean; override;
+    function IsEOF: Boolean; override;
     procedure ReadBytes(out ALine: TBytes); overload; override;
     function ReadBytes: TBytes; overload; override;
     procedure Read(out ALine: string); overload; override;
@@ -233,7 +229,7 @@ begin
   end;
 end;
 
-function TBrookStreamReader.IsEof: Boolean;
+function TBrookStreamReader.IsEOF: Boolean;
 begin
   if not Assigned(FStream) then
     Exit(True);
@@ -337,9 +333,9 @@ begin
   ProxyReader.Close;
 end;
 
-function TBrookBaseReader.IsEof: Boolean;
+function TBrookBaseReader.IsEOF: Boolean;
 begin
-  Result := ProxyReader.IsEof;
+  Result := ProxyReader.IsEOF;
 end;
 
 procedure TBrookBaseReader.ReadBytes(out ALine: TBytes);

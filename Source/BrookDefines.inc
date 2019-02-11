@@ -38,6 +38,3 @@
   {$POP}
  {$ENDIF}
 {$ENDIF}
-{$IFNDEF DEBUG}
- {$DEFINE INLINE}
-{$ENDIF}
