@@ -33,12 +33,14 @@ interface
 uses
   RTLConsts,
   SysUtils,
-  Generics.Collections,
 {$IFDEF VER3_0_0}
   FPC300Fixes,
 {$ENDIF}
+  libsagui,
   BrookExtra,
-  BrookReader;
+  BrookReader,
+  BrookHandledClasses,
+  BrookStringMap;
 
 const
   BROOK_MIME_FILE = 'mime.types';
@@ -52,14 +54,16 @@ resourcestring
 type
   EBrookMediaTypes = class(Exception);
 
-  TBrookMediaTypes = class abstract
+  TBrookMediaTypes = class abstract(TBrookHandledPersistent)
   private
-    FCache: TDictionary<string, string>;
+    FCache: TBrookStringMap;
+    FHandle: Psg_strmap;
   protected
-    function CreateCache: TDictionary<string, string>; virtual;
+    function CreateCache: TBrookStringMap; virtual;
     procedure CheckExt(const AExt: string); inline;
     procedure CheckType(const AType: string); inline;
-    property Cache: TDictionary<string, string> read FCache;
+    function GetHandle: Pointer; override;
+    property Cache: TBrookStringMap read FCache;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -156,9 +160,9 @@ begin
   inherited Destroy;
 end;
 
-function TBrookMediaTypes.CreateCache: TDictionary<string, string>;
+function TBrookMediaTypes.CreateCache: TBrookStringMap;
 begin
-  Result := TDictionary<string, string>.Create;
+  Result := TBrookStringMap.Create(@FHandle);
 end;
 
 class function TBrookMediaTypes.IsValid(const AType: string): Boolean;
@@ -193,6 +197,11 @@ begin
     raise EBrookMediaTypes.CreateResFmt(@SBrookInvalidMediaType, [AType]);
 end;
 
+function TBrookMediaTypes.GetHandle: Pointer;
+begin
+  Result := FHandle;
+end;
+
 class function TBrookMediaTypes.NormalizeExt(const AExt: string): string;
 begin
   Result := AExt;
@@ -204,7 +213,7 @@ procedure TBrookMediaTypes.Add(const AExt, AType: string);
 begin
   CheckExt(AExt);
   CheckType(AType);
-  FCache.AddOrSetValue(NormalizeExt(AExt), AType);
+  FCache.AddOrSet(NormalizeExt(AExt), AType);
 end;
 
 procedure TBrookMediaTypes.Remove(const AExt: string);
@@ -217,7 +226,7 @@ function TBrookMediaTypes.TryType(const AExt: string;
   out AType: string): Boolean;
 begin
   CheckExt(AExt);
-  Result := FCache.TryGetValue(NormalizeExt(AExt), AType);
+  Result := FCache.TryValue(NormalizeExt(AExt), AType);
 end;
 
 function TBrookMediaTypes.Find(const AExt, ADefType: string): string;
@@ -225,7 +234,7 @@ begin
   CheckExt(AExt);
   if not ADefType.IsEmpty then
     CheckType(ADefType);
-  if not FCache.TryGetValue(NormalizeExt(AExt), Result) then
+  if not FCache.TryValue(NormalizeExt(AExt), Result) then
     Result := ADefType;
 end;
 

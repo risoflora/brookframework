@@ -71,14 +71,16 @@ type
 {$ENDIF}
 
 const
-  SG_VERSION_MAJOR = 1;
+  SG_VERSION_MAJOR = 2;
 
-  SG_VERSION_MINOR = 2;
+  SG_VERSION_MINOR = 0;
 
   SG_VERSION_PATCH = 0;
 
   SG_VERSION_HEX = (SG_VERSION_MAJOR shl 16) or (SG_VERSION_MINOR shl 8) or
     SG_VERSION_PATCH;
+
+  SG_VERSION_MAJOR_STR = '2';
 
   SG_ERR_SIZE = 256;
 
@@ -95,12 +97,12 @@ const
 
   SG_LIB_NAME = Concat(
 {$IFDEF MSWINDOWS}
-    'libsagui-1' // SG_VERSION_MAJOR
+    'libsagui-', SG_VERSION_MAJOR_STR
 {$ELSE}
     'libsagui'
 {$ENDIF}, '.', SharedSuffix
 {$IFDEF LINUX}
-    , '.1' // SG_VERSION_MAJOR
+    , '.', SG_VERSION_MAJOR_STR
 {$ENDIF}
   );
 
@@ -108,7 +110,9 @@ resourcestring
   SSgLibEmptyName = 'Empty library name.';
   SSgLibNotLoaded = 'Library ''%s'' not loaded.';
   SSgLibInvalid = 'Invalid library ''%s''.';
-  SSgLibMinVersion = 'Application requires Sagui library ''%d.%d.%d'' or higher.';
+  SSgLibMinMajorVersion = 'Application requires Sagui library v%d.';
+  SSgLibMinMinorVersion = 'Application requires Sagui library v%d.%d or higher.';
+  SSgLibMinPathVersion = 'Application requires Sagui library v%d.%d.%d or higher.';
 
 type
   cchar = Byte;
@@ -372,6 +376,9 @@ function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
 var
   sg_httpres_zsendbinary: function(res: Psg_httpres; buf: Pcvoid; size: csize_t;
     const content_type: Pcchar; status: cuint): cint; cdecl;
+
+  sg_httpres_zsendstream: function(res: Psg_httpres; read_cb: sg_read_cb;
+    handle: Pcvoid; free_cb: sg_free_cb; status: cuint): cint; cdecl;
 
   sg_httpres_clear: function(res: Psg_httpres): cint; cdecl;
 
@@ -675,13 +682,22 @@ begin
 end;
 
 class procedure SgLib.CheckVersion;
+var
+  V: cuint;
 begin
   try
     if not Assigned(sg_version) then
       raise EInvalidOpException.CreateFmt(SSgLibInvalid, [GetLastName]);
-    if sg_version < SG_VERSION_HEX then
-      raise EInvalidOpException.CreateFmt(SSgLibMinVersion, [
-        SG_VERSION_MAJOR, SG_VERSION_MINOR, SG_VERSION_PATCH]);
+    V := sg_version;
+    if (SG_VERSION_MAJOR <> ((V shr 16) and $FF)) then
+      raise EInvalidOpException.CreateFmt(SSgLibMinMajorVersion,
+        [SG_VERSION_MAJOR]);
+    if (SG_VERSION_MINOR < ((V shr 8) and $FF)) then
+      raise EInvalidOpException.CreateFmt(SSgLibMinMinorVersion,
+        [SG_VERSION_MINOR]);
+    if (SG_VERSION_PATCH < (V and $FF)) then
+      raise EInvalidOpException.CreateFmt(SSgLibMinPathVersion,
+        [SG_VERSION_PATCH]);
   except
     Unload;
     raise;
@@ -800,6 +816,7 @@ begin //FI:C101
     sg_httpres_sendfile := GetProcAddress(GHandle, 'sg_httpres_sendfile');
     sg_httpres_sendstream := GetProcAddress(GHandle, 'sg_httpres_sendstream');
     sg_httpres_zsendbinary := GetProcAddress(GHandle, 'sg_httpres_zsendbinary');
+    sg_httpres_zsendstream := GetProcAddress(GHandle, 'sg_httpres_zsendstream');
     sg_httpres_clear := GetProcAddress(GHandle, 'sg_httpres_clear');
 
     sg_httpsrv_new2 := GetProcAddress(GHandle, 'sg_httpsrv_new2');
@@ -954,6 +971,7 @@ begin //FI:C101
     sg_httpres_sendfile := nil;
     sg_httpres_sendstream := nil;
     sg_httpres_zsendbinary := nil;
+    sg_httpres_zsendstream := nil;
     sg_httpres_clear := nil;
 
     sg_httpsrv_new2 := nil;
