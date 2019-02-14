@@ -4,9 +4,9 @@
  *  | |_) | | | (_) | (_) |   <
  *  |_.__/|_|  \___/ \___/|_|\_\
  *
- *  –– microframework which helps to develop web Pascal applications.
+ * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2018 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
  *
  * This file is part of Brook framework.
  *
@@ -123,7 +123,7 @@ type
   protected
     class procedure DoRouteCallback(Acls: Pcvoid;
       Aroute: Psg_route); cdecl; static;
-    class function DoSegmentsIterCallback(Acls: Pcvoid;
+    class function DoSegmentsIterCallback(Acls: Pcvoid; Aindex: cuint;
       const Asegment: Pcchar): cint; cdecl; static;
     class function DoVarsIterCallback(Acls: Pcvoid;
       const Aname: Pcchar; const Aval: Pcchar): cint; cdecl; static;
@@ -312,13 +312,18 @@ begin
   VRoute.HandleMatch(VRoute);
 end;
 
+{$IFDEF FPC}
+ {$PUSH}{$WARN 5024 OFF}
+{$ENDIF}
+
 class function TBrookHTTPRoute.DoSegmentsIterCallback(Acls: Pcvoid;
-  const Asegment: Pcchar): cint;
+  Aindex: cuint; const Asegment: Pcchar): cint;
 var
   VSegments: ^TArray<string>;
 begin
   VSegments := Acls;
 {$IFDEF VER3_0}
+  { TODO: use 'Aindex' and remove -w5024. }
   SetLength(VSegments^, Succ(Length(VSegments^)));
   VSegments^[High(VSegments^)] := TMarshal.ToString(Asegment);
 {$ELSE}
@@ -326,6 +331,10 @@ begin
 {$ENDIF}
   Result := 0;
 end;
+
+{$IFDEF FPC}
+ {$POP}
+{$ENDIF}
 
 class function TBrookHTTPRoute.DoVarsIterCallback(Acls: Pcvoid;
   const Aname: Pcchar; const Aval: Pcchar): cint;

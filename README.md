@@ -3,7 +3,7 @@
 * Version number: `5.0`
 * Codename: `Tardigrade`
 * Core under [Sagui library](https://risoflora.github.io/libsagui/)
-    * shared library - dynamic loading, single external file required (`libsagui.so`/`libsagui.dll`)
+    * shared library - dynamic loading, single external file required (`libsagui.so.2`/`libsagui-2.dll`)
 
 **This page will be updated (examples, how-to, links etc.) as soon as the version 5.0.0 is released!**
 
@@ -20,7 +20,7 @@ It was successfully tested on:
 
 Successfully compiled for Windows 32/64 bit and Linux 64 bit using:
 * Delphi XE family (tested in Delphi Tokyo)
-* Lazarus / Free Pascal (tested in Lazarus 1.8.4 / FPC 3.0.4)
+* Lazarus / Free Pascal (tested in Lazarus 2.0.0 / FPC 3.0.4)
 
 # Dependence
 
