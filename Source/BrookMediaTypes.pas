@@ -60,9 +60,10 @@ type
     FHandle: Psg_strmap;
   protected
     function CreateCache: TBrookStringMap; virtual;
+    function IsPrepared: Boolean; virtual; abstract;
+    function GetHandle: Pointer; override;
     procedure CheckExt(const AExt: string); inline;
     procedure CheckType(const AType: string); inline;
-    function GetHandle: Pointer; override;
     property Cache: TBrookStringMap read FCache;
   public
     constructor Create; virtual;
@@ -72,6 +73,7 @@ type
     class function IsExt(const AExt: string): Boolean; static; inline;
     class function NormalizeExt(const AExt: string): string; static; inline;
     class function GetFileName: TFileName; virtual; abstract;
+    procedure Prepare; virtual; abstract;
     procedure Add(const AExt, AType: string); virtual;
     procedure Remove(const AExt: string); virtual;
     function TryType(const AExt: string; out AType: string): Boolean; virtual;
@@ -79,6 +81,7 @@ type
     function Find(const AExt: string): string; overload; virtual;
     function Count: Integer; virtual;
     procedure Clear; virtual;
+    property Prepared: Boolean read IsPrepared;
   end;
 
   TBrookMediaTypesParser = class
@@ -103,13 +106,16 @@ type
     FParser: TBrookMediaTypesParser;
     FReader: TBrookTextReader;
     FPath: string;
+    FPrepared: Boolean;
   protected
     function CreateReader: TBrookTextReader; virtual;
     function CreateParser: TBrookMediaTypesParser; virtual;
+    function IsPrepared: Boolean; override;
   public
     constructor Create(const APath: string); reintroduce; virtual;
     destructor Destroy; override;
     class function GetFileName: TFileName; override;
+    procedure Prepare; override;
     property Reader: TBrookTextReader read FReader;
     property Parser: TBrookMediaTypesParser read FParser;
     property Path: string read FPath {write SetPath};
@@ -147,6 +153,8 @@ type
 {$ENDIF}
 
 implementation
+
+{ TBrookMediaTypes }
 
 constructor TBrookMediaTypes.Create;
 begin
@@ -324,7 +332,6 @@ begin
   FPath := APath;
   FReader := CreateReader;
   FParser := CreateParser;
-  FParser.Parse;
 end;
 
 destructor TBrookMediaTypesPath.Destroy;
@@ -347,6 +354,17 @@ end;
 class function TBrookMediaTypesPath.GetFileName: TFileName;
 begin
   Result := BROOK_MIME_FILE;
+end;
+
+function TBrookMediaTypesPath.IsPrepared: Boolean;
+begin
+  Result := FPrepared;
+end;
+
+procedure TBrookMediaTypesPath.Prepare;
+begin
+  if not FPrepared then
+    FParser.Parse;
 end;
 
 { TBrookMediaTypesApache }
