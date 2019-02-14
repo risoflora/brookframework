@@ -134,6 +134,8 @@ end;
 
 procedure TfrMain.UpdateControls;
 begin
+  if Application.Terminated then
+    Exit;
   if BrookHTTPServer1.Active then
     edPort.Value := BrookHTTPServer1.Port
   else

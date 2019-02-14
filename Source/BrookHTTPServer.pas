@@ -878,7 +878,7 @@ begin
     Exit;
   SgLib.Check;
   InternalFreeServerHandle;
-  FActive := False;
+  FActive := Assigned(FHandle);
   if Assigned(FOnStop) then
     FOnStop(Self);
 end;
