@@ -64,6 +64,7 @@ type
     function GetHandle: Pointer; override;
     procedure CheckExt(const AExt: string); inline;
     procedure CheckType(const AType: string); inline;
+    procedure CheckPrepared; inline;
     property Cache: TBrookStringMap read FCache;
   public
     constructor Create; virtual;
@@ -116,6 +117,7 @@ type
     destructor Destroy; override;
     class function GetFileName: TFileName; override;
     procedure Prepare; override;
+    procedure Clear; override;
     property Reader: TBrookTextReader read FReader;
     property Parser: TBrookMediaTypesParser read FParser;
     property Path: string read FPath {write SetPath};
@@ -123,7 +125,7 @@ type
 
   TBrookMediaTypesApache = class(TBrookMediaTypesPath)
   public
-    constructor Create; reintroduce; virtual;
+    constructor Create; reintroduce; overload; virtual;
     class function GetFileName: TFileName; override;
   end;
 
@@ -131,7 +133,7 @@ type
   protected
     function CreateParser: TBrookMediaTypesParser; override;
   public
-    constructor Create; reintroduce; virtual;
+    constructor Create; reintroduce; overload; virtual;
     class function GetFileName: TFileName; override;
   end;
 
@@ -146,7 +148,7 @@ type
 
   TBrookMediaTypesUnix = class(TBrookMediaTypesPath)
   public
-    constructor Create; reintroduce; virtual;
+    constructor Create; reintroduce; overload; virtual;
     class function GetFileName: TFileName; override;
   end;
 
@@ -197,6 +199,12 @@ begin
     raise EBrookMediaTypes.CreateFmt(SBrookInvalidMediaExt, [AExt]);
 end;
 
+procedure TBrookMediaTypes.CheckPrepared;
+begin
+  if not IsPrepared then
+    Prepare;
+end;
+
 procedure TBrookMediaTypes.CheckType(const AType: string);
 begin
   if AType.IsEmpty then
@@ -234,6 +242,7 @@ function TBrookMediaTypes.TryType(const AExt: string;
   out AType: string): Boolean;
 begin
   CheckExt(AExt);
+  CheckPrepared;
   Result := FCache.TryValue(NormalizeExt(AExt), AType);
 end;
 
@@ -242,6 +251,7 @@ begin
   CheckExt(AExt);
   if not ADefType.IsEmpty then
     CheckType(ADefType);
+  CheckPrepared;
   if not FCache.TryValue(NormalizeExt(AExt), Result) then
     Result := ADefType;
 end;
@@ -363,8 +373,18 @@ end;
 
 procedure TBrookMediaTypesPath.Prepare;
 begin
+  if FPrepared then
+    Exit;
+  FParser.Parse;
+  FPrepared := True;
+end;
+
+procedure TBrookMediaTypesPath.Clear;
+begin
   if not FPrepared then
-    FParser.Parse;
+    Exit;
+  inherited Clear;
+  FPrepared := False;
 end;
 
 { TBrookMediaTypesApache }
