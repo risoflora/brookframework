@@ -282,7 +282,7 @@ begin
     FCb := {$IFNDEF VER3_0}@{$ENDIF}DoStreamFree
   else
     FCb := nil;
-  R := sg_httpres_sendstream(FHandle, AStream.Size,
+  R := sg_httpres_sendstream(FHandle, 0,
 {$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
