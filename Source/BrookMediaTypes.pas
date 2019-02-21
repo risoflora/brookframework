@@ -85,7 +85,7 @@ type
     property Prepared: Boolean read IsPrepared;
   end;
 
-  TBrookMediaTypesParser = class
+  TBrookMediaTypesParser = class(TPersistent)
   private
     FReader: TBrookTextReader;
     FTypes: TBrookMediaTypes;

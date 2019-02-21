@@ -110,9 +110,7 @@ resourcestring
   SSgLibEmptyName = 'Empty library name.';
   SSgLibNotLoaded = 'Library ''%s'' not loaded.';
   SSgLibInvalid = 'Invalid library ''%s''.';
-  SSgLibMinMajorVersion = 'Application requires Sagui library v%d.';
-  SSgLibMinMinorVersion = 'Application requires Sagui library v%d.%d or higher.';
-  SSgLibMinPathVersion = 'Application requires Sagui library v%d.%d.%d or higher.';
+  SSgLibVersion = 'Application requires Sagui library v%d.%d.%d or higher.';
 
 type
   cchar = Byte;
@@ -689,15 +687,11 @@ begin
     if not Assigned(sg_version) then
       raise EInvalidOpException.CreateFmt(SSgLibInvalid, [GetLastName]);
     V := sg_version;
-    if (SG_VERSION_MAJOR <> ((V shr 16) and $FF)) then
-      raise EInvalidOpException.CreateFmt(SSgLibMinMajorVersion,
-        [SG_VERSION_MAJOR]);
-    if (SG_VERSION_MINOR < ((V shr 8) and $FF)) then
-      raise EInvalidOpException.CreateFmt(SSgLibMinMinorVersion,
-        [SG_VERSION_MINOR]);
-    if (SG_VERSION_PATCH < (V and $FF)) then
-      raise EInvalidOpException.CreateFmt(SSgLibMinPathVersion,
-        [SG_VERSION_PATCH]);
+    if (SG_VERSION_MAJOR <> ((V shr 16) and $FF)) and
+      (SG_VERSION_MINOR < ((V shr 8) and $FF)) and
+      (SG_VERSION_PATCH < (V and $FF)) then
+      raise EInvalidOpException.CreateFmt(SSgLibVersion, [SG_VERSION_MAJOR,
+        SG_VERSION_MINOR, SG_VERSION_PATCH]);
   except
     Unload;
     raise;
