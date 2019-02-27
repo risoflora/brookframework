@@ -73,7 +73,7 @@ type
 const
   SG_VERSION_MAJOR = 2;
 
-  SG_VERSION_MINOR = 0;
+  SG_VERSION_MINOR = 3;
 
   SG_VERSION_PATCH = 0;
 
@@ -347,36 +347,63 @@ var
     const val: Pcchar): cint; cdecl;
 
 function sg_httpres_send(res: Psg_httpres; const val: Pcchar;
-  const content_type: Pcchar; status: cuint): cint; cdecl;
+  const content_type: Pcchar; status: cuint): cint; inline;
 
 var
   sg_httpres_sendbinary: function(res: Psg_httpres; buf: Pcvoid; size: csize_t;
     const content_type: Pcchar; status: cuint): cint; cdecl;
 
 function sg_httpres_download(res: Psg_httpres;
-  const filename: Pcchar): cint; cdecl;
+  const filename: Pcchar): cint; inline;
 
 function sg_httpres_render(res: Psg_httpres;
-  const filename: Pcchar): cint; cdecl;
+  const filename: Pcchar): cint; inline;
 
 var
+  sg_httpres_sendfile2: function(res: Psg_httpres; size: cuint64_t;
+    max_size: cuint64_t; offset: cuint64_t; const filename: Pcchar;
+    const disposition: Pcchar; status: cuint): cint; cdecl;
+
   sg_httpres_sendfile: function(res: Psg_httpres; size: cuint64_t;
     max_size: cuint64_t; offset: cuint64_t; const filename: Pcchar;
-    rendered: cbool; status: cuint): cint; cdecl;
+    downloaded: cbool; status: cuint): cint; cdecl;
 
   sg_httpres_sendstream: function(res: Psg_httpres; size: cuint64_t;
     read_cb: sg_read_cb; handle: Pcvoid; free_cb: sg_free_cb;
     status: cuint): cint; cdecl;
 
 function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
-  const content_type: Pcchar; status: cuint): cint; cdecl;
+  const content_type: Pcchar; status: cuint): cint; inline;
 
 var
+  sg_httpres_zsendbinary2: function(res: Psg_httpres; level: cint; buf: Pcvoid;
+    size: csize_t; const content_type: Pcchar; status: cuint): cint; cdecl;
+
   sg_httpres_zsendbinary: function(res: Psg_httpres; buf: Pcvoid; size: csize_t;
     const content_type: Pcchar; status: cuint): cint; cdecl;
 
+  sg_httpres_zsendstream2: function(res: Psg_httpres; level: cint;
+    size: cuint64_t; read_cb: sg_read_cb; handle: Pcvoid; free_cb: sg_free_cb;
+    status: cuint): cint; cdecl;
+
   sg_httpres_zsendstream: function(res: Psg_httpres; read_cb: sg_read_cb;
     handle: Pcvoid; free_cb: sg_free_cb; status: cuint): cint; cdecl;
+
+function sg_httpres_zdownload(res: Psg_httpres;
+  const filename: Pcchar): cint; inline;
+
+function sg_httpres_zrender(res: Psg_httpres;
+  const filename: Pcchar): cint; inline;
+
+var
+  sg_httpres_zsendfile2: function(res: Psg_httpres; level: cint;
+    size: cuint64_t; max_size: cuint64_t; offset: cuint64_t;
+    const filename: Pcchar; const disposition: Pcchar;
+    status: cuint): cint; cdecl;
+
+  sg_httpres_zsendfile: function(res: Psg_httpres; size: cuint64_t;
+    max_size: cuint64_t; offset: cuint64_t; const filename: Pcchar;
+    downloaded: cbool; status: cuint): cint; cdecl;
 
   sg_httpres_clear: function(res: Psg_httpres): cint; cdecl;
 
@@ -613,12 +640,12 @@ end;
 
 function sg_httpres_download(res: Psg_httpres; const filename: Pcchar): cint;
 begin
-  Result := sg_httpres_sendfile(res, 0, 0, 0, filename, False, 200);
+  Result := sg_httpres_sendfile2(res, 0, 0, 0, filename, 'attachment', 200);
 end;
 
 function sg_httpres_render(res: Psg_httpres; const filename: Pcchar): cint;
 begin
-  Result := sg_httpres_sendfile(res, 0, 0, 0, filename, True, 200);
+  Result := sg_httpres_sendfile2(res, 0, 0, 0, filename, 'inline', 200);
 end;
 
 function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
@@ -631,6 +658,16 @@ begin
   else
     len := 0;
   Result := sg_httpres_zsendbinary(res, val, len, content_type, status);
+end;
+
+function sg_httpres_zdownload(res: Psg_httpres; const filename: Pcchar): cint;
+begin
+  Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'attachment', 200);
+end;
+
+function sg_httpres_zrender(res: Psg_httpres; const filename: Pcchar): cint;
+begin
+  Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'inline', 200);
 end;
 
 class procedure SgLib.Init;
@@ -807,10 +844,15 @@ begin //FI:C101
     sg_httpres_headers := GetProcAddress(GHandle, 'sg_httpres_headers');
     sg_httpres_set_cookie := GetProcAddress(GHandle, 'sg_httpres_set_cookie');
     sg_httpres_sendbinary := GetProcAddress(GHandle, 'sg_httpres_sendbinary');
+    sg_httpres_sendfile2 := GetProcAddress(GHandle, 'sg_httpres_sendfile2');
     sg_httpres_sendfile := GetProcAddress(GHandle, 'sg_httpres_sendfile');
     sg_httpres_sendstream := GetProcAddress(GHandle, 'sg_httpres_sendstream');
+    sg_httpres_zsendbinary2 := GetProcAddress(GHandle, 'sg_httpres_zsendbinary2');
     sg_httpres_zsendbinary := GetProcAddress(GHandle, 'sg_httpres_zsendbinary');
     sg_httpres_zsendstream := GetProcAddress(GHandle, 'sg_httpres_zsendstream');
+    sg_httpres_zsendstream2 := GetProcAddress(GHandle, 'sg_httpres_zsendstream2');
+    sg_httpres_zsendfile2 := GetProcAddress(GHandle, 'sg_httpres_zsendfile2');
+    sg_httpres_zsendfile := GetProcAddress(GHandle, 'sg_httpres_zsendfile');
     sg_httpres_clear := GetProcAddress(GHandle, 'sg_httpres_clear');
 
     sg_httpsrv_new2 := GetProcAddress(GHandle, 'sg_httpsrv_new2');
@@ -962,10 +1004,15 @@ begin //FI:C101
     sg_httpres_headers := nil;
     sg_httpres_set_cookie := nil;
     sg_httpres_sendbinary := nil;
+    sg_httpres_sendfile2 := nil;
     sg_httpres_sendfile := nil;
     sg_httpres_sendstream := nil;
+    sg_httpres_zsendbinary2 := nil;
     sg_httpres_zsendbinary := nil;
+    sg_httpres_zsendstream2 := nil;
     sg_httpres_zsendstream := nil;
+    sg_httpres_zsendfile2 := nil;
+    sg_httpres_zsendfile := nil;
     sg_httpres_clear := nil;
 
     sg_httpsrv_new2 := nil;

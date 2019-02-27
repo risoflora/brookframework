@@ -74,7 +74,7 @@ type
     procedure SendBinary(ABuffer: Pointer; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); virtual;
     procedure SendFile(ASize: NativeUInt; AMaxSize, AOffset: UInt64;
-      const AFileName: TFileName; ARendered: Boolean; AStatus: Word); virtual;
+      const AFileName: TFileName; ADownloaded: Boolean; AStatus: Word); virtual;
     procedure SendStream(AStream: TStream; AStatus: Word;
       AFreed: Boolean); overload; virtual;
     procedure SendStream(AStream: TStream; AStatus: Word); overload; virtual;
@@ -204,7 +204,7 @@ begin
 end;
 
 procedure TBrookHTTPResponse.SendFile(ASize: NativeUInt; AMaxSize,
-  AOffset: UInt64; const AFileName: TFileName; ARendered: Boolean;
+  AOffset: UInt64; const AFileName: TFileName; ADownloaded: Boolean;
   AStatus: Word);
 var
   M: TMarshaller;
@@ -213,7 +213,7 @@ begin
   CheckStatus(AStatus);
   SgLib.Check;
   R := sg_httpres_sendfile(FHandle, ASize, AMaxSize, AOffset,
-    M.ToCString(AFileName), ARendered, AStatus);
+    M.ToCString(AFileName), ADownloaded, AStatus);
   CheckAlreadySent(R);
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
