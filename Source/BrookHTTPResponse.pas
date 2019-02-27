@@ -71,24 +71,13 @@ type
       const AContentType: string; AStatus: Word); overload; virtual;
     procedure Send(const ABytes: TBytes; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); overload; virtual;
-    procedure ZSend(const AValue, AContentType: string;
-      AStatus: Word); overload; virtual;
-    procedure ZSend(const AFmt: string; const AArgs: array of const;
-      const AContentType: string; AStatus: Word); overload; virtual;
-    procedure ZSend(const ABytes: TBytes; ASize: NativeUInt;
-      const AContentType: string; AStatus: Word); overload; virtual;
     procedure SendBinary(ABuffer: Pointer; ASize: NativeUInt;
-      const AContentType: string; AStatus: Word); virtual;
-    procedure ZSendBinary(ABuffer: Pointer; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); virtual;
     procedure SendFile(ASize: NativeUInt; AMaxSize, AOffset: UInt64;
       const AFileName: TFileName; ARendered: Boolean; AStatus: Word); virtual;
     procedure SendStream(AStream: TStream; AStatus: Word;
       AFreed: Boolean); overload; virtual;
     procedure SendStream(AStream: TStream; AStatus: Word); overload; virtual;
-    procedure ZSendStream(AStream: TStream; AStatus: Word;
-      AFreed: Boolean); overload; virtual;
-    procedure ZSendStream(AStream: TStream; AStatus: Word); overload; virtual;
     procedure SendEmpty(const AContentType: string); overload; virtual;
     procedure SendEmpty; overload; virtual;
     procedure SendAndRedirect(const AValue, ADestination, AContentType: string;
@@ -200,30 +189,6 @@ begin
   SendBinary(@ABytes[0], ASize, AContentType, AStatus);
 end;
 
-procedure TBrookHTTPResponse.ZSend(const AValue, AContentType: string;
-  AStatus: Word);
-var
-  M: TMarshaller;
-  R: cint;
-begin
-  R := sg_httpres_zsendbinary(FHandle, M.ToCString(AValue), Length(AValue),
-    M.ToCString(AContentType), AStatus);
-  CheckAlreadySent(R);
-  SgLib.CheckLastError(R);
-end;
-
-procedure TBrookHTTPResponse.ZSend(const AFmt: string;
-  const AArgs: array of const; const AContentType: string; AStatus: Word);
-begin
-  Send(Format(AFmt, AArgs), AContentType, AStatus);
-end;
-
-procedure TBrookHTTPResponse.ZSend(const ABytes: TBytes; ASize: NativeUInt;
-  const AContentType: string; AStatus: Word);
-begin
-  ZSendBinary(@ABytes[0], ASize, AContentType, AStatus);
-end;
-
 procedure TBrookHTTPResponse.SendBinary(ABuffer: Pointer; ASize: NativeUInt;
   const AContentType: string; AStatus: Word);
 var
@@ -233,20 +198,6 @@ begin
   CheckStatus(AStatus);
   SgLib.Check;
   R := sg_httpres_sendbinary(FHandle, ABuffer, ASize,
-    M.ToCString(AContentType), AStatus);
-  CheckAlreadySent(R);
-  SgLib.CheckLastError(R);
-end;
-
-procedure TBrookHTTPResponse.ZSendBinary(ABuffer: Pointer; ASize: NativeUInt;
-  const AContentType: string; AStatus: Word);
-var
-  M: TMarshaller;
-  R: cint;
-begin
-  CheckStatus(AStatus);
-  SgLib.Check;
-  R := sg_httpres_zsendbinary(FHandle, ABuffer, ASize,
     M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
@@ -291,30 +242,6 @@ end;
 procedure TBrookHTTPResponse.SendStream(AStream: TStream; AStatus: Word);
 begin
   SendStream(AStream, AStatus, True);
-end;
-
-procedure TBrookHTTPResponse.ZSendStream(AStream: TStream; AStatus: Word;
-  AFreed: Boolean);
-var
-  FCb: sg_free_cb;
-  R: cint;
-begin
-  CheckStream(AStream);
-  CheckStatus(AStatus);
-  SgLib.Check;
-  if AFreed then
-    FCb := {$IFNDEF VER3_0}@{$ENDIF}DoStreamFree
-  else
-    FCb := nil;
-  R := sg_httpres_zsendstream(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
-  CheckAlreadySent(R);
-  SgLib.CheckLastError(R);
-end;
-
-procedure TBrookHTTPResponse.ZSendStream(AStream: TStream; AStatus: Word);
-begin
-  ZSendStream(AStream, AStatus, True);
 end;
 
 procedure TBrookHTTPResponse.SendEmpty(const AContentType: string);
