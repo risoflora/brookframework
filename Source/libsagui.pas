@@ -73,7 +73,7 @@ type
 const
   SG_VERSION_MAJOR = 2;
 
-  SG_VERSION_MINOR = 3;
+  SG_VERSION_MINOR = 2;
 
   SG_VERSION_PATCH = 0;
 
