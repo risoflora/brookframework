@@ -44,12 +44,14 @@ uses
 resourcestring
   SBrookInvalidHTTPStatus = 'Invalid status code: %d.';
   SBrookResponseAlreadySent = 'Response already sent.';
+  SBrookZLibError = 'Generic ZLib error.';
 
 type
   EBrookHTTPResponse = class(Exception);
 
   TBrookHTTPResponse = class(TBrookHandledPersistent)
   private
+    FCompressed: Boolean;
     FHeaders: TBrookStringMap;
     FHandle: Psg_httpres;
   protected
@@ -61,6 +63,7 @@ type
     function CreateHeaders(AHandle: Pointer): TBrookStringMap; virtual;
     function GetHandle: Pointer; override;
     procedure CheckAlreadySent(Aret: cint); inline;
+    procedure CheckZLib(Aret: cint); inline;
   public
     constructor Create(AHandle: Pointer); virtual;
     destructor Destroy; override;
@@ -87,6 +90,7 @@ type
     procedure Download(const AFileName: TFileName); virtual;
     procedure Render(const AFileName: TFileName); virtual;
     procedure Clear; virtual;
+    property Compressed: Boolean read FCompressed write FCompressed;
     property Headers: TBrookStringMap read FHeaders;
   end;
 
@@ -114,6 +118,12 @@ procedure TBrookHTTPResponse.CheckAlreadySent(Aret: cint);
 begin
   if Aret = EALREADY then
     raise EBrookHTTPResponse.Create(SBrookResponseAlreadySent);
+end;
+
+procedure TBrookHTTPResponse.CheckZLib(Aret: cint);
+begin
+  if Aret < 0 then
+    raise EBrookHTTPResponse.Create(SBrookZLibError);
 end;
 
 class procedure TBrookHTTPResponse.CheckStatus(AStatus: Word);
@@ -171,8 +181,15 @@ var
   M: TMarshaller;
   R: cint;
 begin
-  R := sg_httpres_sendbinary(FHandle, M.ToCString(AValue), Length(AValue),
-    M.ToCString(AContentType), AStatus);
+  if FCompressed then
+  begin
+    R := sg_httpres_zsendbinary(FHandle, M.ToCString(AValue), Length(AValue),
+      M.ToCString(AContentType), AStatus);
+    CheckZLib(R);
+  end
+  else
+    R := sg_httpres_sendbinary(FHandle, M.ToCString(AValue), Length(AValue),
+      M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
 end;
@@ -197,8 +214,15 @@ var
 begin
   CheckStatus(AStatus);
   SgLib.Check;
-  R := sg_httpres_sendbinary(FHandle, ABuffer, ASize,
-    M.ToCString(AContentType), AStatus);
+  if FCompressed then
+  begin
+    R := sg_httpres_zsendbinary(FHandle, ABuffer, ASize,
+      M.ToCString(AContentType), AStatus);
+    CheckZLib(R);
+  end
+  else
+    R := sg_httpres_sendbinary(FHandle, ABuffer, ASize,
+      M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
 end;
@@ -212,8 +236,15 @@ var
 begin
   CheckStatus(AStatus);
   SgLib.Check;
-  R := sg_httpres_sendfile(FHandle, ASize, AMaxSize, AOffset,
-    M.ToCString(AFileName), ADownloaded, AStatus);
+  if FCompressed then
+  begin
+    R := sg_httpres_zsendfile(FHandle, ASize, AMaxSize, AOffset,
+      M.ToCString(AFileName), ADownloaded, AStatus);
+    CheckZLib(R);
+  end
+  else
+    R := sg_httpres_sendfile(FHandle, ASize, AMaxSize, AOffset,
+      M.ToCString(AFileName), ADownloaded, AStatus);
   CheckAlreadySent(R);
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
@@ -233,7 +264,14 @@ begin
     FCb := {$IFNDEF VER3_0}@{$ENDIF}DoStreamFree
   else
     FCb := nil;
-  R := sg_httpres_sendstream(FHandle, 0,
+  if FCompressed then
+  begin
+    R := sg_httpres_zsendstream(FHandle,
+{$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
+    CheckZLib(R);
+  end
+  else
+    R := sg_httpres_sendstream(FHandle, 0,
 {$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
@@ -277,7 +315,13 @@ var
   R: cint;
 begin
   SgLib.Check;
-  R := sg_httpres_download(FHandle, M.ToCString(AFileName));
+  if FCompressed then
+  begin
+    R := sg_httpres_zdownload(FHandle, M.ToCString(AFileName));
+    CheckZLib(R);
+  end
+  else
+    R := sg_httpres_download(FHandle, M.ToCString(AFileName));
   CheckAlreadySent(R);
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
@@ -290,7 +334,13 @@ var
   R: cint;
 begin
   SgLib.Check;
-  R := sg_httpres_render(FHandle, M.ToCString(AFileName));
+  if FCompressed then
+  begin
+    R := sg_httpres_zrender(FHandle, M.ToCString(AFileName));
+    CheckZLib(R);
+  end
+  else
+    R := sg_httpres_render(FHandle, M.ToCString(AFileName));
   CheckAlreadySent(R);
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
