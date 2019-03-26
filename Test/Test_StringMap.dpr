@@ -33,6 +33,7 @@ program Test_StringMap;
  {$IFNDEF VER3_0} // should be FPC_FULLVERSION>=030100, but we must avoid "[dcc32 Error] Constant expression expected"
   {$WARN 6058 OFF}
  {$ENDIF}
+ {$CODEPAGE UTF8}
 {$ENDIF}
 
 uses

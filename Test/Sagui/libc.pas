@@ -14,13 +14,10 @@ uses
 
 const
 {$IF DEFINED(FPC) AND DEFINED(UNIX)}
-  EINVAL = ESysEINVAL;
   EINTR = ESysEINTR;
 {$ELSEIF DEFINED(POSIX)}
-  EINVAL = Posix.Errno.EINVAL;
   EINTR = Posix.Errno.EINTR;
 {$ELSEIF DEFINED(MSWINDOWS)}
-  EINVAL = 22;
   EINTR = 4;
 {$ENDIF}
 
@@ -34,6 +31,10 @@ function sprintf(s: Pcchar; const format: Pcchar): cint; cdecl; varargs; externa
 function strcmp(const s1: Pcchar; const s2: Pcchar): cint; cdecl; external LIB_NAME;
 
 function strlen(const s: Pcchar): cint; cdecl; external LIB_NAME;
+
+function strcpy(dest: Pcchar; const src: Pcchar): Pcchar; cdecl; external LIB_NAME;
+
+function strcat (dest: Pcchar; const src: Pcchar): Pcchar; cdecl; external LIB_NAME;
 
 procedure memset(s: Pcvoid; c: cint; n: csize_t); cdecl; external LIB_NAME;
 

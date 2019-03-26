@@ -10,7 +10,7 @@
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <Title Value="test_utils"/>
+      <Title Value="test_strmap"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -30,25 +30,20 @@
         <PackageName Value="BrookTardigrade"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="1">
       <Unit0>
-        <Filename Value="test_utils.dpr"/>
+        <Filename Value="test_strmap.dpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="libc.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
-      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="test_utils"/>
+      <Filename Value="test_strmap"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

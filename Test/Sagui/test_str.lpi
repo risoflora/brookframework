@@ -10,7 +10,7 @@
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <Title Value="test_utils"/>
+      <Title Value="test_str"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -32,7 +32,7 @@
     </RequiredPackages>
     <Units Count="2">
       <Unit0>
-        <Filename Value="test_utils.dpr"/>
+        <Filename Value="test_str.dpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <UsageCount Value="20"/>
@@ -48,7 +48,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="test_utils"/>
+      <Filename Value="test_str"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
