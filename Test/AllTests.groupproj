@@ -1,0 +1,51 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{A9DDDEC9-103F-4421-9B53-6E71323270DE}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Test_String.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Test_StringMap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Test_Utils.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Test_String">
+        <MSBuild Projects="Test_String.dproj"/>
+    </Target>
+    <Target Name="Test_String:Clean">
+        <MSBuild Projects="Test_String.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Test_String:Make">
+        <MSBuild Projects="Test_String.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Test_StringMap">
+        <MSBuild Projects="Test_StringMap.dproj"/>
+    </Target>
+    <Target Name="Test_StringMap:Clean">
+        <MSBuild Projects="Test_StringMap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Test_StringMap:Make">
+        <MSBuild Projects="Test_StringMap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Test_String;Test_StringMap;Test_Utils;Test_libsagui"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Test_String:Clean;Test_StringMap:Clean;Test_Utils:Clean;Test_libsagui:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Test_String:Make;Test_StringMap:Make;Test_Utils:Make;Test_libsagui:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
