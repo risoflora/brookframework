@@ -513,7 +513,7 @@ var
 begin
   AMap.Clear;
   VPair := Default(TBrookStringPair);
-  Assert(AMap.Next(VPair));
+  Assert(not AMap.Next(VPair));
   AMap.Add('abc', '123');
   AMap.Add('def', '456');
   AMap.Add('xxx', 'yyy');
@@ -556,10 +556,10 @@ begin
   AMap.Clear;
   Assert(AMap.ToString.IsEmpty);
   AMap.Add(AName, AValue);
-  Assert(AMap.ToString = Concat(AName, '=', AName, sLineBreak));
+  Assert(AMap.ToString = Concat(AName, '=', AValue, sLineBreak));
   AMap.Add('xxx', 'yyy');
   AMap.Add('yyy', 'xxx');
-  Assert(AMap.ToString.Equals(Concat(AName, '=', AName, sLineBreak,
+  Assert(AMap.ToString.Equals(Concat(AName, '=', AValue, sLineBreak,
     'xxx=yyy', sLineBreak, 'yyy=xxx', sLineBreak)));
 end;
 

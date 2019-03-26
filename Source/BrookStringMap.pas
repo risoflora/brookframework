@@ -428,6 +428,8 @@ var
   M: TMarshaller;
 begin
   SgLib.Check;
+  if not Assigned(FHandle^) then
+    Exit(False);
   R := sg_strmap_find(FHandle^, M.ToCString(AName), @P);
   Result := R = 0;
   if Result then

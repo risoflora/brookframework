@@ -737,6 +737,7 @@ end;
 
 class procedure SgLib.CheckLastError(ALastError: Integer);
 var
+  E: EOSError;
   P: array[0..SG_ERR_SIZE-1] of cchar;
   S: string;
 begin
@@ -749,7 +750,9 @@ begin
 {$ELSE}
   S := TMarshal.ReadStringAsUtf8(TPtrWrapper.Create(@P[0]));
 {$ENDIF}
-  raise EOSError.Create(S);
+  E := EOSError.Create(S);
+  E.ErrorCode := ALastError;
+  raise E;
 end;
 
 class function SgLib.Load(const AName: TFileName): TLibHandle;
