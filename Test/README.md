@@ -2,7 +2,7 @@
 
 Compile the test you want. Now, after generating its executable, open the terminal and run the script related to your system. On Linux:
 
-```
+```bash
 ./RunAllTests.sh
 ```
 
@@ -17,11 +17,11 @@ RunAllTests.bat
 The script will report the result of all tests, for example:
 
 ```
-$ ./RunAllTests.sh 
-Running test ./Test_String OK
-Running test ./Test_Utils OK
-Running test ./Test_libbrook OK
-Total of run tests: 3
+./Test_String OK
+./Test_StringMap OK
+./Test_Utils OK
+./Sagui/Test_libsagui OK
+Total: 4
 ```
 
 If you do not get the message `OK` in front the test, then probably it failed.

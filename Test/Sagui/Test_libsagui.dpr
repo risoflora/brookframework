@@ -29,41 +29,61 @@ program Test_libsagui;
 {$I Tests.inc}
 
 uses
+  RTLConsts,
   SysUtils,
   libsagui;
 
-procedure Test_LoadLibrary;
+procedure Test_SgLibLoad;
+var
+  OK: Boolean;
 begin
-  SgUnloadLibrary;
-  Assert(SgLoadLibrary('') = NilHandle);
-  Assert(SgLoadLibrary('abc') = NilHandle);
-  Assert(SgLoadLibrary(SG_LIB_NAME) <> NilHandle);
+  SgLib.Unload;
+  OK := False;
+  try
+    Assert(SgLib.Load('') = NilHandle);
+  except
+    on E: Exception do
+      OK := (E.ClassType = EArgumentException) and (E.Message = SSgLibEmptyName);
+  end;
+  Assert(OK);
+
+  OK := False;
+  try
+    Assert(SgLib.Load('abc') = NilHandle);
+  except
+    on E: Exception do
+      OK := (E.ClassType = ESgLibNotLoaded) and
+        (E.Message = Format(SSgLibNotLoaded, ['abc']));
+  end;
+  Assert(OK);
+
+  Assert(SgLib.Load(SG_LIB_NAME) <> NilHandle);
 end;
 
-procedure Test_UnloadLibrary;
+procedure Test_SgLibUnload;
 begin
-  Assert(SgLoadLibrary(SG_LIB_NAME) <> NilHandle);
-  Assert(SgUnloadLibrary = NilHandle);
+  Assert(SgLib.Load(SG_LIB_NAME) <> NilHandle);
+  Assert(SgLib.Unload = NilHandle);
 end;
 
-procedure Test_CheckLibrary;
+procedure Test_SgLibCheck;
 var
   OK: Boolean;
 begin
   OK := False;
   try
-    SgUnloadLibrary;
-    SgCheckLibrary;
+    SgLib.Unload;
+    SgLib.Check;
   except
     on E: Exception do
-      OK := (E.ClassType = ESgLibraryNotLoaded) and (E.Message =
-        Format(SSgLibraryNotLoaded, [SG_LIB_NAME]));
+      OK := (E.ClassType = ESgLibNotLoaded) and (E.Message =
+        Format(SSgLibNotLoaded, [SG_LIB_NAME]));
   end;
   Assert(OK);
 end;
 
 begin
-  Test_LoadLibrary;
-  Test_UnloadLibrary;
-  Test_CheckLibrary;
+  Test_SgLibLoad;
+  Test_SgLibUnload;
+  Test_SgLibCheck;
 end.

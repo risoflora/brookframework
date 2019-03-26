@@ -27,10 +27,10 @@
 @ECHO OFF
 SET /A COUNT = 0
 FOR /R %%T IN (*.exe) DO (
-    ECHO | SET /P = "Running test %%~NXT "
+    ECHO | SET /P = "%%~NXT "
     CMD /C %%T || GOTO :ERROR
     ECHO OK
     SET /A COUNT += 1
 )
-ECHO Total of run tests: %COUNT%
+ECHO Total: %COUNT%
 :ERROR

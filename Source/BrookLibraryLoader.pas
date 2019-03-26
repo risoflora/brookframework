@@ -4,9 +4,9 @@
  *  | |_) | | | (_) | (_) |   <
  *  |_.__/|_|  \___/ \___/|_|\_\
  *
- *  –– microframework which helps to develop web Pascal applications.
+ * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2018 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
  *
  * This file is part of Brook framework.
  *

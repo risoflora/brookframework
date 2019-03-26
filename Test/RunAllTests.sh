@@ -28,12 +28,12 @@
 set -e
 
 COUNT=0
-for file in ./*; do
+for file in ./* ./Sagui/*; do
     if [ "$file" != "$0" ] && [ -f "$file" ] && [ -x "$file" ] ; then
-        echo -n "Running test $file "
+        echo -n "$file "
         sh -c "$file"
         echo "OK"
         COUNT=$((COUNT+1))
     fi
 done
-echo "Total of run tests: $COUNT"
+echo "Total: $COUNT"

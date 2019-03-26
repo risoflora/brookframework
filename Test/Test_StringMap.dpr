@@ -30,7 +30,9 @@ program Test_StringMap;
 
 {$IFDEF FPC}
  {$WARN 5024 OFF}
- {$WARN 6058 OFF}
+ {$IFNDEF VER3_0} // should be FPC_FULLVERSION>=030100, but we must avoid "[dcc32 Error] Constant expression expected"
+  {$WARN 6058 OFF}
+ {$ENDIF}
 {$ENDIF}
 
 uses
@@ -60,7 +62,7 @@ end;
 procedure TLocalStringMap.LocalDestroy;
 begin
   inherited Destroy;
-  SgCheckLibrary;
+  SgLib.Check;
   { checks if the handle was really freed and 'nilified'. }
   Assert(not Assigned(Handle));
   sg_strmap_cleanup(Handle);
@@ -90,7 +92,7 @@ begin
     VMap.ClearOnDestroy := False;
     VMap.Add('abc', '123');
     VMap.Add('def', '456');
-    SgCheckLibrary;
+    SgLib.Check;
     Assert(sg_strmap_count(VMapHandle) = 2);
   finally
     VMap.Free;
@@ -102,7 +104,7 @@ begin
   try
     VMap.Add('abc', '123');
     VMap.Add('def', '456');
-    SgCheckLibrary;
+    SgLib.Check;
     Assert(sg_strmap_count(VMapHandle) = 2);
   finally
     VMap.Free;
@@ -582,6 +584,7 @@ var
   VMapHandle: Pointer;
   VMap: TBrookStringMap;
 begin
+  SgLib.Load(SG_LIB_NAME);
   Test_StringMapNameValue;
   Test_StringMapClearOnDestroy;
   Test_StringMapOnChange;

@@ -30,24 +30,26 @@ program Test_Utils;
 
 uses
   SysUtils,
-  BrookUtils;
+  libsagui,
+  BrookUtility;
 
 procedure Test_Version;
 begin
-  Assert(BrookVersion > 0);
-  ASSERT(BrookVersionStr <> '');
+  Assert(Sagui.Version > 0);
+  ASSERT(Sagui.VersionStr <> '');
 end;
 
 procedure Test_Memory;
 var
   Vbuf: Pointer;
 begin
-  Vbuf := BrookAlloc(10);
+  Vbuf := Sagui.Alloc(10);
   Assert(Assigned(Vbuf));
-  BrookFree(Vbuf);
+  Sagui.Free(Vbuf);
 end;
 
 begin
+  SgLib.Load(SG_LIB_NAME);
   Test_Version;
   Test_Memory;
 end.

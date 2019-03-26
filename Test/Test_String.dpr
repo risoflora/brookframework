@@ -42,7 +42,7 @@ type
 procedure TLocalString.LocalDestroy;
 begin
   inherited Destroy;
-  SgCheckLibrary;
+  SgLib.Check;
   { checks if the handle was really freed and 'nilified'. }
   Assert(not Assigned(Handle));
   Assert(sg_str_clear(Handle) <> 0);
@@ -73,7 +73,7 @@ var
   Vhandle: Psg_str;
   VStr: TBrookString;
 begin
-  SgCheckLibrary;
+  SgLib.Check;
   Vhandle := sg_str_new;
   Assert(Assigned(Vhandle));
   VStr := TBrookString.Create(Vhandle);
@@ -216,6 +216,7 @@ var
   VValB: TBytes;
   VStr: TBrookString;
 begin
+  SgLib.Load(SG_LIB_NAME);
   VValB := TEncoding.UTF8.GetBytes(VAL);
   VStr := TBrookString.Create(nil);
   try
