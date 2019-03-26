@@ -30,4 +30,9 @@
 {$IFDEF MSWINDOWS}
  {$APPTYPE CONSOLE}
 {$ENDIF}
+{$IFDEF VER3_0}
+ {$PUSH}{$MACRO ON}
+ {$DEFINE EInvalidOpException := Exception}
+ {$POP}
+{$ENDIF}
 {$ASSERTIONS ON}

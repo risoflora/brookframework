@@ -613,7 +613,8 @@ type
     class procedure Init; static; inline;
     class procedure Done; static; inline;
     class function GetLastName: string; static; inline;
-    class procedure CheckVersion; static; inline;
+    class procedure CheckVersion(AVersion: Integer); overload; static; inline;
+    class procedure CheckVersion; overload; static; inline;
     class procedure CheckLastError(ALastError: Integer); static; inline;
     class function Load(const AName: TFileName): TLibHandle; static;
     class function Unload: TLibHandle; static;
@@ -716,23 +717,28 @@ begin
   Result := GLastName;
 end;
 
-class procedure SgLib.CheckVersion;
+class procedure SgLib.CheckVersion(AVersion: Integer);
 var
-  V: cuint;
+  N: cint;
 begin
   try
     if not Assigned(sg_version) then
       raise EInvalidOpException.CreateFmt(SSgLibInvalid, [GetLastName]);
-    V := sg_version;
-    if (SG_VERSION_MAJOR <> ((V shr 16) and $FF)) and
-      (SG_VERSION_MINOR < ((V shr 8) and $FF)) and
-      (SG_VERSION_PATCH < (V and $FF)) then
+    N := ((AVersion shr 8) and $FF);
+    if (((AVersion shr 16) and $FF) <> SG_VERSION_MAJOR) or
+      (N < SG_VERSION_MINOR) or (((AVersion and $FF) < SG_VERSION_PATCH) and
+      (N <= SG_VERSION_MINOR)) then
       raise EInvalidOpException.CreateFmt(SSgLibVersion, [SG_VERSION_MAJOR,
         SG_VERSION_MINOR, SG_VERSION_PATCH]);
   except
     Unload;
     raise;
   end;
+end;
+
+class procedure SgLib.CheckVersion;
+begin
+  CheckVersion(sg_version);
 end;
 
 class procedure SgLib.CheckLastError(ALastError: Integer);

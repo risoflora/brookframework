@@ -34,6 +34,78 @@ uses
   SysUtils,
   libsagui;
 
+procedure Test_SgLibGetLastName;
+begin
+  SgLib.Unload;
+  Assert(SgLib.GetLastName = '');
+  SgLib.Load(SG_LIB_NAME);
+  Assert(SgLib.GetLastName = SG_LIB_NAME);
+end;
+
+procedure Test_SgLibCheckVersion;
+var
+  OK: Boolean;
+begin
+  SgLib.Unload;
+  SgLib.Load(SG_LIB_NAME);
+  OK := False;
+  try
+    SgLib.CheckVersion((Pred(SG_VERSION_MAJOR) shl 16) or
+      (SG_VERSION_MINOR shl 8) or SG_VERSION_PATCH);
+  except
+    on E: Exception do
+      OK := (E.ClassType = EInvalidOpException) and
+        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
+          SG_VERSION_PATCH]));
+  end;
+  Assert(OK);
+  SgLib.Load(SG_LIB_NAME);
+  OK := False;
+  try
+    SgLib.CheckVersion((Succ(SG_VERSION_MAJOR) shl 16) or
+      (SG_VERSION_MINOR shl 8) or SG_VERSION_PATCH);
+  except
+    on E: Exception do
+      OK := (E.ClassType = EInvalidOpException) and
+        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
+          SG_VERSION_PATCH]));
+  end;
+  Assert(OK);
+
+  SgLib.Load(SG_LIB_NAME);
+  OK := False;
+  try
+    SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
+      (Pred(SG_VERSION_MINOR) shl 8) or SG_VERSION_PATCH);
+  except
+    on E: Exception do
+      OK := (E.ClassType = EInvalidOpException) and
+        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
+          SG_VERSION_PATCH]));
+  end;
+  Assert(OK);
+  SgLib.Load(SG_LIB_NAME);
+  SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
+    (Succ(SG_VERSION_MINOR) shl 8) or SG_VERSION_PATCH);
+
+  OK := False;
+  try
+    SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
+      (SG_VERSION_MINOR shl 8) or Pred(SG_VERSION_PATCH));
+  except
+    on E: Exception do
+      OK := (E.ClassType = EInvalidOpException) and
+        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
+          SG_VERSION_PATCH]));
+  end;
+  Assert(OK);
+  SgLib.Load(SG_LIB_NAME);
+  SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
+    (Succ(SG_VERSION_MINOR) shl 8) or 0);
+
+  SgLib.CheckVersion;
+end;
+
 procedure Test_SgLibLoad;
 var
   OK: Boolean;
@@ -84,6 +156,8 @@ begin
 end;
 
 begin
+  Test_SgLibGetLastName;
+  Test_SgLibCheckVersion;
   Test_SgLibLoad;
   Test_SgLibUnload;
   Test_SgLibCheck;
