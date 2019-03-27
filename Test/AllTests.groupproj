@@ -3,6 +3,9 @@
         <ProjectGuid>{A9DDDEC9-103F-4421-9B53-6E71323270DE}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="Test_libsagui.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Test_String.dproj">
             <Dependencies/>
         </Projects>
@@ -20,6 +23,15 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="Test_libsagui">
+        <MSBuild Projects="Test_libsagui.dproj"/>
+    </Target>
+    <Target Name="Test_libsagui:Clean">
+        <MSBuild Projects="Test_libsagui.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Test_libsagui:Make">
+        <MSBuild Projects="Test_libsagui.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Test_String">
         <MSBuild Projects="Test_String.dproj"/>
     </Target>
@@ -38,14 +50,23 @@
     <Target Name="Test_StringMap:Make">
         <MSBuild Projects="Test_StringMap.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Test_Utils">
+        <MSBuild Projects="Test_Utils.dproj"/>
+    </Target>
+    <Target Name="Test_Utils:Clean">
+        <MSBuild Projects="Test_Utils.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Test_Utils:Make">
+        <MSBuild Projects="Test_Utils.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Test_String;Test_StringMap;Test_Utils;Test_libsagui"/>
+        <CallTarget Targets="Test_libsagui;Test_String;Test_StringMap;Test_Utils"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Test_String:Clean;Test_StringMap:Clean;Test_Utils:Clean;Test_libsagui:Clean"/>
+        <CallTarget Targets="Test_libsagui:Clean;Test_String:Clean;Test_StringMap:Clean;Test_Utils:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Test_String:Make;Test_StringMap:Make;Test_Utils:Make;Test_libsagui:Make"/>
+        <CallTarget Targets="Test_libsagui:Make;Test_String:Make;Test_StringMap:Make;Test_Utils:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

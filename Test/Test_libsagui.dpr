@@ -29,6 +29,8 @@ program Test_libsagui;
 
 {$I Tests.inc}
 
+{.$DEFINE TLS_SUPPORT}
+
 uses
   RTLConsts,
   SysUtils,
@@ -222,6 +224,20 @@ begin
 end;
 
 procedure Test_SgLibCheckLastError;
+
+  function strerror(ALastError: Integer): string;
+  var
+    P: array[0..SG_ERR_SIZE-1] of cchar;
+  begin
+    sg_strerror(ALastError, @P[0], SG_ERR_SIZE);
+  {$IFDEF FPC}
+    SetString(Result, @P[0], Length(Pcchar(@P[0])));
+    SetCodePage(RawByteString(Result), CP_UTF8, False);
+  {$ELSE}
+    Result := TMarshal.ReadStringAsUtf8(TPtrWrapper.Create(@P[0]));
+  {$ENDIF}
+  end;
+
 var
   F: Pointer;
   OK: Boolean;
@@ -238,7 +254,7 @@ begin
   except
     on E: Exception do
       OK := (E.ClassType = EOSError) and (EOSError(E).ErrorCode = EINVAL) and
-        (E.Message = SysErrorMessage(EINVAL));
+        (E.Message = strerror(EINVAL));
   end;
   Assert(OK);
   OK := False;
@@ -247,7 +263,7 @@ begin
   except
     on E: Exception do
       OK := (E.ClassType = EOSError) and (EOSError(E).ErrorCode = 456) and
-        (E.Message = 'Unknown error 456');
+        (E.Message = strerror(456));
   end;
   Assert(OK);
 end;
@@ -387,7 +403,9 @@ begin
   Assert(not Assigned(sg_httpreq_payload));
   Assert(not Assigned(sg_httpreq_is_uploading));
   Assert(not Assigned(sg_httpreq_uploads));
+{$IFDEF TLS_SUPPORT}
   Assert(not Assigned(sg_httpreq_tls_session));
+{$ENDIF}
   Assert(not Assigned(sg_httpreq_set_user_data));
   Assert(not Assigned(sg_httpreq_user_data));
 
@@ -408,8 +426,10 @@ begin
   Assert(not Assigned(sg_httpsrv_new2));
   Assert(not Assigned(sg_httpsrv_new));
   Assert(not Assigned(sg_httpsrv_free));
+{$IFDEF TLS_SUPPORT}
   Assert(not Assigned(sg_httpsrv_tls_listen2));
   Assert(not Assigned(sg_httpsrv_tls_listen));
+{$ENDIF}
   Assert(not Assigned(sg_httpsrv_listen));
   Assert(not Assigned(sg_httpsrv_shutdown));
   Assert(not Assigned(sg_httpsrv_port));
@@ -532,7 +552,9 @@ begin
   Assert(Assigned(sg_httpreq_payload));
   Assert(Assigned(sg_httpreq_is_uploading));
   Assert(Assigned(sg_httpreq_uploads));
+{$IFDEF TLS_SUPPORT}
   Assert(Assigned(sg_httpreq_tls_session));
+{$ENDIF}
   Assert(Assigned(sg_httpreq_set_user_data));
   Assert(Assigned(sg_httpreq_user_data));
 
@@ -553,8 +575,10 @@ begin
   Assert(Assigned(sg_httpsrv_new2));
   Assert(Assigned(sg_httpsrv_new));
   Assert(Assigned(sg_httpsrv_free));
+{$IFDEF TLS_SUPPORT}
   Assert(Assigned(sg_httpsrv_tls_listen2));
   Assert(Assigned(sg_httpsrv_tls_listen));
+{$ENDIF}
   Assert(Assigned(sg_httpsrv_listen));
   Assert(Assigned(sg_httpsrv_shutdown));
   Assert(Assigned(sg_httpsrv_port));
