@@ -591,24 +591,24 @@ var
 type
   ESgLibNotLoaded = class(EFileNotFoundException);
 
-  TSgLibUnloadCb = procedure(ACls: Pointer); cdecl;
+  TSgLibNotifier = procedure(AClosure: Pointer); cdecl;
 
-  PSgLibUnloadCbItem = ^TSgLibUnloadCbItem;
-  TSgLibUnloadCbItem = record
-    Next: PSgLibUnloadCbItem;
-    Cb: TSgLibUnloadCb;
-    Cls: Pointer;
+  PSgLibNotifierItem = ^TSgLibNotifierItem;
+  TSgLibNotifierItem = record
+    Next: PSgLibNotifierItem;
+    Notifier: TSgLibNotifier;
+    Closure: Pointer;
   end;
 
   SgLib = record
   private class var
     GCS: TCriticalSection;
-    GUnloadCbs: PSgLibUnloadCbItem;
+    GNotifiers: PSgLibNotifierItem;
     GLastName: TFileName;
     GHandle: TLibHandle;
   private
-    class procedure FreeUnloadCbs; static; inline;
-    class procedure CallUnloadCbs; static; inline;
+    class procedure FreeNotifiers; static; inline;
+    class procedure CallNotifiers; static; inline;
   public
     class procedure Init; static; inline;
     class procedure Done; static; inline;
@@ -620,8 +620,9 @@ type
     class function Unload: TLibHandle; static;
     class function IsLoaded: Boolean; static;
     class procedure Check; static;
-    class procedure AddUnloadCb(ACb: TSgLibUnloadCb; ACls: Pointer); static;
-    class procedure RmUnloadCb(ACb: TSgLibUnloadCb); static;
+    class procedure AddNotifier(ANotifier: TSgLibNotifier;
+      AClosure: Pointer); static;
+    class procedure RemoveNotifier(ANotifier: TSgLibNotifier); static;
     class property Handle: TLibHandle read GHandle;
   end;
 
@@ -674,17 +675,17 @@ end;
 class procedure SgLib.Init;
 begin
   GCS := TCriticalSection.Create;
-  GUnloadCbs := nil;
+  GNotifiers := nil;
 end;
 
-class procedure SgLib.FreeUnloadCbs;
+class procedure SgLib.FreeNotifiers;
 var
-  P: PSgLibUnloadCbItem;
+  P: PSgLibNotifierItem;
 begin
-  while Assigned(GUnloadCbs) do
+  while Assigned(GNotifiers) do
   begin
-    P := GUnloadCbs;
-    GUnloadCbs := P^.Next;
+    P := GNotifiers;
+    GNotifiers := P^.Next;
     Dispose(P);
   end;
 end;
@@ -693,21 +694,21 @@ class procedure SgLib.Done;
 begin
   GCS.Acquire;
   try
-    FreeUnloadCbs;
+    FreeNotifiers;
   finally
     GCS.Release;
     GCS.Free;
   end;
 end;
 
-class procedure SgLib.CallUnloadCbs;
+class procedure SgLib.CallNotifiers;
 var
-  P: PSgLibUnloadCbItem;
+  P: PSgLibNotifierItem;
 begin
-  P := GUnloadCbs;
+  P := GNotifiers;
   while Assigned(P) do
   begin
-    P^.Cb(P^.Cls);
+    P^.Notifier(P^.Closure);
     P := P^.Next;
   end;
 end;
@@ -935,7 +936,7 @@ begin //FI:C101
   try
     if GHandle = NilHandle then
       Exit(NilHandle);
-    CallUnloadCbs;
+    CallNotifiers;
     if not FreeLibrary(GHandle) then
       Exit(GHandle);
     GHandle := NilHandle;
@@ -1105,31 +1106,31 @@ begin
       [IfThen(GLastName = '', SG_LIB_NAME, GLastName)]);
 end;
 
-class procedure SgLib.AddUnloadCb(ACb: TSgLibUnloadCb; ACls: Pointer);
+class procedure SgLib.AddNotifier(ANotifier: TSgLibNotifier; AClosure: Pointer);
 var
-  P: PSgLibUnloadCbItem;
+  P: PSgLibNotifierItem;
 begin
   GCS.Acquire;
   try
     New(P);
-    P^.Next := GUnloadCbs;
-    P^.Cb := ACb;
-    P^.Cls := ACls;
-    GUnloadCbs := P;
+    P^.Next := GNotifiers;
+    P^.Notifier := ANotifier;
+    P^.Closure := AClosure;
+    GNotifiers := P;
   finally
     GCS.Release;
   end;
 end;
 
-class procedure SgLib.RmUnloadCb(ACb: TSgLibUnloadCb);
+class procedure SgLib.RemoveNotifier(ANotifier: TSgLibNotifier);
 var
-  D: PSgLibUnloadCbItem;
-  P: ^PSgLibUnloadCbItem;
+  D: PSgLibNotifierItem;
+  P: ^PSgLibNotifierItem;
 begin
   GCS.Acquire;
   try
-    P := @GUnloadCbs;
-    while Assigned(P^) and (@P^^.Cb <> @ACb) do
+    P := @GNotifiers;
+    while Assigned(P^) and (@P^^.Notifier <> @ANotifier) do
       P := @P^.Next;
     if Assigned(P^) then
     begin

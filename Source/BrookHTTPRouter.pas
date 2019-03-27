@@ -224,7 +224,7 @@ type
     procedure SetActive(AValue: Boolean);
     procedure SetRoutes(AValue: TBrookHTTPRoutes);
   protected
-    class procedure UnloadLibCb(ACls: Pointer); static; cdecl;
+    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     function CreateRoutes: TBrookHTTPRoutes; virtual;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
@@ -743,14 +743,14 @@ constructor TBrookHTTPRouter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRoutes := CreateRoutes;
-  SgLib.AddUnloadCb({$IFNDEF VER3_0}@{$ENDIF}UnloadLibCb, Self);
+  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
 end;
 
 destructor TBrookHTTPRouter.Destroy;
 begin
   try
     SetActive(False);
-    SgLib.RmUnloadCb({$IFNDEF VER3_0}@{$ENDIF}UnloadLibCb);
+    SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   finally
     inherited Destroy;
     FRoutes.Free;
@@ -762,9 +762,9 @@ begin
   Result := TBrookHTTPRoutes.Create(Self);
 end;
 
-class procedure TBrookHTTPRouter.UnloadLibCb(ACls: Pointer);
+class procedure TBrookHTTPRouter.LibNotifier(AClosure: Pointer);
 begin
-  TBrookHTTPRouter(ACls).Close;
+  TBrookHTTPRouter(AClosure).Close;
 end;
 
 procedure TBrookHTTPRouter.CheckItems;

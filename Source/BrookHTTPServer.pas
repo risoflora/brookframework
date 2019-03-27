@@ -156,7 +156,7 @@ type
     procedure InternalFreeServerHandle; inline;
     procedure InternalCheckServerOption(Aret: cint); inline;
   protected
-    class procedure UnloadLibCb(ACls: Pointer); static; cdecl;
+    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     class function DoAuthenticationCallback(Acls: Pcvoid; Aauth: Psg_httpauth;
       Areq: Psg_httpreq; Ares: Psg_httpres): cbool; cdecl; static;
     class procedure DoRequestCallback(Acls: Pcvoid; Areq: Psg_httpreq;
@@ -288,7 +288,7 @@ constructor TBrookHTTPServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FSecurity := CreateSecurity;
-  SgLib.AddUnloadCb({$IFNDEF VER3_0}@{$ENDIF}UnloadLibCb, Self);
+  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
   FPostBufferSize := BROOK_POST_BUFFER_SIZE;
   FPayloadLimit := BROOK_PAYLOAD_LIMIT;
   FUploadsLimit := BROOK_UPLOADS_LIMIT;
@@ -298,7 +298,7 @@ destructor TBrookHTTPServer.Destroy;
 begin
   try
     SetActive(False);
-    SgLib.RmUnloadCb({$IFNDEF VER3_0}@{$ENDIF}UnloadLibCb);
+    SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   finally
     FSecurity.Free;
     inherited Destroy;
@@ -362,9 +362,9 @@ begin
   Result := EBrookHTTPServer.Create(AMessage);
 end;
 
-class procedure TBrookHTTPServer.UnloadLibCb(ACls: Pointer);
+class procedure TBrookHTTPServer.LibNotifier(AClosure: Pointer);
 begin
-  TBrookHTTPServer(ACls).Close;
+  TBrookHTTPServer(AClosure).Close;
 end;
 
 class function TBrookHTTPServer.DoAuthenticationCallback(Acls: Pcvoid;

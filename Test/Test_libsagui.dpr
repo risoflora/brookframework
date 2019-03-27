@@ -32,6 +32,7 @@ program Test_libsagui;
 uses
   RTLConsts,
   SysUtils,
+  Platform,
   libsagui;
 
 procedure Test_SgLibGetLastName;
@@ -106,6 +107,37 @@ begin
   SgLib.CheckVersion;
 end;
 
+procedure Test_SgLibCheckLastError;
+var
+  F: Pointer;
+  OK: Boolean;
+begin
+  SgLib.CheckLastError(0);
+  F := @sg_strerror;
+  sg_strerror := nil;
+  SgLib.CheckLastError(123);
+  sg_strerror := F;
+
+  OK := False;
+  try
+    SgLib.CheckLastError(EINVAL);
+  except
+    on E: Exception do
+      OK := (E.ClassType = EOSError) and (EOSError(E).ErrorCode = EINVAL) and
+        (E.Message = SysErrorMessage(EINVAL));
+  end;
+  Assert(OK);
+  OK := False;
+  try
+    SgLib.CheckLastError(456);
+  except
+    on E: Exception do
+      OK := (E.ClassType = EOSError) and (EOSError(E).ErrorCode = 456) and
+        (E.Message = 'Unknown error 456');
+  end;
+  Assert(OK);
+end;
+
 procedure Test_SgLibLoad;
 var
   OK: Boolean;
@@ -139,6 +171,14 @@ begin
   Assert(SgLib.Unload = NilHandle);
 end;
 
+procedure Test_SgLibIsLoaded;
+begin
+  SgLib.Unload;
+  Assert(not SgLib.IsLoaded);
+  SgLib.Load(SG_LIB_NAME);
+  Assert(SgLib.IsLoaded);
+end;
+
 procedure Test_SgLibCheck;
 var
   OK: Boolean;
@@ -149,8 +189,8 @@ begin
     SgLib.Check;
   except
     on E: Exception do
-      OK := (E.ClassType = ESgLibNotLoaded) and (E.Message =
-        Format(SSgLibNotLoaded, [SG_LIB_NAME]));
+      OK := (E.ClassType = ESgLibNotLoaded) and
+        (E.Message = Format(SSgLibNotLoaded, [SG_LIB_NAME]));
   end;
   Assert(OK);
 end;
@@ -158,7 +198,9 @@ end;
 begin
   Test_SgLibGetLastName;
   Test_SgLibCheckVersion;
+  Test_SgLibCheckLastError;
   Test_SgLibLoad;
   Test_SgLibUnload;
+  Test_SgLibIsLoaded;
   Test_SgLibCheck;
 end.
