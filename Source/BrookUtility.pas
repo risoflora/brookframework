@@ -41,54 +41,90 @@ uses
   libsagui;
 
 type
+  { Callback signature used by stuff that handle errors.
+    @param(ASender[in] Sender object.)
+    @param(AException[in] Exception object.)}
   TBrookErrorEvent = procedure(ASender: TObject;
     AException: Exception) of object;
 
+  { Global Sagui object containing general purpose functions. }
   Sagui = record
-    {
-      Returns the library version number.
-      @return(Library version packed into a single integer.)
-    }
+    { Returns the library version number.
+      @return(Library version packed into a single integer.) }
     class function Version: Cardinal; overload; static;
-    { experimental }
+    { Returns the library version number.
+      @param(AMajor[out] Major number.)
+      @param(AMinor[out] Minor number.)
+      @param(APatch[out] Patch number.)
+      @return(Library version packed into a single integer.) }
     class function Version(out AMajor, AMinor: Byte;
       out APatch: SmallInt): Cardinal; overload; static;
-    {
-      Returns the library version number as string.
-      @return(Library version packed into a static string.)
-    }
+    { Returns the library version number as string in the
+      format @code(<MAJOR>.<MINOR>.<PATCH>).
+      @return(Library version packed into a static string.) }
     class function VersionStr: string; static;
-    {
-      Allocates a new memory space and zero-initialize it.
-
+    { Allocates a new memory space.
       @param(ASize[in] Memory size to be allocated.)
-
       @return(Pointer of the allocated zero-initialized memory.
 
         @bold(Returns values:)
-
         @definitionList(
           @itemLabel(@code(nil))
-          @item(When size is @code(0) or no memory space.)
+            @item(If size is @code(0) or no memory space.)
         )
-      )
-    }
+      ) }
+    class function Malloc(ASize: NativeUInt): Pointer; static;
+    { Allocates a new zero-initialized memory space.
+      @param(ASize[in] Memory size to be allocated.)
+      @return(Pointer of the allocated zero-initialized memory.
+
+        @bold(Returns values:)
+        @definitionList(
+          @itemLabel(@code(nil))
+            @item(If size is @code(0) or no memory space.)
+        )
+      ) }
     class function Alloc(ASize: NativeUInt): Pointer; static;
-    {
-      Frees a memory space previous allocated by @link(BrookAlloc).
-      @param(APtr[in] Pointer of the memory to be freed.)
-    }
-    class procedure Free(APtr: Pointer); static;
-    { experimental }
-    class function StrError(AErrorNum: Integer): string; static;
-    { experimental }
+    { Reallocates an existing memory block.
+      @param(APointer[in,out] Pointer of the memory to be reallocated.)
+      @param(ASize[in] Memory size to be allocated.)
+      @return(Pointer of the reallocated memory.) }
+    class function Realloc(APointer: Pointer;
+      ASize: NativeUInt): Pointer; static;
+    { Frees a memory space previous allocated by @link(Sagui.Malloc),
+      @link(Sagui.Alloc) or @link(Sagui.Realloc).
+      @param(APointer[in] Pointer of the memory to be freed.) }
+    class procedure Free(APointer: Pointer); static;
+    { Returns string describing an error number.
+      @param(AErrorNum[in] Error number.)
+      @param(AErrorMsg[out] Referenced string to store the error message.)
+      @param(AErrorLen[in] Length of the error message.) }
+    class procedure StrError(AErrorNum: Integer; out AErrorMsg: string;
+      AErrorLen: Integer); overload; static; inline;
+    { Returns string describing an error number.
+      @param(AErrorNum[in] Error number.)
+      @return(Static string describing the error.) }
+    class function StrError(AErrorNum: Integer): string; overload; static;
+    { Checks if a string is a HTTP post method. }
     class function IsPost(const AMethod: string): Boolean; static;
-    { experimental }
+    { Extracts the entry-point of a path or resource. For example, given a path
+      @code(/api1/customer), the part considered as entry-point is
+      @code(/api1).
+      @param(APath[in] Path as static string.)
+      @return(Entry-point as static string.) }
     class function ExtractEntryPoint(const APath: string): string; static;
-    { experimental }
+    { Returns the system temporary directory.
+      @Return(Temporary directory as static string.) }
     class function TmpDir: string; static;
+    { Indicates the end-of-read processed in
+      @link(TBrookHTTPResponse.SendStream).
+      @param(AError[in] @True to return a value indicating a stream
+       reading error.)
+      @return(Value to end a stream reading.) }
+    class function EOR(AError: Boolean): NativeInt; static;
   end;
 
+  { Global Brook object containing general purpose functions. }
   Brook = record
     { experimental }
     class function FixPath(const APath: string): string; static; inline;
@@ -122,25 +158,43 @@ begin
   Result := TMarshal.ToString(sg_version_str);
 end;
 
+class function Sagui.Malloc(ASize: NativeUInt): Pointer;
+begin
+  SgLib.Check;
+  Result := sg_malloc(ASize);
+end;
+
 class function Sagui.Alloc(ASize: NativeUInt): Pointer;
 begin
   SgLib.Check;
   Result := sg_alloc(ASize);
 end;
 
-class procedure Sagui.Free(APtr: Pointer);
+class function Sagui.Realloc(APointer: Pointer; ASize: NativeUInt): Pointer;
 begin
   SgLib.Check;
-  sg_free(APtr);
+  Result := sg_realloc(APointer, ASize);
 end;
 
-class function Sagui.StrError(AErrorNum: Integer): string;
+class procedure Sagui.Free(APointer: Pointer);
+begin
+  SgLib.Check;
+  sg_free(APointer);
+end;
+
+class procedure Sagui.StrError(AErrorNum: Integer; out AErrorMsg: string;
+  AErrorLen: Integer);
 var
   P: array[0..SG_ERR_SIZE-1] of cchar;
 begin
   SgLib.Check;
-  sg_strerror(AErrorNum, @P[0], SG_ERR_SIZE);
-  Result := TMarshal.ToString(@P[0]);
+  sg_strerror(AErrorNum, @P[0], AErrorLen);
+  AErrorMsg := TMarshal.ToString(@P[0]);
+end;
+
+class function Sagui.StrError(AErrorNum: Integer): string;
+begin
+  Sagui.StrError(AErrorNum, Result, SG_ERR_SIZE);
 end;
 
 class function Sagui.IsPost(const AMethod: string): Boolean;
@@ -176,6 +230,12 @@ begin
   finally
     sg_free(S);
   end;
+end;
+
+class function Sagui.EOR(AError: Boolean): NativeInt;
+begin
+  SgLib.Check;
+  Result := sg_eor(AError);
 end;
 
 { Brook }
