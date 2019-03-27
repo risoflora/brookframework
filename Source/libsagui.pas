@@ -607,12 +607,11 @@ type
     GNotifiers: PSgLibNotifierItem;
     GLastName: TFileName;
     GHandle: TLibHandle;
-  private
-    class procedure FreeNotifiers; static; inline;
-    class procedure CallNotifiers; static; inline;
   public
     class procedure Init; static; inline;
     class procedure Done; static; inline;
+    class procedure CallNotifiers; static; inline;
+    class procedure ClearNotifiers; static; inline;
     class function GetLastName: string; static; inline;
     class procedure CheckVersion(AVersion: Integer); overload; static; inline;
     class procedure CheckVersion; overload; static; inline;
@@ -679,7 +678,7 @@ begin
   GNotifiers := nil;
 end;
 
-class procedure SgLib.FreeNotifiers;
+class procedure SgLib.ClearNotifiers;
 var
   P: PSgLibNotifierItem;
 begin
@@ -689,13 +688,14 @@ begin
     GNotifiers := P^.Next;
     Dispose(P);
   end;
+  GNotifiers := nil;
 end;
 
 class procedure SgLib.Done;
 begin
   GCS.Acquire;
   try
-    FreeNotifiers;
+    ClearNotifiers;
   finally
     GCS.Release;
     GCS.Free;

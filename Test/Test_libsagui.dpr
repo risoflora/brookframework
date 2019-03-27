@@ -215,6 +215,8 @@ var
   I1, I2, I3: Integer;
   OK: Boolean;
 begin
+  SgLib.ClearNotifiers;
+
   OK := False;
   try
     SgLib.AddNotifier(nil, Pointer(1));
@@ -253,6 +255,8 @@ var
   I1, I2, I3: Integer;
   OK: Boolean;
 begin
+  SgLib.ClearNotifiers;
+
   OK := False;
   try
     SgLib.RemoveNotifier(nil);
