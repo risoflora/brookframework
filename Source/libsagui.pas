@@ -46,6 +46,7 @@ unit libsagui;
 interface
 
 uses
+  RTLConsts,
   SysUtils,
   StrUtils,
 {$IFDEF MSWINDOWS}
@@ -1110,6 +1111,8 @@ class procedure SgLib.AddNotifier(ANotifier: TSgLibNotifier; AClosure: Pointer);
 var
   P: PSgLibNotifierItem;
 begin
+  if not Assigned(ANotifier) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
   GCS.Acquire;
   try
     New(P);
@@ -1127,6 +1130,8 @@ var
   D: PSgLibNotifierItem;
   P: ^PSgLibNotifierItem;
 begin
+  if not Assigned(ANotifier) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
   GCS.Acquire;
   try
     P := @GNotifiers;
