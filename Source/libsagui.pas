@@ -607,10 +607,14 @@ type
     GNotifiers: PSgLibNotifierItem;
     GLastName: TFileName;
     GHandle: TLibHandle;
+  private
+    class procedure CallNotifiers; static; inline;
   public
     class procedure Init; static; inline;
     class procedure Done; static; inline;
-    class procedure CallNotifiers; static; inline;
+    class procedure AddNotifier(ANotifier: TSgLibNotifier;
+      AClosure: Pointer); static;
+    class procedure RemoveNotifier(ANotifier: TSgLibNotifier); static;
     class procedure ClearNotifiers; static; inline;
     class function GetLastName: string; static; inline;
     class procedure CheckVersion(AVersion: Integer); overload; static; inline;
@@ -620,9 +624,6 @@ type
     class function Unload: TLibHandle; static;
     class function IsLoaded: Boolean; static;
     class procedure Check; static;
-    class procedure AddNotifier(ANotifier: TSgLibNotifier;
-      AClosure: Pointer); static;
-    class procedure RemoveNotifier(ANotifier: TSgLibNotifier); static;
     class property Handle: TLibHandle read GHandle;
   end;
 
@@ -711,6 +712,47 @@ begin
   begin
     P^.Notifier(P^.Closure);
     P := P^.Next;
+  end;
+end;
+
+class procedure SgLib.AddNotifier(ANotifier: TSgLibNotifier; AClosure: Pointer);
+var
+  P: PSgLibNotifierItem;
+begin
+  if not Assigned(ANotifier) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
+  GCS.Acquire;
+  try
+    New(P);
+    P^.Next := GNotifiers;
+    P^.Notifier := ANotifier;
+    P^.Closure := AClosure;
+    GNotifiers := P;
+  finally
+    GCS.Release;
+  end;
+end;
+
+class procedure SgLib.RemoveNotifier(ANotifier: TSgLibNotifier);
+var
+  D: PSgLibNotifierItem;
+  P: ^PSgLibNotifierItem;
+begin
+  if not Assigned(ANotifier) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
+  GCS.Acquire;
+  try
+    P := @GNotifiers;
+    while Assigned(P^) and (@P^^.Notifier <> @ANotifier) do
+      P := @P^.Next;
+    if Assigned(P^) then
+    begin
+      D := P^;
+      P^ := D^.Next;
+      Dispose(D);
+    end;
+  finally
+    GCS.Release;
   end;
 end;
 
@@ -1105,47 +1147,6 @@ begin
   if GHandle = NilHandle then
     raise ESgLibNotLoaded.CreateFmt(SSgLibNotLoaded,
       [IfThen(GLastName = '', SG_LIB_NAME, GLastName)]);
-end;
-
-class procedure SgLib.AddNotifier(ANotifier: TSgLibNotifier; AClosure: Pointer);
-var
-  P: PSgLibNotifierItem;
-begin
-  if not Assigned(ANotifier) then
-    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
-  GCS.Acquire;
-  try
-    New(P);
-    P^.Next := GNotifiers;
-    P^.Notifier := ANotifier;
-    P^.Closure := AClosure;
-    GNotifiers := P;
-  finally
-    GCS.Release;
-  end;
-end;
-
-class procedure SgLib.RemoveNotifier(ANotifier: TSgLibNotifier);
-var
-  D: PSgLibNotifierItem;
-  P: ^PSgLibNotifierItem;
-begin
-  if not Assigned(ANotifier) then
-    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
-  GCS.Acquire;
-  try
-    P := @GNotifiers;
-    while Assigned(P^) and (@P^^.Notifier <> @ANotifier) do
-      P := @P^.Next;
-    if Assigned(P^) then
-    begin
-      D := P^;
-      P^ := D^.Next;
-      Dispose(D);
-    end;
-  finally
-    GCS.Release;
-  end;
 end;
 
 initialization

@@ -35,6 +35,120 @@ uses
   Platform,
   libsagui;
 
+procedure DoLibNotifier1(AClosure: Pointer); cdecl;
+begin
+  PInteger(AClosure)^ := 123;
+end;
+
+procedure DoLibNotifier2(AClosure: Pointer); cdecl;
+begin
+  PInteger(AClosure)^ := 456;
+end;
+
+procedure DoLibNotifier3(AClosure: Pointer); cdecl;
+begin
+  PInteger(AClosure)^ := 789;
+end;
+
+procedure Test_SgLibAddNotifier;
+var
+  I1, I2, I3: Integer;
+  OK: Boolean;
+begin
+  SgLib.ClearNotifiers;
+
+  OK := False;
+  try
+    SgLib.AddNotifier(nil, Pointer(1));
+  except
+    on E: Exception do
+      OK := (E.ClassType = EArgumentNilException) and
+        (E.Message = Format(SParamIsNil, ['ANotifier']));
+  end;
+  Assert(OK);
+  SgLib.AddNotifier(@DoLibNotifier1, nil);
+  SgLib.RemoveNotifier(@DoLibNotifier1);
+
+  SgLib.Load(SG_LIB_NAME);
+  I1 := 0;
+  I2 := 0;
+  I3 := 0;
+  SgLib.AddNotifier(@DoLibNotifier1, @I1);
+  SgLib.AddNotifier(@DoLibNotifier2, @I2);
+  SgLib.AddNotifier(@DoLibNotifier3, @I3);
+  SgLib.Unload;
+  Assert(I1 = 123);
+  Assert(I2 = 456);
+  Assert(I3 = 789);
+  SgLib.Load(SG_LIB_NAME);
+  I1 := 0;
+  I2 := 0;
+  I3 := 0;
+  SgLib.Unload;
+  Assert(I1 = 123);
+  Assert(I2 = 456);
+  Assert(I3 = 789);
+end;
+
+procedure Test_SgLibRemoveNotifier;
+var
+  I1, I2, I3: Integer;
+  OK: Boolean;
+begin
+  SgLib.ClearNotifiers;
+
+  OK := False;
+  try
+    SgLib.RemoveNotifier(nil);
+  except
+    on E: Exception do
+      OK := (E.ClassType = EArgumentNilException) and
+        (E.Message = Format(SParamIsNil, ['ANotifier']));
+  end;
+  Assert(OK);
+
+  SgLib.Load(SG_LIB_NAME);
+  I1 := 0;
+  I2 := 0;
+  I3 := 0;
+  SgLib.AddNotifier(@DoLibNotifier1, @I1);
+  SgLib.AddNotifier(@DoLibNotifier2, @I2);
+  SgLib.AddNotifier(@DoLibNotifier3, @I3);
+  SgLib.RemoveNotifier(@DoLibNotifier2);
+  SgLib.Unload;
+  Assert(I1 = 123);
+  Assert(I2 = 0);
+  Assert(I3 = 789);
+end;
+
+procedure Test_SgLibClearNotifiers;
+var
+  I1, I2, I3: Integer;
+begin
+  SgLib.Load(SG_LIB_NAME);
+  I1 := 0;
+  I2 := 0;
+  I3 := 0;
+  SgLib.AddNotifier(@DoLibNotifier1, @I1);
+  SgLib.AddNotifier(@DoLibNotifier2, @I2);
+  SgLib.AddNotifier(@DoLibNotifier3, @I3);
+  SgLib.Unload;
+  Assert(I1 = 123);
+  Assert(I2 = 456);
+  Assert(I3 = 789);
+  SgLib.Load(SG_LIB_NAME);
+  I1 := 0;
+  I2 := 0;
+  I3 := 0;
+  SgLib.ClearNotifiers;
+  SgLib.Unload;
+  Assert(I1 = 0);
+  Assert(I2 = 0);
+  Assert(I3 = 0);
+
+  SgLib.ClearNotifiers;
+end;
+
 procedure Test_SgLibGetLastName;
 begin
   SgLib.Unload;
@@ -195,93 +309,18 @@ begin
   Assert(OK);
 end;
 
-procedure DoLibNotifier1(AClosure: Pointer); cdecl;
+procedure Test_SgLibHandle;
 begin
-  PInteger(AClosure)^ := 123;
-end;
-
-procedure DoLibNotifier2(AClosure: Pointer); cdecl;
-begin
-  PInteger(AClosure)^ := 456;
-end;
-
-procedure DoLibNotifier3(AClosure: Pointer); cdecl;
-begin
-  PInteger(AClosure)^ := 789;
-end;
-
-procedure Test_SgLibAddNotifier;
-var
-  I1, I2, I3: Integer;
-  OK: Boolean;
-begin
-  SgLib.ClearNotifiers;
-
-  OK := False;
-  try
-    SgLib.AddNotifier(nil, Pointer(1));
-  except
-    on E: Exception do
-      OK := (E.ClassType = EArgumentNilException) and
-        (E.Message = Format(SParamIsNil, ['ANotifier']));
-  end;
-  Assert(OK);
-  SgLib.AddNotifier(@DoLibNotifier1, nil);
-  SgLib.RemoveNotifier(@DoLibNotifier1);
-
-  SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.AddNotifier(@DoLibNotifier1, @I1);
-  SgLib.AddNotifier(@DoLibNotifier2, @I2);
-  SgLib.AddNotifier(@DoLibNotifier3, @I3);
   SgLib.Unload;
-  Assert(I1 = 123);
-  Assert(I2 = 456);
-  Assert(I3 = 789);
+  Assert(SgLib.Handle = NilHandle);
   SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.Unload;
-  Assert(I1 = 123);
-  Assert(I2 = 456);
-  Assert(I3 = 789);
-end;
-
-procedure Test_SgLibRemoveNotifier;
-var
-  I1, I2, I3: Integer;
-  OK: Boolean;
-begin
-  SgLib.ClearNotifiers;
-
-  OK := False;
-  try
-    SgLib.RemoveNotifier(nil);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EArgumentNilException) and
-        (E.Message = Format(SParamIsNil, ['ANotifier']));
-  end;
-  Assert(OK);
-
-  SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.AddNotifier(@DoLibNotifier1, @I1);
-  SgLib.AddNotifier(@DoLibNotifier2, @I2);
-  SgLib.AddNotifier(@DoLibNotifier3, @I3);
-  SgLib.RemoveNotifier(@DoLibNotifier2);
-  SgLib.Unload;
-  Assert(I1 = 123);
-  Assert(I2 = 0);
-  Assert(I3 = 789);
+  Assert(SgLib.Handle <> NilHandle);
 end;
 
 begin
+  Test_SgLibAddNotifier;
+  Test_SgLibRemoveNotifier;
+  Test_SgLibClearNotifiers;
   Test_SgLibGetLastName;
   Test_SgLibCheckVersion;
   Test_SgLibCheckLastError;
@@ -289,6 +328,5 @@ begin
   Test_SgLibUnload;
   Test_SgLibIsLoaded;
   Test_SgLibCheck;
-  Test_SgLibAddNotifier;
-  Test_SgLibRemoveNotifier;
+  Test_SgLibHandle;
 end.
