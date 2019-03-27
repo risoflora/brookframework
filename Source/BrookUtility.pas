@@ -126,9 +126,11 @@ type
 
   { Global Brook object containing general purpose functions. }
   Brook = record
-    { experimental }
+    { Fixes a path by including the leading path delimiter and excluding the
+      trailing one. }
     class function FixPath(const APath: string): string; static; inline;
-    { experimental }
+    { Extracts and fixes an entry-point by including the leading path delimiter
+      and excluding the trailing one. }
     class function FixEntryPoint(const APath: string): string; static;
   end;
 
@@ -245,7 +247,7 @@ begin
   Result := APath;
   if not APath.StartsWith('/') then
     Result := Concat('/', Result);
-  if (Length('/') > SizeOf(Char)) and Result.EndsWith('/') then
+  if (Length(APath) > SizeOf(Char)) and Result.EndsWith('/') then
     SetLength(Result, Length(Result) - Length('/'));
 end;
 

@@ -161,6 +161,27 @@ end;
 
 procedure Test_FixPath;
 begin
+  Assert(Brook.FixPath('') = '/');
+  Assert(Brook.FixPath('/') = '/');
+  Assert(Brook.FixPath('abc') = '/abc');
+  Assert(Brook.FixPath('/abc') = '/abc');
+  Assert(Brook.FixPath('abc/') = '/abc');
+  Assert(Brook.FixPath('/abc/') = '/abc');
+  Assert(Brook.FixPath('abc/def') = '/abc/def');
+end;
+
+procedure Test_FixEntryPoint;
+begin
+  Assert(Brook.FixEntryPoint('') = '/');
+  Assert(Brook.FixEntryPoint('/') = '/');
+  Assert(Brook.FixEntryPoint('abc') = '/abc');
+  Assert(Brook.FixEntryPoint('/abc') = '/abc');
+  Assert(Brook.FixEntryPoint('abc/') = '/abc');
+  Assert(Brook.FixEntryPoint('/abc/') = '/abc');
+  Assert(Brook.FixEntryPoint('abc/def') = '/abc');
+  Assert(Brook.FixEntryPoint('/abc/def') = '/abc');
+  Assert(Brook.FixEntryPoint('abc/def/') = '/abc');
+  Assert(Brook.FixEntryPoint('/abc/def/') = '/abc');
 end;
 
 begin
@@ -176,4 +197,5 @@ begin
   Test_TmpDir;
   Test_EOR;
   Test_FixPath;
+  Test_FixEntryPoint;
 end.
