@@ -28,6 +28,10 @@ program Test_Reader;
 
 {$I Tests.inc}
 
+{$IF DEFINED(FPC) AND DEFINED(MSWINDOWS)}
+ {$CODEPAGE UTF8}
+{$ENDIF}
+
 uses
   RTLConsts,
   SysUtils,
@@ -61,13 +65,13 @@ end;
 
 procedure Test_Reset(AReader: TBrookTextReader);
 begin
-  Assert(AReader.Read = 'ABÇ');
-  Assert(AReader.Read = 'dÉf');
-  Assert(AReader.Read = 'GHÏ');
+  Assert(UnicodeString(AReader.Read) = 'ABÇ');
+  Assert(UnicodeString(AReader.Read) = 'dÉf');
+  Assert(UnicodeString(AReader.Read) = 'GHÏ');
   AReader.Reset;
-  Assert(AReader.Read = 'ABÇ');
-  Assert(AReader.Read = 'dÉf');
-  Assert(AReader.Read = 'GHÏ');
+  Assert(UnicodeString(AReader.Read) = 'ABÇ');
+  Assert(UnicodeString(AReader.Read) = 'dÉf');
+  Assert(UnicodeString(AReader.Read) = 'GHÏ');
 end;
 
 procedure Test_IsEOF(AReader: TBrookTextReader);
@@ -103,20 +107,20 @@ procedure Test_Read(AReader: TBrookTextReader);
 var
   S: string;
 begin
-  Assert(AReader.Read = 'ABÇ');
-  Assert(AReader.Read = 'dÉf');
-  Assert(AReader.Read = 'GHÏ');
+  Assert(UnicodeString(AReader.Read) = 'ABÇ');
+  Assert(UnicodeString(AReader.Read) = 'dÉf');
+  Assert(UnicodeString(AReader.Read) = 'GHÏ');
   Assert(AReader.Read = '123');
   Assert(AReader.Read = '456');
   Assert(AReader.Read = '789');
   Assert(AReader.EOF);
   AReader.Reset;
   AReader.Read(S);
-  Assert('ABÇ' = S);
+  Assert('ABÇ' = UnicodeString(S));
   AReader.Read(S);
-  Assert('dÉf' = S);
+  Assert('dÉf' = UnicodeString(S));
   AReader.Read(S);
-  Assert('GHÏ' = S);
+  Assert('GHÏ' = UnicodeString(S));
   AReader.Read(S);
   Assert('123' = S);
   AReader.Read(S);
