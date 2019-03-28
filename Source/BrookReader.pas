@@ -24,8 +24,7 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
-{ Contains classes for reading text line by line from a string, stream or
-  file. }
+{ Contains classes for reading text line by line from a string, stream or file. }
 
 unit BrookReader;
 

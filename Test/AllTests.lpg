@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="4">
+    <Targets Count="5">
       <Target0 FileName="Test_libsagui.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target0>
-      <Target1 FileName="Test_String.lpi">
+      <Target1 FileName="Test_Reader.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target1>
-      <Target2 FileName="Test_StringMap.lpi">
+      <Target2 FileName="Test_String.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target2>
-      <Target3 FileName="Test_Utils.lpi">
+      <Target3 FileName="Test_StringMap.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target3>
+      <Target4 FileName="Test_Utils.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target4>
     </Targets>
   </ProjectGroup>
 </CONFIG>

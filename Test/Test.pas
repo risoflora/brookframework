@@ -49,12 +49,12 @@ procedure AssertExcept(ARoutine: TTestRoutineArgs; AExceptClass: ExceptClass;
   const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
-  ACode: Integer; const AArgs: array of const); overload;
+  ACode: Cardinal; const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
   const AArgs: array of const); overload;
 
-procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Integer;
+procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Cardinal;
   const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs;
@@ -69,12 +69,12 @@ procedure AssertExcept(ARoutine: TTestRoutine;
   AExceptClass: ExceptClass); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine; const AError: string;
-  ACode: Integer); overload;
+  ACode: Cardinal); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine;
   const AError: string); overload;
 
-procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Integer); overload;
+procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Cardinal); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine); overload;
 
@@ -115,7 +115,7 @@ begin
 end;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
-  ACode: Integer; const AArgs: array of const);
+  ACode: Cardinal; const AArgs: array of const);
 var
   OK: Boolean;
 begin
@@ -146,7 +146,7 @@ begin
   Assert(OK);
 end;
 
-procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Integer;
+procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Cardinal;
   const AArgs: array of const);
 var
   OK: Boolean;
@@ -211,7 +211,7 @@ begin
 end;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine; const AError: string;
-  ACode: Integer);
+  ACode: Cardinal);
 var
   OK: Boolean;
 begin
@@ -241,7 +241,7 @@ begin
   Assert(OK);
 end;
 
-procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Integer);
+procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Cardinal);
 var
   OK: Boolean;
 begin
