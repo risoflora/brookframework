@@ -45,7 +45,6 @@ type
   TBrookStringMap = class;
 
   { Identifies the kind of operation in the map.
-
     @value(sgmoNone None operation or map cleaned.)
     @value(sgmoAdd Pair added to the map.)
     @value(sgmoAddOrSet Pair added or set to the map.)
@@ -53,7 +52,6 @@ type
   TBrookStringMapOperation = (sgmoNone, sgmoAdd, sgmoAddOrSet, sgmoRemove);
 
   { Event to notify a change in the map.
-
     @param(ASender Event caller.)
     @param(AOperation Operation kind.) }
   TBrookStringMapChangeEvent = procedure(ASender: TObject;
@@ -66,9 +64,8 @@ type
     FValue: string;
   public
     { Initializes a variable of @link(TBrookStringPair).
-
       @param(AName[in] Name of the pair.)
-      @param(AValue[in] Value of the pair.)}
+      @param(AValue[in] Value of the pair.) }
     constructor Create(const AName, AValue: string);
     { Name of the pair. }
     property Name: string read FName;
@@ -84,15 +81,12 @@ type
     FBOF: Boolean;
   public
     { Creates an instance of @link(TBrookStringMapEnumerator).
-
       @param(AMap[in] Pairs map.) }
     constructor Create(AMap: TBrookStringMap);
     { Gets the current pair.
-
-      @return(Current pair.)  }
+      @return(Current pair.) }
     function GetCurrent: TBrookStringPair;
     { Moves to the next pair.
-
       @return(@True when move next reachs the EOF.) }
     function MoveNext: Boolean;
     { Same to @link(GetCurrent). }
@@ -100,14 +94,12 @@ type
   end;
 
   { Function signature used by @link(TBrookStringMap.Iterate).
-
     @param(AData[in,out] User-defined data.)
     @param(APair[out] Current iterated pair.)}
   TBrookStringMapIterator = function(AData: Pointer;
     APair: TBrookStringPair): Integer;
 
   { Function signature used by @link(TBrookStringMap.Sort).
-
     @param(AData[in,out] User-defined data.)
     @param(APairA[out] Current left pair (A).)
     @param(APairB[out] Current right pair (B).)}
@@ -136,83 +128,64 @@ type
     procedure DoChange(AOperation: TBrookStringMapOperation); virtual;
   public
     { Creates an instance of @link(TBrookStringMap).
-
       @param(AHandle[in] Pointer to store the string map handle.)}
     constructor Create(AHandle: Pointer); virtual;
     { Frees an instance of @link(TBrookStringMap). }
     destructor Destroy; override;
     { Copies the properties of the source string map.
-
       @param(ASource[in] String map source to be copied.) }
     procedure Assign(ASource: TPersistent); override;
     { Checks if the map is empty.
-
       @returns(@True when map is empty, @False otherwise.) }
     function IsEmpty: Boolean; virtual;
     { Gets an instance of @link(TBrookStringMapEnumerator). }
     function GetEnumerator: TBrookStringMapEnumerator;
     { Adds a pair of strings to the map.
-
       @param(AName[in] Name of the pair.)
       @param(AValue[in] Value of the pair.) }
     procedure Add(const AName, AValue: string); virtual;
     { Adds or sets a pair of strings to the map.
-
       @param(AName[in] Name of the pair.)
       @param(AValue[in] Value of the pair.) }
     procedure AddOrSet(const AName, AValue: string); virtual;
     { Removes a pair by its name.
-
       @param(AName[in] Name of the pair.) }
     procedure Remove(const AName: string); virtual;
     { Cleans the entire map. }
     procedure Clear; virtual;
     { Finds a pair by its name.
-
       @param(AName[in] Name of the pair.)
       @param(APair[out] Reference to store found pair.)
-
       @returns(@True when pair is found, @False otherwise.) }
     function Find(const AName: string;
       out APair: TBrookStringPair): Boolean; virtual;
     { Checks if map contains a pair by its name.
-
       @param(AName[in] Name of the pair.)
-
       @returns(@True when map contains the pair, @False otherwise.) }
     function Contains(const AName: string): Boolean; virtual;
     { Gets a pair by name and return its value.
-
       @param(AName[in] Name of the pair.)
-
       @returns(Pair value.)}
     function Get(const AName: string): string; virtual;
     { Tries to find a pair value by its name.
-
       @param(AName[in] Name of the pair.)
       @param(AValue[out] Reference to store found value.)
-
       @returns(@True when pair is found, @False otherwise.) }
     function TryValue(const AName: string;
       out AValue: string): Boolean; virtual;
     { Retrieves the first pair in the map.
-
       @param(APair[out] First pair returned.)
-
       @returns(@True when pair is found, @False otherwise.) }
     function First(out APair: TBrookStringPair): Boolean; virtual;
     { Retrieves the next pair in the map.
-
       @param(APair[out] Next pair returned.) }
     function Next(out APair: TBrookStringPair): Boolean; virtual;
     { Iterates over pairs map.
-
       @param(AIterator[in] Function to iterate the pairs.)
       @param(AData[in,out] User-specified value.) }
     procedure Iterate(AIterator: TBrookStringMapIterator;
       AData: Pointer); virtual;
     { Sorts the pairs map.
-
       @param(AComparator[in] Function to sort the pairs.)
       @param(AData[in,out] User-specified value.) }
     procedure Sort(AComparator: TBrookStringMapComparator;

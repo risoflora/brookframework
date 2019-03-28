@@ -31,7 +31,8 @@ program Test_String;
 uses
   SysUtils,
   libsagui,
-  BrookString;
+  BrookString,
+  Test;
 
 type
   TLocalString = class(TBrookString)
@@ -43,7 +44,7 @@ procedure TLocalString.LocalDestroy;
 begin
   inherited Destroy;
   SgLib.Check;
-  { checks if the handle was really freed and 'nilified'. }
+  { checks if handle was really freed and 'nilified'. }
   Assert(not Assigned(Handle));
   Assert(sg_str_clear(Handle) <> 0);
 end;
@@ -92,54 +93,43 @@ begin
   end;
 end;
 
+procedure DoStrWriteBytes1(const AArgs: array of const);
+begin
+  Assert(TBrookString(AArgs[0].VObject).WriteBytes(nil, AArgs[1].VInteger) = 0);
+end;
+
+procedure DoStrWriteBytes2(const AArgs: array of const);
+begin
+  Assert(TBrookString(AArgs[0].VObject).WriteBytes(
+    TBytes(AArgs[1].VPointer^), 0) = 0);
+end;
+
 procedure Test_StringWriteBytes(AStr: TBrookString; const AVal: TBytes;
   ALen: NativeUInt);
-var
-  OK: Boolean;
 begin
-  OK := False;
-  try
-    Assert(AStr.WriteBytes(nil, ALen) = 0);
-  except
-    on E: Exception do
-      OK := E.ClassType = EOSError;
-  end;
-  Assert(OK);
-  OK := False;
-  try
-    Assert(AStr.WriteBytes(AVal, 0) = 0);
-  except
-    on E: Exception do
-      OK := E.ClassType = EOSError;
-  end;
-  Assert(OK);
+  AssertOSExcept(DoStrWriteBytes1, [AStr, ALen]);
+  AssertOSExcept(DoStrWriteBytes2, [AStr, @AVal]);
 
   AStr.Clear;
   Assert(AStr.WriteBytes(AVal, ALen) = ALen);
   Assert(AStr.Length = ALen);
 end;
 
+procedure DoStrWrite1(const AArgs: array of const);
+begin
+  TBrookString(AArgs[0].VObject).Write('', TEncoding.UTF8);
+end;
+
+procedure DoStrWrite2(const AArgs: array of const);
+begin
+  TBrookString(AArgs[0].VObject).Write(AArgs[1].VString^, nil);
+end;
+
 procedure Test_StringWrite(AStr: TBrookString; const AVal: string;
   ALen: NativeUInt);
-var
-  OK: Boolean;
 begin
-  OK := False;
-  try
-    AStr.Write('', TEncoding.UTF8);
-  except
-    on E: Exception do
-      OK := E.ClassType = EOSError;
-  end;
-  Assert(OK);
-  OK := False;
-  try
-    AStr.Write(AVal, nil);
-  except
-    on E: Exception do
-      OK := E.ClassType = EArgumentNilException;
-  end;
-  Assert(OK);
+  AssertOSExcept(DoStrWrite1, [AStr]);
+  AssertExcept(DoStrWrite2, EArgumentNilException, [AStr, @AVal]);
 
   AStr.Clear;
   AStr.Write(AVal, TEncoding.UTF8);

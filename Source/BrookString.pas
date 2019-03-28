@@ -43,7 +43,7 @@ uses
 { TODO: TBrookString.Assign() }
 
 type
-  { String class and its related methods. }
+  { String buffer class and its related methods. }
   TBrookString = class(TBrookHandledPersistent)
   private
     FHandle: Psg_str;
@@ -57,7 +57,6 @@ type
     function GetHandle: Pointer; override;
   public
     { Creates an instance of @link(TBrookString).
-
       @param(AHandle[in] String handle.) }
     constructor Create(AHandle: Pointer); virtual;
     { Frees an instance of @link(TBrookString). }
@@ -66,23 +65,19 @@ type
     property OwnsHandle: Boolean read FOwnsHandle write FOwnsHandle;
     { Write a string buffer to the string handle. All strings previously
       written are kept.
-
       @param(ASource[in] String buffer source to be written.)
       @param(ALength[in] Length of the string buffer being written.)
-
       @returns(Length of the written string buffer.) }
     function WriteBytes(const ASource: TBytes;
       ALength: NativeUInt): NativeUInt; virtual;
-    { Writes a string to the string handle. All strings previously written are
-      kept.
-
+    { Writes a string to the string handle. All strings previously written
+      are kept.
       @param(ASource[in] String to be written.)
       @param(AEncoding[in] Determines the encoding of the string being written.) }
     procedure Write(const ASource: string;
       AEncoding: TEncoding); overload; virtual;
-    { Writes a string to the string handle. All strings previously written are
-      kept.
-
+    { Writes a string to the string handle. All strings previously written
+      are kept.
       @param(ASource[in] String to be written.) }
     procedure Write(const ASource: string); overload; virtual;
     { Gets the string from the string handle. }

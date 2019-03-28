@@ -32,7 +32,7 @@
         <PackageName Value="BrookTardigrade"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="2">
       <Unit0>
         <Filename Value="Test_StringMap.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -40,6 +40,11 @@
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="Test.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

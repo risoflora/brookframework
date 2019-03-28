@@ -35,7 +35,8 @@ uses
   RTLConsts,
   SysUtils,
   Platform,
-  libsagui;
+  libsagui,
+  Test;
 
 procedure DoLibNotifier1(AClosure: Pointer); cdecl;
 begin
@@ -52,22 +53,20 @@ begin
   PInteger(AClosure)^ := 789;
 end;
 
+procedure DoSgLibAddNotifier;
+begin
+  SgLib.AddNotifier(nil, Pointer(1));
+end;
+
 procedure Test_SgLibAddNotifier;
 var
   I1, I2, I3: Integer;
-  OK: Boolean;
 begin
   SgLib.ClearNotifiers;
 
-  OK := False;
-  try
-    SgLib.AddNotifier(nil, Pointer(1));
-  except
-    on E: Exception do
-      OK := (E.ClassType = EArgumentNilException) and
-        (E.Message = Format(SParamIsNil, ['ANotifier']));
-  end;
-  Assert(OK);
+  AssertExcept(DoSgLibAddNotifier, EArgumentNilException,
+    Format(SParamIsNil, ['ANotifier']));
+
   SgLib.AddNotifier(@DoLibNotifier1, nil);
   SgLib.RemoveNotifier(@DoLibNotifier1);
 
@@ -92,22 +91,19 @@ begin
   Assert(I3 = 789);
 end;
 
+procedure DoSgLibRemoveNotifier;
+begin
+  SgLib.RemoveNotifier(nil);
+end;
+
 procedure Test_SgLibRemoveNotifier;
 var
   I1, I2, I3: Integer;
-  OK: Boolean;
 begin
   SgLib.ClearNotifiers;
 
-  OK := False;
-  try
-    SgLib.RemoveNotifier(nil);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EArgumentNilException) and
-        (E.Message = Format(SParamIsNil, ['ANotifier']));
-  end;
-  Assert(OK);
+  AssertExcept(DoSgLibRemoveNotifier, EArgumentNilException,
+    Format(SParamIsNil, ['ANotifier']));
 
   SgLib.Load(SG_LIB_NAME);
   I1 := 0;
@@ -159,68 +155,64 @@ begin
   Assert(SgLib.GetLastName = SG_LIB_NAME);
 end;
 
+procedure DoSgLibCheckVersion1;
+begin
+  SgLib.CheckVersion((Pred(SG_VERSION_MAJOR) shl 16) or
+    (SG_VERSION_MINOR shl 8) or SG_VERSION_PATCH);
+end;
+
+procedure DoSgLibCheckVersion2;
+begin
+  SgLib.CheckVersion((Succ(SG_VERSION_MAJOR) shl 16) or
+    (SG_VERSION_MINOR shl 8) or SG_VERSION_PATCH);
+end;
+
+procedure DoSgLibCheckVersion3;
+begin
+  SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
+    (Pred(SG_VERSION_MINOR) shl 8) or SG_VERSION_PATCH);
+end;
+
+procedure DoSgLibCheckVersion4;
+begin
+  SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
+    (SG_VERSION_MINOR shl 8) or Pred(SG_VERSION_PATCH));
+end;
+
 procedure Test_SgLibCheckVersion;
-var
-  OK: Boolean;
 begin
   SgLib.Unload;
   SgLib.Load(SG_LIB_NAME);
-  OK := False;
-  try
-    SgLib.CheckVersion((Pred(SG_VERSION_MAJOR) shl 16) or
-      (SG_VERSION_MINOR shl 8) or SG_VERSION_PATCH);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EInvalidOpException) and
-        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
-          SG_VERSION_PATCH]));
-  end;
-  Assert(OK);
-  SgLib.Load(SG_LIB_NAME);
-  OK := False;
-  try
-    SgLib.CheckVersion((Succ(SG_VERSION_MAJOR) shl 16) or
-      (SG_VERSION_MINOR shl 8) or SG_VERSION_PATCH);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EInvalidOpException) and
-        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
-          SG_VERSION_PATCH]));
-  end;
-  Assert(OK);
 
+  AssertExcept(DoSgLibCheckVersion1, EInvalidOpException,
+    Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR, SG_VERSION_PATCH]));
   SgLib.Load(SG_LIB_NAME);
-  OK := False;
-  try
-    SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
-      (Pred(SG_VERSION_MINOR) shl 8) or SG_VERSION_PATCH);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EInvalidOpException) and
-        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
-          SG_VERSION_PATCH]));
-  end;
-  Assert(OK);
+  AssertExcept(DoSgLibCheckVersion2, EInvalidOpException,
+    Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR, SG_VERSION_PATCH]));
+  SgLib.Load(SG_LIB_NAME);
+  AssertExcept(DoSgLibCheckVersion3, EInvalidOpException,
+    Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR, SG_VERSION_PATCH]));
   SgLib.Load(SG_LIB_NAME);
   SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
     (Succ(SG_VERSION_MINOR) shl 8) or SG_VERSION_PATCH);
 
-  OK := False;
-  try
-    SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
-      (SG_VERSION_MINOR shl 8) or Pred(SG_VERSION_PATCH));
-  except
-    on E: Exception do
-      OK := (E.ClassType = EInvalidOpException) and
-        (E.Message = Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR,
-          SG_VERSION_PATCH]));
-  end;
-  Assert(OK);
+  AssertExcept(DoSgLibCheckVersion4, EInvalidOpException,
+    Format(SSgLibVersion, [SG_VERSION_MAJOR, SG_VERSION_MINOR, SG_VERSION_PATCH]));
   SgLib.Load(SG_LIB_NAME);
   SgLib.CheckVersion((SG_VERSION_MAJOR shl 16) or
     (Succ(SG_VERSION_MINOR) shl 8) or 0);
 
   SgLib.CheckVersion;
+end;
+
+procedure DoSgLibCheckLastError1;
+begin
+  SgLib.CheckLastError(EINVAL);
+end;
+
+procedure DoSgLibCheckLastError2;
+begin
+  SgLib.CheckLastError(456);
 end;
 
 procedure Test_SgLibCheckLastError;
@@ -240,7 +232,6 @@ procedure Test_SgLibCheckLastError;
 
 var
   F: Pointer;
-  OK: Boolean;
 begin
   SgLib.CheckLastError(0);
   F := @sg_strerror;
@@ -248,49 +239,25 @@ begin
   SgLib.CheckLastError(123);
   sg_strerror := F;
 
-  OK := False;
-  try
-    SgLib.CheckLastError(EINVAL);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EOSError) and (EOSError(E).ErrorCode = EINVAL) and
-        (E.Message = strerror(EINVAL));
-  end;
-  Assert(OK);
-  OK := False;
-  try
-    SgLib.CheckLastError(456);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EOSError) and (EOSError(E).ErrorCode = 456) and
-        (E.Message = strerror(456));
-  end;
-  Assert(OK);
+  AssertOSExcept(DoSgLibCheckLastError1, strerror(EINVAL), EINVAL);
+  AssertOSExcept(DoSgLibCheckLastError2, strerror(456), 456);
+end;
+
+procedure DoSgLibLoad1;
+begin
+  Assert(SgLib.Load('') = NilHandle);
+end;
+
+procedure DoSgLibLoad2;
+begin
+  Assert(SgLib.Load('abc') = NilHandle);
 end;
 
 procedure Test_SgLibLoad;
-var
-  OK: Boolean;
 begin
   SgLib.Unload;
-  OK := False;
-  try
-    Assert(SgLib.Load('') = NilHandle);
-  except
-    on E: Exception do
-      OK := (E.ClassType = EArgumentException) and (E.Message = SSgLibEmptyName);
-  end;
-  Assert(OK);
-
-  OK := False;
-  try
-    Assert(SgLib.Load('abc') = NilHandle);
-  except
-    on E: Exception do
-      OK := (E.ClassType = ESgLibNotLoaded) and
-        (E.Message = Format(SSgLibNotLoaded, ['abc']));
-  end;
-  Assert(OK);
+  AssertExcept(DoSgLibLoad1, EArgumentException, SSgLibEmptyName);
+  AssertExcept(DoSgLibLoad2, ESgLibNotLoaded, Format(SSgLibNotLoaded, ['abc']));
 
   Assert(SgLib.Load(SG_LIB_NAME) <> NilHandle);
 end;
@@ -309,20 +276,16 @@ begin
   Assert(SgLib.IsLoaded);
 end;
 
-procedure Test_SgLibCheck;
-var
-  OK: Boolean;
+procedure DoSgLibCheck;
 begin
-  OK := False;
-  try
-    SgLib.Unload;
-    SgLib.Check;
-  except
-    on E: Exception do
-      OK := (E.ClassType = ESgLibNotLoaded) and
-        (E.Message = Format(SSgLibNotLoaded, [SG_LIB_NAME]));
-  end;
-  Assert(OK);
+  SgLib.Unload;
+  SgLib.Check;
+end;
+
+procedure Test_SgLibCheck;
+begin
+  AssertExcept(DoSgLibCheck, ESgLibNotLoaded,
+    Format(SSgLibNotLoaded, [SG_LIB_NAME]));
 end;
 
 procedure Test_SgLibHandle;

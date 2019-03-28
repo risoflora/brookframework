@@ -41,7 +41,8 @@ uses
   SysUtils,
   libsagui,
   Marshalling,
-  BrookStringMap;
+  BrookStringMap,
+  Test;
 
 type
   TLocalStringMap = class(TBrookStringMap)
@@ -310,24 +311,21 @@ begin
   Result := 0;
 end;
 
+procedure DoMapIterate(const AArgs: array of const);
+begin
+  TBrookStringMap(AArgs[0].VObject).Iterate(StringMapIterate123, nil);
+end;
+
 procedure Test_StringMapIterate(AMap: TBrookStringMap);
 var
   S: string;
-  OK: Boolean;
 begin
   AMap.Clear;
   AMap.Add('abc', '123');
   AMap.Add('def', '456');
 
   AMap.Iterate(StringMapIterateEmpty, nil);
-  OK := False;
-  try
-    AMap.Iterate(StringMapIterate123, nil);
-  except
-    on E: EOSError do
-      OK := EOSError(E).ErrorCode = 123;
-  end;
-  Assert(OK);
+  AssertOSExcept(DoMapIterate, 123, [AMap]);
 
   S := '';
   AMap.Iterate(StringMapIterateConcat, @S);
