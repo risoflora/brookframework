@@ -69,9 +69,9 @@ type
     procedure CheckUnloaded; inline;
     function GetHandle: Pointer; override;
   public
-    { Creates an instance of a @link(TBrookLibraryLoader) class. }
+    { Creates an instance of @link(TBrookLibraryLoader). }
     constructor Create(AOwner: TComponent); override;
-    { Destroys an instance of @link(TBrookLibraryLoader) class. }
+    { Destroys an instance of @link(TBrookLibraryLoader). }
     destructor Destroy; override;
     { Loads the library dynamically.
       @return(@True if the library is succesfully loaded.) }

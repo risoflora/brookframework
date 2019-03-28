@@ -210,7 +210,7 @@ begin
   end;
   VReader := TMyStreamReader.Create(TEncoding.UTF8, TBytesStream.Create, 512, True);
   try
-    Assert(High(VReader.Bytes) = 511);
+    Assert(High(VReader.Buffer) = 511);
   finally
     VReader.Free;
   end;

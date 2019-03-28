@@ -39,58 +39,100 @@ uses
   BrookExtra;
 
 type
+  { Abstract class for line reader. }
   TBrookTextReader = class abstract
   protected
     function GetEncoding: TEncoding; virtual; abstract;
     procedure SetEncoding(AValue: TEncoding); virtual; abstract;
   public
+    { Resets the reader to its initial state. }
     procedure Reset; virtual; abstract;
+    { Closes the reader. }
     procedure Close; virtual; abstract;
+    { Checks if the reader has reached the End-Of-File.
+      @return(@True if the reader has reached the End-Of-File.) }
     function IsEOF: Boolean; virtual; abstract;
+    { Reads a line as bytes.
+      @param(ALine[out] Line read as bytes.) }
     procedure ReadBytes(out ALine: TBytes); overload; virtual; abstract;
+    { Reads a line returning it as bytes.
+      @return(Line read as bytes.) }
     function ReadBytes: TBytes; overload; virtual; abstract;
+    { Reads a line as static string.
+      @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; virtual; abstract;
+    { Reads a line returning it as static string.
+      @return(Line read as static string.) }
     function Read: string; overload; virtual; abstract;
+    { @True if the reader has reached the End-Of-File. }
     property EOF: Boolean read IsEOF;
+    { Character encoding determined during reading. }
     property Encoding: TEncoding read GetEncoding write SetEncoding;
   end;
 
+  { Line reader which uses stream as source of lines. }
   TBrookStreamReader = class(TBrookTextReader)
   private
-    FBytesRead: Integer;
-    FBytesPosition: Integer;
-    FEncoding: TEncoding;
-    FOwnsStream: Boolean;
     FStream: TStream;
-    FBytes: TBytes;
+    FEncoding: TEncoding;
+    FBuffer: TBytes;
+    FBufferRead: Integer;
+    FBufferPosition: Integer;
+    FOwnsStream: Boolean;
   protected
     function GetEncoding: TEncoding; override;
     function GetOwnsStream: Boolean; virtual;
     function GetStream: TStream; virtual;
     procedure SetEncoding(AValue: TEncoding); override;
     procedure SetOwnsStream(AValue: Boolean); virtual;
-    procedure FillBytes; virtual;
-    property BytesRead: Integer read FBytesRead write FBytesRead;
-    property BytesPosition: Integer read FBytesPosition write FBytesPosition;
-    property Bytes: TBytes read FBytes write FBytes;
+    procedure FillBuffer; virtual;
+    property BufferRead: Integer read FBufferRead write FBufferRead;
+    property BufferPosition: Integer read FBufferPosition write FBufferPosition;
+    property Buffer: TBytes read FBuffer write FBuffer;
   public
+    { Creates an instance of @link(TBrookStreamReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AStream[in] Stream to be read line by line.)
+      @param(ABufferSize[in] Buffer size for the line reading.)
+      @param(AOwnsStream[in] If @True the stream is freed on @link(Destroy).) }
     constructor Create(AEncoding: TEncoding; AStream: TStream;
-      ABytesSize: Integer; AOwnsStream: Boolean); reintroduce; overload; virtual;
+      ABufferSize: Cardinal; AOwnsStream: Boolean); reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStreamReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AStream[in] Stream to be read line by line.) }
     constructor Create(AEncoding: TEncoding; AStream: TStream);
       reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStreamReader)
+      @param(AStream[in] Stream to be read line by line.) }
     constructor Create(AStream: TStream); reintroduce; overload; virtual;
+    { Destroys an instance of @link(TBrookStreamReader). }
     destructor Destroy; override;
+    { Resets the cursor to the beginning of the stream. }
     procedure Reset; override;
+    { Frees the stream if property @link(OwnsStream) is @True. }
     procedure Close; override;
+    { Checks if the reader has reached the End-Of-File.
+      @return(@True if the stream has reached the End-Of-File.) }
     function IsEOF: Boolean; override;
+    { Reads a line as bytes.
+      @param(ALine[out] Line read as bytes.) }
     procedure ReadBytes(out ALine: TBytes); overload; override;
+    { Reads a line returning it as bytes.
+      @return(Line read as bytes.) }
     function ReadBytes: TBytes; overload; override;
+    { Reads a line as static string.
+      @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; override;
+    { Reads a line returning it as static string.
+      @return(Line read as static string.) }
     function Read: string; overload; override;
+    { Source stream containing the lines to be read. }
     property Stream: TStream read GetStream;
+    { If @True the stream is freed on @link(Destroy). }
     property OwnsStream: Boolean read GetOwnsStream write SetOwnsStream;
   end;
 
+  { Base proxied line reader. }
   TBrookBaseReader = class(TBrookTextReader)
   protected
     procedure SetEncoding(AValue: TEncoding); override;
@@ -100,16 +142,30 @@ type
     property ProxyReader: TBrookTextReader read GetProxyReader
       write SetProxyReader;
   public
+    { Destroys an instance of @link(TBrookBaseReader). }
     destructor Destroy; override;
+    { Resets the reader to its initial state. }
     procedure Reset; override;
+    { Closes the reader. }
     procedure Close; override;
+    { Checks if the reader has reached the End-Of-File.
+      @return(@True if the reader has reached the End-Of-File.) }
     function IsEOF: Boolean; override;
+    { Reads a line as bytes.
+      @param(ALine[out] Line read as bytes.) }
     procedure ReadBytes(out ALine: TBytes); overload; override;
+    { Reads a line returning it as bytes.
+      @return(Line read as bytes.) }
     function ReadBytes: TBytes; overload; override;
+    { Reads a line as static string.
+      @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; override;
+    { Reads a line returning it as static string.
+      @return(Line read as static string.) }
     function Read: string; overload; override;
   end;
 
+  { String line reader. }
   TBrookStringReader = class(TBrookBaseReader)
   private
     FProxyReader: TBrookTextReader;
@@ -117,13 +173,23 @@ type
     procedure SetProxyReader(AValue: TBrookTextReader); override;
     function GetProxyReader: TBrookTextReader; override;
   public
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AString[in] String to be read line by line.)
+      @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AString: string;
-      ABytesSize: Integer); reintroduce; overload; virtual;
+      ABufferSize: Integer); reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AString[in] String to be read line by line.) }
     constructor Create(AEncoding: TEncoding; const AString: string);
       reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AString[in] String to be read line by line.) }
     constructor Create(const AString: string); reintroduce; overload; virtual;
   end;
 
+  { File line reader. }
   TBrookFileReader = class(TBrookBaseReader)
   private
     FProxyReader: TBrookTextReader;
@@ -131,15 +197,35 @@ type
     procedure SetProxyReader(AValue: TBrookTextReader); override;
     function GetProxyReader: TBrookTextReader; override;
   public
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AFileName[in] File to be read line by line.)
+      @param(AMode[in] Open mode and (possibly) a share mode or'ed together.)
+      @param(ARights[in] Permission bits with which to create the file on Linux.)
+      @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
       AMode: Word; ARights: Cardinal;
-      ABytesSize: Integer); reintroduce; overload; virtual;
+      ABufferSize: Integer); reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AFileName[in] File to be read line by line.)
+      @param(AMode[in] Open mode and (possibly) a share mode or'ed together.)
+      @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
-      AMode: Word; ABytesSize: Integer); reintroduce; overload; virtual;
+      AMode: Word; ABufferSize: Integer); reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AFileName[in] File to be read line by line.)
+      @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
-      ABytesSize: Integer); reintroduce; overload; virtual;
+      ABufferSize: Integer); reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AEncoding[in] Character encoding determined during reading.)
+      @param(AFileName[in] File to be read line by line.) }
     constructor Create(AEncoding: TEncoding;
       const AFileName: TFileName); reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookStringReader)
+      @param(AFileName[in] File to be read line by line.) }
     constructor Create(
       const AFileName: TFileName); reintroduce; overload; virtual;
   end;
@@ -149,7 +235,7 @@ implementation
 { TBrookStreamReader }
 
 constructor TBrookStreamReader.Create(AEncoding: TEncoding; AStream: TStream;
-  ABytesSize: Integer; AOwnsStream: Boolean);
+  ABufferSize: Cardinal; AOwnsStream: Boolean);
 begin
   inherited Create;
   if not Assigned(AStream) then
@@ -157,15 +243,15 @@ begin
   FEncoding := AEncoding;
   FStream := AStream;
   FOwnsStream := AOwnsStream;
-  if ABytesSize >= BROOK_MIN_BYTES_SIZE then
-    SetLength(FBytes, ABytesSize)
+  if ABufferSize >= BROOK_MIN_BUFFER_SIZE then
+    SetLength(FBuffer, ABufferSize)
   else
-    SetLength(FBytes, BROOK_MIN_BYTES_SIZE);
+    SetLength(FBuffer, BROOK_MIN_BUFFER_SIZE);
 end;
 
 constructor TBrookStreamReader.Create(AEncoding: TEncoding; AStream: TStream);
 begin
-  Create(AEncoding, AStream, BROOK_BYTES_SIZE, False);
+  Create(AEncoding, AStream, BROOK_BUFFER_SIZE, False);
 end;
 
 constructor TBrookStreamReader.Create(AStream: TStream);
@@ -179,11 +265,11 @@ begin
   inherited Destroy;
 end;
 
-procedure TBrookStreamReader.FillBytes;
+procedure TBrookStreamReader.FillBuffer;
 begin
-  FBytesRead := FStream.Read(FBytes[0], Pred(Length(FBytes)));
-  FBytes[FBytesRead] := 0;
-  FBytesPosition := 0;
+  FBufferRead := FStream.Read(FBuffer[0], Pred(Length(FBuffer)));
+  FBuffer[FBufferRead] := 0;
+  FBufferPosition := 0;
 end;
 
 function TBrookStreamReader.GetEncoding: TEncoding;
@@ -213,8 +299,8 @@ end;
 
 procedure TBrookStreamReader.Reset;
 begin
-  FBytesRead := 0;
-  FBytesPosition := 0;
+  FBufferRead := 0;
+  FBufferPosition := 0;
   if Assigned(FStream) then
     FStream.Seek(0, TSeekOrigin.soBeginning);
 end;
@@ -232,57 +318,57 @@ function TBrookStreamReader.IsEOF: Boolean;
 begin
   if not Assigned(FStream) then
     Exit(True);
-  Result := FBytesPosition >= FBytesRead;
+  Result := FBufferPosition >= FBufferRead;
   if Result then
   begin
-    FillBytes;
-    Result := FBytesRead = 0;
+    FillBuffer;
+    Result := FBufferRead = 0;
   end;
 end;
 
 procedure TBrookStreamReader.ReadBytes(out ALine: TBytes);
 var
-  VPByte: PByte;
-  VPosition, VStrLength, VLength: Integer;
+  VBuf: PByte;
+  VPos, VLen, VCount: Integer;
 begin
-  VPosition := FBytesPosition;
+  VPos := FBufferPosition;
   ALine := nil;
   repeat
-    VPByte := @FBytes[FBytesPosition];
-    while (FBytesPosition < FBytesRead) and not (VPByte^ in [10, 13]) do
+    VBuf := @FBuffer[FBufferPosition];
+    while (FBufferPosition < FBufferRead) and not (VBuf^ in [10, 13]) do
     begin
-      Inc(VPByte);
-      Inc(FBytesPosition);
+      Inc(VBuf);
+      Inc(FBufferPosition);
     end;
-    if FBytesPosition = FBytesRead then
+    if FBufferPosition = FBufferRead then
     begin
-      VLength := FBytesPosition - VPosition;
-      if VLength > 0 then
+      VCount := FBufferPosition - VPos;
+      if VCount > 0 then
       begin
-        VStrLength := Length(ALine);
-        SetLength(ALine, VStrLength + VLength);
-        Move(FBytes[VPosition], ALine[VStrLength], VLength);
+        VLen := Length(ALine);
+        SetLength(ALine, VLen + VCount);
+        Move(FBuffer[VPos], ALine[VLen], VCount);
       end;
-      FillBytes;
-      VPosition := FBytesPosition;
+      FillBuffer;
+      VPos := FBufferPosition;
     end;
-  until (FBytesPosition = FBytesRead) or (VPByte^ in [10, 13]);
-  VLength := FBytesPosition - VPosition;
-  if VLength > 0 then
+  until (FBufferPosition = FBufferRead) or (VBuf^ in [10, 13]);
+  VCount := FBufferPosition - VPos;
+  if VCount > 0 then
   begin
-    VStrLength := Length(ALine);
-    SetLength(ALine, VStrLength + VLength);
-    Move(FBytes[VPosition], ALine[VStrLength], VLength);
+    VLen := Length(ALine);
+    SetLength(ALine, VLen + VCount);
+    Move(FBuffer[VPos], ALine[VLen], VCount);
   end;
-  if (VPByte^ in [10, 13]) and (FBytesPosition < FBytesRead) then
+  if (VBuf^ in [10, 13]) and (FBufferPosition < FBufferRead) then
   begin
-    Inc(FBytesPosition);
-    if VPByte^ = 13 then
+    Inc(FBufferPosition);
+    if VBuf^ = 13 then
     begin
-      if FBytesPosition = FBytesRead then
-        FillBytes;
-      if (FBytesPosition < FBytesRead) and (FBytes[FBytesPosition] = 10) then
-        Inc(FBytesPosition);
+      if FBufferPosition = FBufferRead then
+        FillBuffer;
+      if (FBufferPosition < FBufferRead) and (FBuffer[FBufferPosition] = 10) then
+        Inc(FBufferPosition);
     end;
   end;
 end;
@@ -360,7 +446,7 @@ end;
 { TBrookStringReader }
 
 constructor TBrookStringReader.Create(AEncoding: TEncoding;
-  const AString: string; ABytesSize: Integer);
+  const AString: string; ABufferSize: Integer);
 {$IFNDEF FPC}
 var
   VEncoding: TEncoding;
@@ -374,13 +460,13 @@ begin
     VEncoding := TEncoding.Default;
 {$ENDIF}
   FProxyReader := TBrookStreamReader.Create(AEncoding, TStringStream.Create(
-    AString{$IFNDEF FPC}, VEncoding{$ENDIF}), ABytesSize, True);
+    AString{$IFNDEF FPC}, VEncoding{$ENDIF}), ABufferSize, True);
 end;
 
 constructor TBrookStringReader.Create(AEncoding: TEncoding;
   const AString: string);
 begin
-  Create(AEncoding, AString, BROOK_BYTES_SIZE);
+  Create(AEncoding, AString, BROOK_BUFFER_SIZE);
 end;
 
 constructor TBrookStringReader.Create(const AString: string);
@@ -402,29 +488,29 @@ end;
 
 constructor TBrookFileReader.Create(AEncoding: TEncoding;
   const AFileName: TFileName; AMode: Word; ARights: Cardinal;
-  ABytesSize: Integer);
+  ABufferSize: Integer);
 begin
   inherited Create;
   FProxyReader := TBrookStreamReader.Create(AEncoding,
-    TFileStream.Create(AFileName, AMode, ARights), ABytesSize, True);
+    TFileStream.Create(AFileName, AMode, ARights), ABufferSize, True);
 end;
 
 constructor TBrookFileReader.Create(AEncoding: TEncoding;
-  const AFileName: TFileName; AMode: Word; ABytesSize: Integer);
+  const AFileName: TFileName; AMode: Word; ABufferSize: Integer);
 begin
-  Create(AEncoding, AFileName, AMode, BROOK_FILE_RIGHTS, ABytesSize);
+  Create(AEncoding, AFileName, AMode, BROOK_FILE_RIGHTS, ABufferSize);
 end;
 
 constructor TBrookFileReader.Create(AEncoding: TEncoding;
-  const AFileName: TFileName; ABytesSize: Integer);
+  const AFileName: TFileName; ABufferSize: Integer);
 begin
-  Create(AEncoding, AFileName, fmOpenRead or fmShareDenyWrite, ABytesSize);
+  Create(AEncoding, AFileName, fmOpenRead or fmShareDenyWrite, ABufferSize);
 end;
 
 constructor TBrookFileReader.Create(AEncoding: TEncoding;
   const AFileName: TFileName);
 begin
-  Create(AEncoding, AFileName, BROOK_BYTES_SIZE);
+  Create(AEncoding, AFileName, BROOK_BUFFER_SIZE);
 end;
 
 constructor TBrookFileReader.Create(const AFileName: TFileName);
