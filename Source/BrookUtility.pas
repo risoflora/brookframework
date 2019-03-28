@@ -187,9 +187,10 @@ end;
 class procedure Sagui.StrError(AErrorNum: Integer; out AErrorMsg: string;
   AErrorLen: Integer);
 var
-  P: array[0..SG_ERR_SIZE-1] of cchar;
+  P: array[0..Pred(SG_ERR_SIZE)] of cchar;
 begin
   SgLib.Check;
+  P[0] := 0;
   sg_strerror(AErrorNum, @P[0], AErrorLen);
   AErrorMsg := TMarshal.ToString(@P[0]);
 end;
