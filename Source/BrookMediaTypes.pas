@@ -137,6 +137,8 @@ type
     property FileName: string read FFileName;
   end;
 
+  TBrookMediaTypesPathClass = class of TBrookMediaTypesPath;
+
   TBrookMediaTypesApache = class(TBrookMediaTypesPath)
   public
     class function GetDescription: string; override;
@@ -166,6 +168,7 @@ type
   TBrookMIME = class(TBrookHandledComponent)
   private
     FDefaultType: string;
+    FFileName: TFileName;
     FTypes: TBrookMediaTypes;
     FActive: Boolean;
     FStreamedActive: Boolean;
@@ -173,9 +176,11 @@ type
     function GetTypes: TBrookMediaTypes;
     function IsActive: Boolean;
     function IsDefaultType: Boolean;
+    function IsFileName: Boolean;
     function IsProvider: Boolean;
     procedure SetActive(AValue: Boolean);
     procedure SetDefaultType(const AValue: string);
+    procedure SetFileName(AValue: TFileName);
     procedure SetProvider(const AValue: string);
   protected
     class procedure LibNotifier(AClosure: Pointer); static; cdecl;
@@ -197,6 +202,8 @@ type
     property Active: Boolean read FActive write SetActive stored IsActive;
     property DefaultType: string read FDefaultType write SetDefaultType stored
       IsDefaultType;
+    property FileName: TFileName read FFileName write SetFileName
+      stored IsFileName;
     property Provider: string read FProvider write SetProvider stored IsProvider;
   end;
 
@@ -522,6 +529,7 @@ begin
   inherited Create(AOwner);
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
   FDefaultType := BROOK_CT_OCTET_STREAM;
+  FFileName := BROOK_MIME_FILE;
   FProvider := 'Default';
 end;
 
@@ -597,11 +605,17 @@ begin
 end;
 
 procedure TBrookMIME.DoOpen;
+var
+  T: TBrookMediaTypesClass;
 begin
   if Assigned(FTypes) then
     Exit;
   CheckProvider;
-  FTypes := GetProviderClass.Create;
+  T := GetProviderClass;
+  if T.InheritsFrom(TBrookMediaTypesPath) then
+    FTypes := TBrookMediaTypesPathClass(T).Create(FFileName)
+  else
+    FTypes := T.Create;
   FTypes.DefaultType := FDefaultType;
   FActive := True;
 end;
@@ -629,6 +643,11 @@ end;
 function TBrookMIME.IsDefaultType: Boolean;
 begin
   Result := FDefaultType <> BROOK_CT_OCTET_STREAM;
+end;
+
+function TBrookMIME.IsFileName: Boolean;
+begin
+  Result := FFileName <> BROOK_MIME_FILE;
 end;
 
 function TBrookMIME.IsProvider: Boolean;
@@ -667,6 +686,17 @@ begin
   FDefaultType := AValue;
   if FDefaultType.IsEmpty then
     FDefaultType := BROOK_CT_OCTET_STREAM;
+end;
+
+procedure TBrookMIME.SetFileName(AValue: TFileName);
+begin
+  if FFileName = AValue then
+    Exit;
+  if not FStreamedActive then
+    CheckInactive;
+  FFileName := AValue;
+  if FFileName.IsEmpty then
+    FFileName := BROOK_MIME_FILE;
 end;
 
 procedure TBrookMIME.SetProvider(const AValue: string);
