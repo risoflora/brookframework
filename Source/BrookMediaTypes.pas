@@ -68,7 +68,6 @@ type
     FHandle: Psg_strmap;
     procedure SetDefaultType(const AValue: string);
   protected
-    class function GetRegisterAlias: string; virtual;
     function CreateCache: TBrookStringMap; virtual;
     function IsPrepared: Boolean; virtual; abstract;
     function GetHandle: Pointer; override;
@@ -79,6 +78,7 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    class function GetRegisterAlias: string; virtual;
     class function GetDescription: string; virtual; abstract;
     class function IsValid(const AType: string): Boolean; static; inline;
     class function IsText(const AType: string): Boolean; static; inline;
@@ -130,6 +130,7 @@ type
     constructor Create; overload; override;
     destructor Destroy; override;
     class function GetDescription: string; override;
+    class function GetFileName: TFileName; virtual;
     procedure Prepare; override;
     procedure Clear; override;
     property Reader: TBrookTextReader read FReader;
@@ -148,8 +149,8 @@ type
   protected
     function CreateParser: TBrookMediaTypesParser; override;
   public
-    constructor Create; override;
     class function GetDescription: string; override;
+    class function GetFileName: TFileName; override;
   end;
 
   TBrookMediaTypesWindows = class(TBrookMediaTypesPath)
@@ -159,11 +160,9 @@ type
 
   TBrookMediaTypesUnix = class(TBrookMediaTypesPath)
   public
-    constructor Create; override;
     class function GetDescription: string; override;
+    class function GetFileName: TFileName; override;
   end;
-
-  { TBrookMIME }
 
   TBrookMIME = class(TBrookHandledComponent)
   private
@@ -209,6 +208,13 @@ type
 
 implementation
 
+function MIMEFileName: TFileName; inline;
+begin
+  Result := Concat(
+{$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
+    BROOK_MIME_FILE);
+end;
+
 { TBrookMediaTypes }
 
 constructor TBrookMediaTypes.Create;
@@ -224,23 +230,14 @@ begin
   inherited Destroy;
 end;
 
-procedure TBrookMediaTypes.SetDefaultType(const AValue: string);
+function TBrookMediaTypes.CreateCache: TBrookStringMap;
 begin
-  if FDefaultType = AValue then
-    Exit;
-  FDefaultType := AValue;
-  if FDefaultType.IsEmpty then
-    FDefaultType := BROOK_CT_OCTET_STREAM;
+  Result := TBrookStringMap.Create(@FHandle);
 end;
 
 class function TBrookMediaTypes.GetRegisterAlias: string;
 begin
   Result := Concat(BROOK_MIME_TAG + GetDescription);
-end;
-
-function TBrookMediaTypes.CreateCache: TBrookStringMap;
-begin
-  Result := TBrookStringMap.Create(@FHandle);
 end;
 
 class function TBrookMediaTypes.IsValid(const AType: string): Boolean;
@@ -257,6 +254,13 @@ end;
 class function TBrookMediaTypes.IsExt(const AExt: string): Boolean;
 begin
   Result := (Length(AExt) > 0) and (AExt <> '.') and (AExt <> '..');
+end;
+
+class function TBrookMediaTypes.NormalizeExt(const AExt: string): string;
+begin
+  Result := AExt;
+  if (Length(AExt) > 0) and (AExt[1] <> '.') then
+    Result := Concat('.', Result);
 end;
 
 procedure TBrookMediaTypes.CheckExt(const AExt: string);
@@ -286,11 +290,13 @@ begin
   Result := FHandle;
 end;
 
-class function TBrookMediaTypes.NormalizeExt(const AExt: string): string;
+procedure TBrookMediaTypes.SetDefaultType(const AValue: string);
 begin
-  Result := AExt;
-  if (Length(AExt) > 0) and (AExt[1] <> '.') then
-    Result := Concat('.', Result);
+  if FDefaultType = AValue then
+    Exit;
+  FDefaultType := AValue;
+  if FDefaultType.IsEmpty then
+    FDefaultType := BROOK_CT_OCTET_STREAM;
 end;
 
 procedure TBrookMediaTypes.Add(const AExt, AType: string);
@@ -414,9 +420,7 @@ end;
 
 constructor TBrookMediaTypesPath.Create;
 begin
-  Create(Concat(
-{$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
-    BROOK_MIME_FILE));
+  Create(GetFileName);
 end;
 
 destructor TBrookMediaTypesPath.Destroy;
@@ -439,6 +443,11 @@ end;
 class function TBrookMediaTypesPath.GetDescription: string;
 begin
   Result := 'Default';
+end;
+
+class function TBrookMediaTypesPath.GetFileName: TFileName;
+begin
+  Result := MIMEFileName;
 end;
 
 function TBrookMediaTypesPath.IsPrepared: Boolean;
@@ -471,13 +480,6 @@ end;
 
 { TBrookMediaTypesNginx }
 
-constructor TBrookMediaTypesNginx.Create;
-begin
-  inherited Create(Concat(
-{$IFDEF UNIX}'/etc/nginx/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
-    BROOK_MIME_FILE));
-end;
-
 function TBrookMediaTypesNginx.CreateParser: TBrookMediaTypesParser;
 begin
   Result := TBrookMediaTypesParserNginx.Create(FReader, Self);
@@ -486,6 +488,13 @@ end;
 class function TBrookMediaTypesNginx.GetDescription: string;
 begin
   Result := 'Nginx';
+end;
+
+class function TBrookMediaTypesNginx.GetFileName: TFileName;
+begin
+  Result := Concat(
+{$IFDEF UNIX}'/etc/nginx/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
+    BROOK_MIME_FILE);
 end;
 
 { TBrookMediaTypesWindows }
@@ -497,29 +506,24 @@ end;
 
 { TBrookMediaTypesUnix }
 
-constructor TBrookMediaTypesUnix.Create;
+class function TBrookMediaTypesUnix.GetDescription: string;
+begin
+  Result := 'Unix';
+end;
+
+class function TBrookMediaTypesUnix.GetFileName: TFileName;
 var
   FNs: TArray<TFileName>;
-  FN: TFileName;
 begin
   FNs := TArray<TFileName>.Create(
     Concat('/etc/', BROOK_MIME_FILE)
     // Put other 'mime.types' paths here...
   );
-  for FN in FNs do
-    if FileExists(FN) then
-    begin
-      inherited Create(FN);
+  for Result in FNs do
+    if FileExists(Result) then
       Exit;
-    end;
-  if Length(FN) = 0 then
-    FN := BROOK_MIME_FILE;
-  inherited Create(FN);
-end;
-
-class function TBrookMediaTypesUnix.GetDescription: string;
-begin
-  Result := 'Unix';
+  if Length(Result) = 0 then
+    Result := BROOK_MIME_FILE;
 end;
 
 { TBrookMIME }
@@ -529,7 +533,7 @@ begin
   inherited Create(AOwner);
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
   FDefaultType := BROOK_CT_OCTET_STREAM;
-  FFileName := BROOK_MIME_FILE;
+  FFileName := MIMEFileName;
   FProvider := 'Default';
 end;
 
@@ -647,7 +651,7 @@ end;
 
 function TBrookMIME.IsFileName: Boolean;
 begin
-  Result := FFileName <> BROOK_MIME_FILE;
+  Result := FFileName <> MIMEFileName;
 end;
 
 function TBrookMIME.IsProvider: Boolean;
@@ -662,7 +666,11 @@ begin
   if csDesigning in ComponentState then
   begin
     if not (csLoading in ComponentState) then
+    begin
+      if not FileExists(FFileName) then
+        raise EFOpenError.CreateFmt(SFOpenError, [FFileName]);
       SgLib.Check;
+    end;
     FActive := AValue;
   end
   else
@@ -695,8 +703,8 @@ begin
   if not FStreamedActive then
     CheckInactive;
   FFileName := AValue;
-  if FFileName.IsEmpty then
-    FFileName := BROOK_MIME_FILE;
+  if FFileName = EmptyStr then
+    FFileName := MIMEFileName;
 end;
 
 procedure TBrookMIME.SetProvider(const AValue: string);
