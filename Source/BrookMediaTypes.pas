@@ -514,16 +514,16 @@ end;
 class function TBrookMediaTypesUnix.GetFileName: TFileName;
 var
   FNs: TArray<TFileName>;
+  FN: TFileName;
 begin
   FNs := TArray<TFileName>.Create(
     Concat('/etc/', BROOK_MIME_FILE)
     // Put other 'mime.types' paths here...
   );
-  for Result in FNs do
-    if FileExists(Result) then
-      Exit;
-  if Length(Result) = 0 then
-    Result := BROOK_MIME_FILE;
+  for FN in FNs do
+    if FileExists(FN) then
+      Exit(FN);
+  Result := BROOK_MIME_FILE;
 end;
 
 { TBrookMIME }
