@@ -136,6 +136,7 @@ implementation
 
 uses
   BrookLibraryLoader,
+  BrookMediaTypes,
   BrookHTTPEntryPoints,
   BrookHTTPRouter,
   BrookHTTPServer;
@@ -169,6 +170,7 @@ procedure Register;
 begin
   RegisterComponents('Brook', [
     TBrookLibraryLoader,
+    TBrookMIME,
     TBrookHTTPEntryPoints,
     TBrookHTTPRouter,
     TBrookHTTPServer
