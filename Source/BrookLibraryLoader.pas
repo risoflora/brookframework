@@ -74,7 +74,7 @@ type
     { Destroys an instance of @link(TBrookLibraryLoader). }
     destructor Destroy; override;
     { Loads the library dynamically.
-      @return(@True if the library is succesfully loaded.) }
+      @returns(@True if the library is succesfully loaded.) }
     class function Load(const ALibraryName: TFileName): Boolean; static;
     { Loads the library dynamically. }
     procedure Open; virtual;

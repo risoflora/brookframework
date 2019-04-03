@@ -93,12 +93,12 @@ begin
   end;
 end;
 
-procedure DoStrWriteBytes1(const AArgs: array of const);
+procedure DoStringWriteBytes1(const AArgs: array of const);
 begin
   Assert(TBrookString(AArgs[0].VObject).WriteBytes(nil, AArgs[1].VInteger) = 0);
 end;
 
-procedure DoStrWriteBytes2(const AArgs: array of const);
+procedure DoStringWriteBytes2(const AArgs: array of const);
 begin
   Assert(TBrookString(AArgs[0].VObject).WriteBytes(
     TBytes(AArgs[1].VPointer^), 0) = 0);
@@ -107,20 +107,20 @@ end;
 procedure Test_StringWriteBytes(AStr: TBrookString; const AVal: TBytes;
   ALen: NativeUInt);
 begin
-  AssertOSExcept(DoStrWriteBytes1, [AStr, ALen]);
-  AssertOSExcept(DoStrWriteBytes2, [AStr, @AVal]);
+  AssertOSExcept(DoStringWriteBytes1, [AStr, ALen]);
+  AssertOSExcept(DoStringWriteBytes2, [AStr, @AVal]);
 
   AStr.Clear;
   Assert(AStr.WriteBytes(AVal, ALen) = ALen);
   Assert(AStr.Length = ALen);
 end;
 
-procedure DoStrWrite1(const AArgs: array of const);
+procedure DoStringWrite1(const AArgs: array of const);
 begin
   TBrookString(AArgs[0].VObject).Write('', TEncoding.UTF8);
 end;
 
-procedure DoStrWrite2(const AArgs: array of const);
+procedure DoStringWrite2(const AArgs: array of const);
 begin
   TBrookString(AArgs[0].VObject).Write(AArgs[1].VString^, nil);
 end;
@@ -128,8 +128,8 @@ end;
 procedure Test_StringWrite(AStr: TBrookString; const AVal: string;
   ALen: NativeUInt);
 begin
-  AssertOSExcept(DoStrWrite1, [AStr]);
-  AssertExcept(DoStrWrite2, EArgumentNilException, [AStr, @AVal]);
+  AssertOSExcept(DoStringWrite1, [AStr]);
+  AssertExcept(DoStringWrite2, EArgumentNilException, [AStr, @AVal]);
 
   AStr.Clear;
   AStr.Write(AVal, TEncoding.UTF8);

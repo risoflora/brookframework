@@ -37,7 +37,7 @@ uses
   libsagui,
   BrookUtility;
 
-procedure Test_Version;
+procedure Test_SaguiVersion;
 begin
   Assert(Sagui.Version = (SG_VERSION_MAJOR shl 16) or
     (SG_VERSION_MINOR shl 8) or SG_VERSION_PATCH);
@@ -45,7 +45,7 @@ begin
     SG_VERSION_MINOR, SG_VERSION_PATCH]));
 end;
 
-procedure Test_Malloc;
+procedure Test_SaguiMalloc;
 const
   TEST_MEM_BUF_LEN = 10;
 var
@@ -59,7 +59,7 @@ begin
   Sagui.Free(B);
 end;
 
-procedure Test_Alloc;
+procedure Test_SaguiAlloc;
 const
   TEST_MEM_BUF_LEN = 10;
 var
@@ -76,7 +76,7 @@ begin
   Sagui.Free(B);
 end;
 
-procedure Test_Realloc;
+procedure Test_SaguiRealloc;
 const
   TEST_MEM_BUF_LEN = 10;
 var
@@ -92,12 +92,12 @@ begin
   Sagui.Free(B);
 end;
 
-procedure Test_Free;
+procedure Test_SaguiFree;
 begin
   Sagui.Free(nil);
 end;
 
-procedure Test_StrError;
+procedure Test_SaguiStrError;
 var
   E: string;
 begin
@@ -107,7 +107,7 @@ begin
   Assert(E = 'Invalid argument');
 end;
 
-procedure Test_IsPost;
+procedure Test_SaguiIsPost;
 begin
   Assert(not Sagui.IsPost(''));
   Assert(not Sagui.IsPost('abc'));
@@ -119,7 +119,7 @@ begin
   Assert(Sagui.IsPost('OPTIONS'));
 end;
 
-procedure Test_ExtractEntryPoint;
+procedure Test_SaguiExtractEntryPoint;
 begin
   Assert(Sagui.ExtractEntryPoint('') = '/');
   Assert(Sagui.ExtractEntryPoint('/') = '/');
@@ -143,7 +143,7 @@ begin
   Assert(Sagui.ExtractEntryPoint('//a//b') = '/a');
 end;
 
-procedure Test_TmpDir;
+procedure Test_SaguiTmpDir;
 begin
 {$IFDEF ANDROID}
   Assert(Sagui.TmpDir = '/data/local/tmp');
@@ -153,13 +153,13 @@ begin
 {$ENDIF}
 end;
 
-procedure Test_EOR;
+procedure Test_SaguiEOR;
 begin
   Assert(Sagui.EOR(False) = -1);
   Assert(Sagui.EOR(True) = -2);
 end;
 
-procedure Test_FixPath;
+procedure Test_BrookFixPath;
 begin
   Assert(Brook.FixPath('') = '/');
   Assert(Brook.FixPath('/') = '/');
@@ -170,7 +170,7 @@ begin
   Assert(Brook.FixPath('abc/def') = '/abc/def');
 end;
 
-procedure Test_FixEntryPoint;
+procedure Test_BrookFixEntryPoint;
 begin
   Assert(Brook.FixEntryPoint('') = '/');
   Assert(Brook.FixEntryPoint('/') = '/');
@@ -186,16 +186,16 @@ end;
 
 begin
   SgLib.Load(SG_LIB_NAME);
-  Test_Version;
-  Test_Malloc;
-  Test_Alloc;
-  Test_Realloc;
-  Test_Free;
-  Test_StrError;
-  Test_IsPost;
-  Test_ExtractEntryPoint;
-  Test_TmpDir;
-  Test_EOR;
-  Test_FixPath;
-  Test_FixEntryPoint;
+  Test_SaguiVersion;
+  Test_SaguiMalloc;
+  Test_SaguiAlloc;
+  Test_SaguiRealloc;
+  Test_SaguiFree;
+  Test_SaguiStrError;
+  Test_SaguiIsPost;
+  Test_SaguiExtractEntryPoint;
+  Test_SaguiTmpDir;
+  Test_SaguiEOR;
+  Test_BrookFixPath;
+  Test_BrookFixEntryPoint;
 end.

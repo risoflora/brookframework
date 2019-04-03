@@ -311,7 +311,7 @@ begin
   Result := 0;
 end;
 
-procedure DoMapIterate(const AArgs: array of const);
+procedure DoStringMapIterate(const AArgs: array of const);
 begin
   TBrookStringMap(AArgs[0].VObject).Iterate(StringMapIterate123, nil);
 end;
@@ -325,7 +325,7 @@ begin
   AMap.Add('def', '456');
 
   AMap.Iterate(StringMapIterateEmpty, nil);
-  AssertOSExcept(DoMapIterate, 123, [AMap]);
+  AssertOSExcept(DoStringMapIterate, 123, [AMap]);
 
   S := '';
   AMap.Iterate(StringMapIterateConcat, @S);

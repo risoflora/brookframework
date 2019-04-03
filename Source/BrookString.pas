@@ -82,7 +82,7 @@ type
     procedure Write(const ASource: string); overload; virtual;
     { Gets the string from the string handle. }
     function ToString: string; override;
-    { Cleans all the content present in the string handle. }
+    { Clears all the content present in the string handle. }
     procedure Clear; virtual;
     { Gets the content buffer from the string handle. }
     property Content: TBytes read GetContent;

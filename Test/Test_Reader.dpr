@@ -167,17 +167,17 @@ end;
 
 { TTestTStreamReader }
 
-procedure DoRaiseCreateNilStream1;
+procedure DoStreamReaderCreateNilStream1;
 begin
   TMyStreamReader.Create(nil, nil, 0, False);
 end;
 
-procedure DoRaiseCreateNilStream2;
+procedure DoStreamReaderCreateNilStream2;
 begin
   TMyStreamReader.Create(nil, nil);
 end;
 
-procedure DoRaiseCreateNilStream3;
+procedure DoStreamReaderCreateNilStream3;
 begin
   TMyStreamReader.Create(nil);
 end;
@@ -240,11 +240,11 @@ begin
     VReader.Free;
   end;
 
-  AssertExcept(DoRaiseCreateNilStream1, EArgumentNilException,
+  AssertExcept(DoStreamReaderCreateNilStream1, EArgumentNilException,
     Format(SParamIsNil, ['AStream']));
-  AssertExcept(DoRaiseCreateNilStream2, EArgumentNilException,
+  AssertExcept(DoStreamReaderCreateNilStream2, EArgumentNilException,
     Format(SParamIsNil, ['AStream']));
-  AssertExcept(DoRaiseCreateNilStream3, EArgumentNilException,
+  AssertExcept(DoStreamReaderCreateNilStream3, EArgumentNilException,
     Format(SParamIsNil, ['AStream']));
 end;
 

@@ -50,22 +50,22 @@ type
   { Global Sagui object containing general purpose functions. }
   Sagui = record
     { Returns the library version number.
-      @return(Library version packed into a single integer.) }
+      @returns(Library version packed into a single integer.) }
     class function Version: Cardinal; overload; static;
     { Returns the library version number.
       @param(AMajor[out] Major number.)
       @param(AMinor[out] Minor number.)
       @param(APatch[out] Patch number.)
-      @return(Library version packed into a single integer.) }
+      @returns(Library version packed into a single integer.) }
     class function Version(out AMajor, AMinor: Byte;
       out APatch: SmallInt): Cardinal; overload; static;
     { Returns the library version number as string in the
       format @code(<MAJOR>.<MINOR>.<PATCH>).
-      @return(Library version packed into a static string.) }
+      @returns(Library version packed into a static string.) }
     class function VersionStr: string; static;
     { Allocates a new memory space.
       @param(ASize[in] Memory size to be allocated.)
-      @return(Pointer of the allocated zero-initialized memory.
+      @returns(Pointer of the allocated zero-initialized memory.
 
         @bold(Returns values:)
         @definitionList(
@@ -76,7 +76,7 @@ type
     class function Malloc(ASize: NativeUInt): Pointer; static;
     { Allocates a new zero-initialized memory space.
       @param(ASize[in] Memory size to be allocated.)
-      @return(Pointer of the allocated zero-initialized memory.
+      @returns(Pointer of the allocated zero-initialized memory.
 
         @bold(Returns values:)
         @definitionList(
@@ -88,7 +88,7 @@ type
     { Reallocates an existing memory block.
       @param(APointer[in,out] Pointer of the memory to be reallocated.)
       @param(ASize[in] Memory size to be allocated.)
-      @return(Pointer of the reallocated memory.) }
+      @returns(Pointer of the reallocated memory.) }
     class function Realloc(APointer: Pointer;
       ASize: NativeUInt): Pointer; static;
     { Frees a memory space previous allocated by @link(Sagui.Malloc),
@@ -103,7 +103,7 @@ type
       AErrorLen: Integer); overload; static; inline;
     { Returns string describing an error number.
       @param(AErrorNum[in] Error number.)
-      @return(Static string describing the error.) }
+      @returns(Static string describing the error.) }
     class function StrError(AErrorNum: Integer): string; overload; static;
     { Checks if a string is a HTTP post method. }
     class function IsPost(const AMethod: string): Boolean; static;
@@ -111,16 +111,16 @@ type
       @code(/api1/customer), the part considered as entry-point is
       @code(/api1).
       @param(APath[in] Path as static string.)
-      @return(Entry-point as static string.) }
+      @returns(Entry-point as static string.) }
     class function ExtractEntryPoint(const APath: string): string; static;
     { Returns the system temporary directory.
-      @Return(Temporary directory as static string.) }
+      @returns(Temporary directory as static string.) }
     class function TmpDir: string; static;
     { Indicates the end-of-read processed in
       @link(TBrookHTTPResponse.SendStream).
       @param(AError[in] @True to return a value indicating a stream
        reading error.)
-      @return(Value to end a stream reading.) }
+      @returns(Value to end a stream reading.) }
     class function EOR(AError: Boolean): NativeInt; static;
   end;
 

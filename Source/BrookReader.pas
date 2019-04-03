@@ -50,19 +50,19 @@ type
     { Closes the reader. }
     procedure Close; virtual; abstract;
     { Checks if the reader has reached the End-Of-File.
-      @return(@True if the reader has reached the End-Of-File.) }
+      @returns(@True if the reader has reached the End-Of-File.) }
     function IsEOF: Boolean; virtual; abstract;
     { Reads a line as bytes.
       @param(ALine[out] Line read as bytes.) }
     procedure ReadBytes(out ALine: TBytes); overload; virtual; abstract;
     { Reads a line returning it as bytes.
-      @return(Line read as bytes.) }
+      @returns(Line read as bytes.) }
     function ReadBytes: TBytes; overload; virtual; abstract;
     { Reads a line as static string.
       @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; virtual; abstract;
     { Reads a line returning it as static string.
-      @return(Line read as static string.) }
+      @returns(Line read as static string.) }
     function Read: string; overload; virtual; abstract;
     { @True if the reader has reached the End-Of-File. }
     property EOF: Boolean read IsEOF;
@@ -112,19 +112,19 @@ type
     { Frees the stream if property @link(OwnsStream) is @True. }
     procedure Close; override;
     { Checks if the reader has reached the End-Of-File.
-      @return(@True if the stream has reached the End-Of-File.) }
+      @returns(@True if the stream has reached the End-Of-File.) }
     function IsEOF: Boolean; override;
     { Reads a line as bytes.
       @param(ALine[out] Line read as bytes.) }
     procedure ReadBytes(out ALine: TBytes); overload; override;
     { Reads a line returning it as bytes.
-      @return(Line read as bytes.) }
+      @returns(Line read as bytes.) }
     function ReadBytes: TBytes; overload; override;
     { Reads a line as static string.
       @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; override;
     { Reads a line returning it as static string.
-      @return(Line read as static string.) }
+      @returns(Line read as static string.) }
     function Read: string; overload; override;
     { Source stream containing the lines to be read. }
     property Stream: TStream read GetStream;
@@ -149,19 +149,19 @@ type
     { Closes the reader. }
     procedure Close; override;
     { Checks if the reader has reached the End-Of-File.
-      @return(@True if the reader has reached the End-Of-File.) }
+      @returns(@True if the reader has reached the End-Of-File.) }
     function IsEOF: Boolean; override;
     { Reads a line as bytes.
       @param(ALine[out] Line read as bytes.) }
     procedure ReadBytes(out ALine: TBytes); overload; override;
     { Reads a line returning it as bytes.
-      @return(Line read as bytes.) }
+      @returns(Line read as bytes.) }
     function ReadBytes: TBytes; overload; override;
     { Reads a line as static string.
       @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; override;
     { Reads a line returning it as static string.
-      @return(Line read as static string.) }
+      @returns(Line read as static string.) }
     function Read: string; overload; override;
   end;
 

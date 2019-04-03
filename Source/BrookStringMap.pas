@@ -84,10 +84,10 @@ type
       @param(AMap[in] Pairs map.) }
     constructor Create(AMap: TBrookStringMap);
     { Gets the current pair.
-      @return(Current pair.) }
+      @returns(Current pair.) }
     function GetCurrent: TBrookStringPair;
     { Moves to the next pair.
-      @return(@True when move next reachs the EOF.) }
+      @returns(@True when move next reachs the EOF.) }
     function MoveNext: Boolean;
     { Same to @link(GetCurrent). }
     property Current: TBrookStringPair read GetCurrent;
@@ -151,7 +151,7 @@ type
     { Removes a pair by its name.
       @param(AName[in] Name of the pair.) }
     procedure Remove(const AName: string); virtual;
-    { Cleans the entire map. }
+    { Clears the entire map. }
     procedure Clear; virtual;
     { Finds a pair by its name.
       @param(AName[in] Name of the pair.)
