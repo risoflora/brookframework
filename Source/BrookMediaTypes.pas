@@ -354,13 +354,13 @@ end;
 
 class function TBrookMediaTypes.GetRegisterAlias: string;
 begin
-  Result := Concat(BROOK_MIME_TAG + GetDescription);
+  Result := Concat(BROOK_MIME_TAG, GetDescription);
 end;
 
 class function TBrookMediaTypes.IsValid(const AType: string): Boolean;
 begin
   Result := (Length(AType) > 0) and
-    (Length(AType.Split(['/'], TStringSplitOptions.ExcludeEmpty)) > 1);
+    (Length(AType.Split(['/'], TStringSplitOptions.ExcludeEmpty)) = 2);
 end;
 
 class function TBrookMediaTypes.IsText(const AType: string): Boolean;
