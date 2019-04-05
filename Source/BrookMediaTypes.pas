@@ -24,6 +24,8 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
+{ Contains classes for media types parsing. }
+
 unit BrookMediaTypes;
 
 {$I BrookDefines.inc}
@@ -44,23 +46,36 @@ uses
   BrookStringMap;
 
 const
+  { Default MIME types file name. }
   BROOK_MIME_FILE = 'mime.types';
-  BROOK_MIME_TAG = 'BrookMediaTypes_';
+  { Register prefix for MIME types class. }
+  BROOK_MIME_TAG = 'BrookMIME_';
 
 resourcestring
+  { Error message @code('Invalid media type'). }
   SBrookInvalidMediaType = 'Invalid media type: %s.';
+  { Error message @code('Invalid media extension: XXX'). }
   SBrookInvalidMediaExt = 'Invalid media extension: %s.';
+  { Error message @code('Empty media type'). }
   SBrookEmptyMediaType = 'Empty media type.';
+  { Error message @code('Empty media extension'). }
   SBrookEmptyMediaExt = 'Empty media extension.';
+  { Error message @code('Active MIME types'). }
   SBrookActiveMIMETypes = 'Active MIME types.';
+  { Error message @code('Inactive MIME types'). }
   SBrookInactiveMIMETypes = 'Inactive MIME types.';
+  { Error message @code('Empty MIME provider'). }
   SBrookEmptyMIMEProvider = 'Empty MIME provider.';
+  { Error message @code('Invalid MIME provider class: XXX'). }
   SBrookInvalidMIMEProviderClass = 'Invalid MIME provider class: %s.';
+  { Error message @code('Unknown MIME provider: XXX'). }
   SBrookUnknownMIMEProvider = 'Unknown MIME provider: %s.';
 
 type
+  { Handles exceptions related to media type classes. }
   EBrookMediaTypes = class(Exception);
 
+  { Cached abstract class to register, add, remove, find a media type. }
   TBrookMediaTypes = class abstract(TBrookHandledPersistent)
   private
     FCache: TBrookStringMap;
@@ -76,45 +91,104 @@ type
     procedure CheckPrepared; inline;
     property Cache: TBrookStringMap read FCache;
   public
+    { Creates an instance of @link(TBrookMediaTypes). }
     constructor Create; virtual;
+    { Destroys an instance of @link(TBrookMediaTypes). }
     destructor Destroy; override;
+    { Returns the alias name for class registration.
+      @returns(Registration alias name.) }
     class function GetRegisterAlias: string; virtual;
+    { Returns the description of the media types source.
+      @returns(Description of the media types source.) }
     class function GetDescription: string; virtual; abstract;
+    { Returns @True if a string represents a media type,
+      e.g @code('text/plain').
+      @param(AType[in] Media type identifier.)
+      @returns(@True if a string represents a media type.) }
     class function IsValid(const AType: string): Boolean; static; inline;
+    { Returns @True if a string represents a text media type,
+      e.g. @code('text/plain').
+      @param(AType[in] Media type identifier.)
+      @returns(@True if a string represents a text media type.) }
     class function IsText(const AType: string): Boolean; static; inline;
+    { Returns @True if a string represents a file extension,
+      e.g. @code('text/plain').
+      @param(AExt[in] File extension.)
+      @returns(@True if a string represents a file extension.) }
     class function IsExt(const AExt: string): Boolean; static; inline;
+    { Normalizes file extension by adding a dot, e.g. a @code('pas') will be
+      normalized to @code('.pas').
+      @param(AExt[in] File extension.)
+      @returns(Normalized file extension.) }
     class function NormalizeExt(const AExt: string): string; static; inline;
+    { Prepares the media types source. }
     procedure Prepare; virtual; abstract;
+    { Adds a new media type to the cache.
+      @param(AExt[in] File extension.)
+      @param(AType[in] Media type identifier.) }
     procedure Add(const AExt, AType: string); virtual;
+    { Removes a media type from the cache.
+      @param(AExt[in] File extension.) }
     procedure Remove(const AExt: string); virtual;
+    { If the cache is not prepared yet, this method prepares it automatically
+      and and tries to find a media type identifier by file extension.
+      @param(AExt[in] File extension.)
+      @param(AType[in] Media type identifier.)
+      @returns(@True if the media type identifier is found.) }
     function TryType(const AExt: string; out AType: string): Boolean; virtual;
+    { Finds a media type identifier by file extension. If the cache is not
+      prepared yet, this method prepares it automatically. If a media type
+      identifier is not found, the @link(ADefType) is returned instead.
+      @param(AExt[in] File extension.)
+      @param(ADefType[in] Default media type identifier.)
+      @returns(Media type identifier.) }
     function Find(const AExt, ADefType: string): string; overload; virtual;
+    { Finds a media type identifier by file extension. If the cache is not
+      prepared yet, this method prepares it automatically. If a media type
+      identifier is not found, the @link(DefaultType) is returned instead.
+      @param(AExt[in] File extension.)
+      @returns(Media type identifier.) }
     function Find(const AExt: string): string; overload; virtual;
+    { Counts all media type identifiers present in the cache.
+      @return(All media type identifiers present in the cache.) }
     function Count: Integer; virtual;
+    { Clears all media type identifiers present in the cache. }
     procedure Clear; virtual;
+    { Default media type identifier returned by @link(Find). }
     property DefaultType: string read FDefaultType write SetDefaultType;
+    { @True if the media types cache is prepared. }
     property Prepared: Boolean read IsPrepared;
   end;
 
+  { Class-reference for @link(TBrookMediaTypes). }
   TBrookMediaTypesClass = class of TBrookMediaTypes;
 
+  { Base class containing a basic media types parser. }
   TBrookMediaTypesParser = class(TPersistent)
   private
     FReader: TBrookTextReader;
     FTypes: TBrookMediaTypes;
   public
+    { Creates an instance of @link(TBrookMediaTypesParser). }
     constructor Create(AReader: TBrookTextReader;
       ATypes: TBrookMediaTypes); virtual;
+    { Parsers a media types source passed by @link(Reader). }
     procedure Parse; virtual;
+    { Line reader containing a media types source. }
     property Reader: TBrookTextReader read FReader;
+    { Cached list containing all parsed media types. }
     property Types: TBrookMediaTypes read FTypes;
   end;
 
+  { Media types parser for
+    @html(<a href="https://github.com/nginx/nginx/blob/master/conf/mime.types">nginx mime.types</a>). }
   TBrookMediaTypesParserNginx = class(TBrookMediaTypesParser)
   public
+    { Parsers a nginx media types source. }
     procedure Parse; override;
   end;
 
+  { Media types provider from the @code(mime.types) file. }
   TBrookMediaTypesPath = class(TBrookMediaTypes)
   private
     FParser: TBrookMediaTypesParser;
@@ -126,44 +200,77 @@ type
     function CreateParser: TBrookMediaTypesParser; virtual;
     function IsPrepared: Boolean; override;
   public
+    { Creates an instance of @link(TBrookMediaTypesPath).
+      @param(Media types file.) }
     constructor Create(const AFileName: string); reintroduce; overload; virtual;
+    { Creates an instance of @link(TBrookMediaTypesPath). }
     constructor Create; overload; override;
+    { Destroys an instance of @link(TBrookMediaTypesPath). }
     destructor Destroy; override;
+    { Returns the description of the media types source.
+      @returns(Description of the media types source.) }
     class function GetDescription: string; override;
+    { Returns the file name of the media types source.
+      @returns(File name of the media types source.) }
     class function GetFileName: TFileName; virtual;
+    { Prepares the media types source. }
     procedure Prepare; override;
+    { Clears the media types source. }
     procedure Clear; override;
+    { Line reader containing a media types source. }
     property Reader: TBrookTextReader read FReader;
+    { Media types parser containing a media types source. }
     property Parser: TBrookMediaTypesParser read FParser;
+    { File name of the media types source. }
     property FileName: string read FFileName;
   end;
 
+  { Class-reference for @link(TBrookMediaTypesPath). }
   TBrookMediaTypesPathClass = class of TBrookMediaTypesPath;
 
+  { Media types provider from the
+    @html(<a href="https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types">Apache mime.types</a>). }
   TBrookMediaTypesApache = class(TBrookMediaTypesPath)
   public
+    { Returns the description of the media types source.
+      @returns(Description of the media types source.) }
     class function GetDescription: string; override;
   end;
 
+  { Media types provider from the
+    @html(<a href="https://github.com/nginx/nginx/blob/master/conf/mime.types">Nginx mime.types</a>). }
   TBrookMediaTypesNginx = class(TBrookMediaTypesPath)
   protected
     function CreateParser: TBrookMediaTypesParser; override;
   public
+    { Returns the description of the media types source.
+      @returns(Description of the media types source.) }
     class function GetDescription: string; override;
+    { Returns the file name of the media types source.
+      @returns(File name of the media types source.) }
     class function GetFileName: TFileName; override;
   end;
 
+  { Media types provider from the Windows registry. }
   TBrookMediaTypesWindows = class(TBrookMediaTypesPath)
   public
+    { Returns the description of the media types source.
+      @returns(Description of the media types source.) }
     class function GetDescription: string; override;
   end;
 
+  { Media types provider from the @code(/etc/mime.types). }
   TBrookMediaTypesUnix = class(TBrookMediaTypesPath)
   public
+    { Returns the description of the media types source.
+      @returns(Description of the media types source.) }
     class function GetDescription: string; override;
+    { Returns the file name of the media types source.
+      @returns(File name of the media types source.) }
     class function GetFileName: TFileName; override;
   end;
 
+  { Provides all registered media types in any supported platform. }
   TBrookMIME = class(TBrookHandledComponent)
   private
     FDefaultType: string;
@@ -191,18 +298,28 @@ type
     procedure CheckActive; inline;
     procedure CheckInactive; inline;
   public
+    { Creates an instance of @link(TBrookMIME). }
     constructor Create(AOwner: TComponent); override;
+    { Destroys an instance of @link(TBrookMIME). }
     destructor Destroy; override;
+    { Gets a media type class from the classes register. }
     function GetProviderClass: TBrookMediaTypesClass; inline;
+    { Opens the media types provider. }
     procedure Open;
+    { Closes the media types provider. }
     procedure Close;
+    { Cached list containing the parsed media types. }
     property Types: TBrookMediaTypes read GetTypes;
   published
+    { Activates the cached media types provider. }
     property Active: Boolean read FActive write SetActive stored IsActive;
-    property DefaultType: string read FDefaultType write SetDefaultType stored
-      IsDefaultType;
+    { Default media type identifier returned by @link(TBrookMediaTypes.Find). }
+    property DefaultType: string read FDefaultType write SetDefaultType
+      stored IsDefaultType;
+    { File name of the media types source. }
     property FileName: TFileName read FFileName write SetFileName
       stored IsFileName;
+    { Media types provider description. }
     property Provider: string read FProvider write SetProvider stored IsProvider;
   end;
 
