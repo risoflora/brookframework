@@ -31,6 +31,7 @@ program Test_String;
 uses
   SysUtils,
   libsagui,
+  BrookLibraryLoader,
   BrookString,
   Test;
 
@@ -206,7 +207,7 @@ var
   VValB: TBytes;
   VStr: TBrookString;
 begin
-  SgLib.Load(SG_LIB_NAME);
+  TBrookLibraryLoader.Load;
   VValB := TEncoding.UTF8.GetBytes(VAL);
   VStr := TBrookString.Create(nil);
   try

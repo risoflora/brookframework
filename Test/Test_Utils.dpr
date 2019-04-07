@@ -35,6 +35,7 @@ uses
 {$ENDIF}
   Platform,
   libsagui,
+  BrookLibraryLoader,
   BrookUtility;
 
 procedure Test_SaguiVersion;
@@ -185,7 +186,7 @@ begin
 end;
 
 begin
-  SgLib.Load(SG_LIB_NAME);
+  TBrookLibraryLoader.Load;
   Test_SaguiVersion;
   Test_SaguiMalloc;
   Test_SaguiAlloc;

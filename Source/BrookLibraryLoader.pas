@@ -49,6 +49,7 @@ type
   { Class for dynamic library loading. }
   TBrookLibraryLoader = class(TBrookHandledComponent)
   public const
+    { Default library name. }
     LIB_NAME = SG_LIB_NAME;
   private
     FActive: Boolean;
@@ -74,8 +75,12 @@ type
     { Destroys an instance of @link(TBrookLibraryLoader). }
     destructor Destroy; override;
     { Loads the library dynamically.
+      @param(ALibraryName Library name.)
       @returns(@True if the library is succesfully loaded.) }
-    class function Load(const ALibraryName: TFileName): Boolean; static;
+    class function Load(const ALibraryName: TFileName): Boolean; overload; static;
+    { Loads the library dynamically.
+      @returns(@True if the library is succesfully loaded.) }
+    class function Load: Boolean; overload; static;
     { Loads the library dynamically. }
     procedure Open; virtual;
     { Unloads the library dynamically. }
@@ -159,6 +164,11 @@ end;
 class function TBrookLibraryLoader.Load(const ALibraryName: TFileName): Boolean;
 begin
   Result := SgLib.Load(ALibraryName) <> NilHandle;
+end;
+
+class function TBrookLibraryLoader.Load: Boolean;
+begin
+  Result := SgLib.Load(LIB_NAME) <> NilHandle;
 end;
 
 procedure TBrookLibraryLoader.SetActive(AValue: Boolean);

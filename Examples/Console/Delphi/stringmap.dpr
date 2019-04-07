@@ -60,7 +60,7 @@ var
   h: Pointer;
   map: TBrookStringMap;
 begin
-  if not TBrookLibraryLoader.Load(TBrookLibraryLoader.LIB_NAME) then
+  if not TBrookLibraryLoader.Load then
   begin
     WriteLn(ErrOutput, 'Library not loaded.');
     Halt(1);

@@ -41,6 +41,7 @@ uses
   SysUtils,
   libsagui,
   Marshalling,
+  BrookLibraryLoader,
   BrookStringMap,
   Test;
 
@@ -583,7 +584,7 @@ var
   VMapHandle: Pointer;
   VMap: TBrookStringMap;
 begin
-  SgLib.Load(SG_LIB_NAME);
+  TBrookLibraryLoader.Load;
   Test_StringMapNameValue;
   Test_StringMapClearOnDestroy;
   Test_StringMapOnChange;
