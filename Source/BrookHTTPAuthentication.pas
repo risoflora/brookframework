@@ -36,6 +36,9 @@ uses
   libsagui,
   BrookHandledClasses;
 
+resourcestring
+  SBrookInvalidHTTPStatus = 'Invalid status code: %d.';
+
 type
   TBrookHTTPCredentials = class(TBrookHandledPersistent)
   private
@@ -58,13 +61,18 @@ type
     FCredentials: TBrookHTTPCredentials;
     FHandle: Psg_httpauth;
   protected
+    class procedure CheckStatus(AStatus: Word); static; inline;
     function GetHandle: Pointer; override;
     function CreateCredentials(
       AHandle: Pointer): TBrookHTTPCredentials; virtual;
   public
     constructor Create(AHandle: Pointer); virtual;
     destructor Destroy; override;
-    procedure Deny(const AJustification, AContentType: string); overload; virtual;
+    procedure Deny(const AReason, AContentType: string;
+      AStatus: Word); overload; virtual;
+    procedure Deny(const AFmt: string; const AArgs: array of const;
+      const AContentType: string; AStatus: Word); overload; virtual;
+    procedure Deny(const AReason, AContentType: string); overload; virtual;
     procedure Deny(const AFmt: string; const AArgs: array of const;
       const AContentType: string); overload; virtual;
     procedure Cancel; virtual;
@@ -123,18 +131,40 @@ begin
   Result := TBrookHTTPCredentials.Create(AHandle);
 end;
 
+class procedure TBrookHTTPAuthentication.CheckStatus(AStatus: Word);
+begin
+  if (AStatus < 100) or (AStatus > 599) then
+    raise EArgumentException.CreateFmt(SBrookInvalidHTTPStatus, [AStatus]);
+end;
+
 function TBrookHTTPAuthentication.GetHandle: Pointer;
 begin
   Result := FHandle;
 end;
 
-procedure TBrookHTTPAuthentication.Deny(const AJustification,
+procedure TBrookHTTPAuthentication.Deny(const AReason, AContentType: string;
+  AStatus: Word);
+var
+  M: TMarshaller;
+begin
+  SgLib.Check;
+  SgLib.CheckLastError(sg_httpauth_deny2(FHandle, M.ToCString(AReason),
+    M.ToCString(AContentType), AStatus));
+end;
+
+procedure TBrookHTTPAuthentication.Deny(const AFmt: string;
+  const AArgs: array of const; const AContentType: string; AStatus: Word);
+begin
+  Deny(Format(AFmt, AArgs), AContentType, AStatus);
+end;
+
+procedure TBrookHTTPAuthentication.Deny(const AReason,
   AContentType: string);
 var
   M: TMarshaller;
 begin
   SgLib.Check;
-  SgLib.CheckLastError(sg_httpauth_deny(FHandle, M.ToCString(AJustification),
+  SgLib.CheckLastError(sg_httpauth_deny(FHandle, M.ToCString(AReason),
     M.ToCString(AContentType)));
 end;
 

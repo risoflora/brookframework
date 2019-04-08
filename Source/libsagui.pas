@@ -275,6 +275,9 @@ var
 
   sg_httpauth_realm: function(auth: Psg_httpauth): pcchar; cdecl;
 
+  sg_httpauth_deny2: function(auth: Psg_httpauth; const justification: Pcchar;
+    const content_type: Pcchar; status: cuint): cint; cdecl;
+
   sg_httpauth_deny: function(auth: Psg_httpauth; const justification: Pcchar;
     const content_type: Pcchar): cint; cdecl;
 
@@ -861,6 +864,7 @@ begin //FI:C101
 
     sg_httpauth_set_realm := GetProcAddress(GHandle, 'sg_httpauth_set_realm');
     sg_httpauth_realm := GetProcAddress(GHandle, 'sg_httpauth_realm');
+    sg_httpauth_deny2 := GetProcAddress(GHandle, 'sg_httpauth_deny2');
     sg_httpauth_deny := GetProcAddress(GHandle, 'sg_httpauth_deny');
     sg_httpauth_cancel := GetProcAddress(GHandle, 'sg_httpauth_cancel');
     sg_httpauth_usr := GetProcAddress(GHandle, 'sg_httpauth_usr');
@@ -1021,6 +1025,7 @@ begin //FI:C101
 
     sg_httpauth_set_realm := nil;
     sg_httpauth_realm := nil;
+    sg_httpauth_deny2 := nil;
     sg_httpauth_deny := nil;
     sg_httpauth_cancel := nil;
     sg_httpauth_usr := nil;
