@@ -74,7 +74,7 @@ type
 const
   SG_VERSION_MAJOR = 2;
 
-  SG_VERSION_MINOR = 3;
+  SG_VERSION_MINOR = 4;
 
   SG_VERSION_PATCH = 0;
 
@@ -129,6 +129,12 @@ type
   cenum = cint;
   cva_list = Pointer;
 
+  sg_malloc_func = function(size: csize_t): Pcvoid; cdecl;
+
+  sg_realloc_func = function(ptr: Pcvoid; size: csize_t): Pcvoid; cdecl;
+
+  sg_free_func = procedure(ptr: Pcvoid); cdecl;
+
   sg_err_cb = procedure(cls: Pcvoid; const err: Pcchar); cdecl;
 
   sg_write_cb = function(handle: Pcvoid; offset: cuint64_t; const buf: Pcchar;
@@ -149,6 +155,9 @@ var
 
   sg_version_str: function: Pcchar; cdecl;
 
+  sg_mm_set: function(malloc_func: sg_malloc_func;
+    realloc_func: sg_realloc_func; free_func: sg_free_func): cint; cdecl;
+
   sg_malloc: function(size: csize_t): Pcvoid; cdecl;
 
   sg_alloc: function(size: csize_t): Pcvoid; cdecl;
@@ -167,6 +176,9 @@ var
   sg_tmpdir: function: Pcchar; cdecl;
 
   sg_eor: function(err: cbool): cssize_t; cdecl;
+
+  sg_ip: function(const socket: Pcvoid; buf: Pcchar;
+    size: csize_t): cint; cdecl;
 
 type
   Psg_str = ^sg_str;
@@ -336,6 +348,8 @@ var
   sg_httpreq_is_uploading: function(req: Psg_httpreq): cbool; cdecl;
 
   sg_httpreq_uploads: function(req: Psg_httpreq): Psg_httpupld; cdecl;
+
+  sg_httpreq_client: function(req: Psg_httpreq): Pcvoid; cdecl;
 
   sg_httpreq_tls_session: function(req: Psg_httpreq): Pcvoid; cdecl;
 
@@ -676,6 +690,8 @@ begin
   Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'inline', 200);
 end;
 
+{ SgLib }
+
 class procedure SgLib.Init;
 begin
   GCS := TCriticalSection.Create;
@@ -830,6 +846,7 @@ begin //FI:C101
 
     CheckVersion;
 
+    sg_mm_set := GetProcAddress(GHandle, 'sg_mm_set');
     sg_malloc := GetProcAddress(GHandle, 'sg_malloc');
     sg_alloc := GetProcAddress(GHandle, 'sg_alloc');
     sg_realloc := GetProcAddress(GHandle, 'sg_realloc');
@@ -839,6 +856,7 @@ begin //FI:C101
     sg_extract_entrypoint := GetProcAddress(GHandle, 'sg_extract_entrypoint');
     sg_tmpdir := GetProcAddress(GHandle, 'sg_tmpdir');
     sg_eor := GetProcAddress(GHandle, 'sg_eor');
+    sg_ip := GetProcAddress(GHandle, 'sg_ip');
 
     sg_str_new := GetProcAddress(GHandle, 'sg_str_new');
     sg_str_free := GetProcAddress(GHandle, 'sg_str_free');
@@ -894,6 +912,7 @@ begin //FI:C101
     sg_httpreq_payload := GetProcAddress(GHandle, 'sg_httpreq_payload');
     sg_httpreq_is_uploading := GetProcAddress(GHandle, 'sg_httpreq_is_uploading');
     sg_httpreq_uploads := GetProcAddress(GHandle, 'sg_httpreq_uploads');
+    sg_httpreq_client := GetProcAddress(GHandle, 'sg_httpreq_client');
     sg_httpreq_tls_session := GetProcAddress(GHandle, 'sg_httpreq_tls_session');
     sg_httpreq_set_user_data := GetProcAddress(GHandle, 'sg_httpreq_set_user_data');
     sg_httpreq_user_data := GetProcAddress(GHandle, 'sg_httpreq_user_data');
@@ -991,6 +1010,7 @@ begin //FI:C101
 
     sg_version := nil;
     sg_version_str := nil;
+    sg_mm_set := nil;
     sg_malloc := nil;
     sg_alloc := nil;
     sg_realloc := nil;
@@ -1000,6 +1020,7 @@ begin //FI:C101
     sg_extract_entrypoint := nil;
     sg_tmpdir := nil;
     sg_eor := nil;
+    sg_ip := nil;
 
     sg_str_new := nil;
     sg_str_free := nil;
@@ -1055,6 +1076,7 @@ begin //FI:C101
     sg_httpreq_payload := nil;
     sg_httpreq_is_uploading := nil;
     sg_httpreq_uploads := nil;
+    sg_httpreq_client := nil;
     sg_httpreq_tls_session := nil;
     sg_httpreq_set_user_data := nil;
     sg_httpreq_user_data := nil;

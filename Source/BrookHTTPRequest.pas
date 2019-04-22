@@ -58,6 +58,7 @@ type
     FIsUploading: Boolean;
     FTLSSession: Pointer;
     FHandle: Psg_httpreq;
+    function GetIP: string;
     function GetPaths: TArray<string>; inline;
     function GetContentType: string; inline;
     function GetReferer: string; inline;
@@ -89,7 +90,7 @@ type
     property Version: string read FVersion;
     property Method: string read FMethod;
     property Path: string read FPath;
-    { TODO: client IP }
+    property IP: string read GetIP;
     property ContentType: string read GetContentType;
     property UserAgent: string read GetUserAgent;
     property Referer: string read GetReferer;
@@ -168,6 +169,19 @@ end;
 function TBrookHTTPRequest.GetHandle: Pointer;
 begin
   Result := FHandle;
+end;
+
+function TBrookHTTPRequest.GetIP: string;
+var
+  P: array[0..45] of cchar;
+  C: Pcvoid;
+begin
+  SgLib.Check;
+  C := sg_httpreq_client(FHandle);
+  if not Assigned(C) then
+    Exit('');
+  SgLib.CheckLastError(sg_ip(C, @P[0], SizeOf(P)));
+  Result := TMarshal.ToString(@P[0]);
 end;
 
 function TBrookHTTPRequest.GetPaths: TArray<string>;
