@@ -131,7 +131,7 @@ type
       @param(AExt[in] File extension.) }
     procedure Remove(const AExt: string); virtual;
     { If the cache is not prepared yet, this method prepares it automatically
-      and and tries to find a media type identifier by file extension.
+      and tries to find a media type identifier by file extension.
       @param(AExt[in] File extension.)
       @param(AType[in] Media type identifier.)
       @returns(@True if the media type identifier is found.) }
@@ -338,7 +338,7 @@ constructor TBrookMediaTypes.Create;
 begin
   inherited Create;
   FCache := CreateCache;
-  FDefaultType := BROOK_CT_OCTET_STREAM;
+  SetDefaultType(BROOK_CT_OCTET_STREAM);
 end;
 
 destructor TBrookMediaTypes.Destroy;
@@ -411,9 +411,8 @@ procedure TBrookMediaTypes.SetDefaultType(const AValue: string);
 begin
   if FDefaultType = AValue then
     Exit;
+  CheckType(AValue);
   FDefaultType := AValue;
-  if FDefaultType.IsEmpty then
-    FDefaultType := BROOK_CT_OCTET_STREAM;
 end;
 
 procedure TBrookMediaTypes.Add(const AExt, AType: string);
@@ -440,8 +439,7 @@ end;
 function TBrookMediaTypes.Find(const AExt, ADefType: string): string;
 begin
   CheckExt(AExt);
-  if not ADefType.IsEmpty then
-    CheckType(ADefType);
+  CheckType(ADefType);
   CheckPrepared;
   if not FCache.TryValue(NormalizeExt(AExt), Result) then
     Result := ADefType;
