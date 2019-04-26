@@ -326,9 +326,7 @@ type
 implementation
 
 var
-  GBrookMIMEFileName: TFileName = Concat(
-{$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
-    BROOK_MIME_FILE);
+  GBrookMIMEFileName: TFileName;
 
 { TBrookMediaTypes }
 
@@ -851,6 +849,9 @@ begin
 end;
 
 initialization
+  GBrookMIMEFileName := Concat(
+{$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
+    BROOK_MIME_FILE);
   RegisterClassAlias(TBrookMediaTypesPath, TBrookMediaTypesPath.GetRegisterAlias);
   RegisterClassAlias(TBrookMediaTypesApache, TBrookMediaTypesApache.GetRegisterAlias);
   RegisterClassAlias(TBrookMediaTypesNginx, TBrookMediaTypesNginx.GetRegisterAlias);
