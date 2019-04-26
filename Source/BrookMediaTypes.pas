@@ -325,12 +325,10 @@ type
 
 implementation
 
-function MIMEFileName: TFileName; inline;
-begin
-  Result := Concat(
+var
+  GBrookMIMEFileName: TFileName = Concat(
 {$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
     BROOK_MIME_FILE);
-end;
 
 { TBrookMediaTypes }
 
@@ -477,16 +475,25 @@ end;
 procedure TBrookMediaTypesParser.Parse;
 var
   I: Integer;
+  VSep: Char;
   VLine, VMediaType: string;
   VPair, VExtensions: TArray<string>;
 begin
   FTypes.Cache.Clear;
+  VSep := #0;
   while not FReader.EOF do
   begin
     VLine := FReader.Read;
     if (Length(VLine) > 0) and (VLine[1] <> '#') then
     begin
-      VPair := VLine.Split([#9], TStringSplitOptions.ExcludeEmpty);
+      if VSep = #0 then
+      begin
+        if Pos(#9, VLine) > 0 then
+          VSep := #9
+        else
+          VSep := #32;
+      end;
+      VPair := VLine.Split([VSep], TStringSplitOptions.ExcludeEmpty);
       if Length(VPair) > 1 then
       begin
         VMediaType := VPair[0];
@@ -562,7 +569,7 @@ end;
 
 class function TBrookMediaTypesPath.GetFileName: TFileName;
 begin
-  Result := MIMEFileName;
+  Result := GBrookMIMEFileName;
 end;
 
 function TBrookMediaTypesPath.IsPrepared: Boolean;
@@ -648,7 +655,7 @@ begin
   inherited Create(AOwner);
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
   FDefaultType := BROOK_CT_OCTET_STREAM;
-  FFileName := MIMEFileName;
+  FFileName := GBrookMIMEFileName;
   FProvider := 'Default';
 end;
 
@@ -766,7 +773,7 @@ end;
 
 function TBrookMIME.IsFileName: Boolean;
 begin
-  Result := FFileName <> MIMEFileName;
+  Result := FFileName <> GBrookMIMEFileName;
 end;
 
 function TBrookMIME.IsProvider: Boolean;
@@ -819,7 +826,7 @@ begin
     CheckInactive;
   FFileName := AValue;
   if FFileName = EmptyStr then
-    FFileName := MIMEFileName;
+    FFileName := GBrookMIMEFileName;
 end;
 
 procedure TBrookMIME.SetProvider(const AValue: string);
