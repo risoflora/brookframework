@@ -42,9 +42,7 @@ const
   MIME_TYPES_FILE = '../Examples/Common/mime.types';
 
 var
-  MIMEFileName: TFileName = Concat(
-{$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
-    BROOK_MIME_FILE);
+  MIMEFileName: TFileName;
 
 type
 
@@ -756,7 +754,223 @@ begin
   end;
 end;
 
+procedure Test_MediaTypesApacheGetDescription;
 begin
+  Assert(TBrookMediaTypesApache.GetDescription = 'Apache');
+end;
+
+procedure Test_MediaTypesNginxGetDescription;
+begin
+  Assert(TBrookMediaTypesNginx.GetDescription = 'Nginx');
+end;
+
+procedure Test_MediaTypesNginxGetFileName;
+begin
+  Assert(TBrookMediaTypesNginx.GetFileName = Concat(
+{$IFDEF UNIX}'/etc/nginx/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
+    BROOK_MIME_FILE));
+end;
+
+procedure Test_MediaTypesWindowsGetDescription;
+begin
+  Assert(TBrookMediaTypesWindows.GetDescription = 'Windows');
+end;
+
+procedure Test_MediaTypesUnixGetDescription;
+begin
+  Assert(TBrookMediaTypesUnix.GetDescription = 'Unix');
+end;
+
+function LocalMediaTypesUnixGetFileName: TFileName;
+var
+  FNs: TArray<TFileName>;
+  FN: TFileName;
+begin
+  FNs := TArray<TFileName>.Create(
+    Concat('/etc/', BROOK_MIME_FILE)
+    // Put other 'mime.types' paths here...
+  );
+  for FN in FNs do
+    if FileExists(FN) then
+      Exit(FN);
+  Result := BROOK_MIME_FILE;
+end;
+
+procedure Test_MediaTypesUnixGetFileName;
+begin
+  Assert(TBrookMediaTypesUnix.GetFileName = LocalMediaTypesUnixGetFileName);
+end;
+
+procedure Test_MIMECreate;
+var
+  M: TBrookMIME;
+  C: TComponent;
+begin
+  C := TComponent.Create(nil);
+  M := TBrookMIME.Create(C);
+  try
+    Assert(M.Owner = C);
+    M.Open;
+    Assert(M.Active);
+    TBrookLibraryLoader.Unload;
+    Assert(not M.Active);
+    TBrookLibraryLoader.Load;
+    Assert(M.DefaultType = BROOK_CT_OCTET_STREAM);
+    Assert(M.FileName = MIMEFileName);
+    Assert(M.Provider = 'Default');
+  finally
+    M.Free;
+    C.Free;
+  end;
+end;
+
+procedure Test_MIMEGetProviderClass;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    M.Provider := 'Nginx';
+    M.Open;
+    Assert(M.GetProviderClass = TBrookMediaTypesNginx);
+    M.Close;
+    M.Provider := 'Apache';
+    M.Open;
+    Assert(M.GetProviderClass = TBrookMediaTypesApache);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MIMEOpen;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    Assert(not M.Active);
+    M.Open;
+    Assert(M.Active);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MIMEClose;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    Assert(not M.Active);
+    M.Open;
+    Assert(M.Active);
+    M.Close;
+    Assert(not M.Active);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MIMETypes;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    M.Provider := 'Default';
+    M.Open;
+    Assert(M.Types is TBrookMediaTypesPath);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MIMEActive;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    Assert(not M.Active);
+    M.Active := not M.Active;
+    Assert(M.Active);
+
+    M.Active := False;
+    M.Provider := 'Fake';
+    RegisterClassAlias(TFakeMediaTypes, TFakeMediaTypes.GetRegisterAlias);
+    M.Active := True;
+    Assert(M.Types is TFakeMediaTypes);
+    UnRegisterClass(TFakeMediaTypes);
+    M.Active := False;
+    M.Provider := 'Unix';
+    M.Active := True;
+    Assert(M.Types is TBrookMediaTypesUnix);
+
+    Assert(M.DefaultType = BROOK_CT_OCTET_STREAM);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MIMEDefaultType;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    Assert(M.DefaultType = BROOK_CT_OCTET_STREAM);
+    M.DefaultType := '';
+    Assert(M.DefaultType = BROOK_CT_OCTET_STREAM);
+    M.DefaultType := 'abc';
+    Assert(M.DefaultType = BROOK_CT_OCTET_STREAM);
+    M.DefaultType := 'text/plain';
+    Assert(M.DefaultType = 'text/plain');
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MIMEFileName;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    Assert(M.FileName = MIMEFileName);
+    M.FileName := '';
+    Assert(M.FileName = MIMEFileName);
+    M.FileName := 'abc';
+    Assert(M.FileName = 'abc');
+    M.FileName := MIME_TYPES_FILE;
+    Assert(M.FileName = MIME_TYPES_FILE);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MIMEProvider;
+var
+  M: TBrookMIME;
+begin
+  M := TBrookMIME.Create(nil);
+  try
+    Assert(M.Provider = 'Default');
+    M.Provider := '';
+    Assert(M.Provider = 'Default');
+    M.Provider := 'abc';
+    Assert(M.Provider = 'abc');
+    M.Provider := 'Unix';
+    Assert(M.Provider = 'Unix');
+  finally
+    M.Free;
+  end;
+end;
+
+begin
+  MIMEFileName := Concat(
+{$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
+    BROOK_MIME_FILE);
   TBrookLibraryLoader.Load;
   Test_MediaTypesCreate;
   // Test_MediaTypesDestroy - not required
@@ -789,4 +1003,20 @@ begin
   Test_MediaTypesPathReader;
   Test_MediaTypesPathParser;
   Test_MediaTypesPathFileName;
+  Test_MediaTypesApacheGetDescription;
+  Test_MediaTypesNginxGetDescription;
+  Test_MediaTypesNginxGetFileName;
+  Test_MediaTypesWindowsGetDescription;
+  Test_MediaTypesUnixGetDescription;
+  Test_MediaTypesUnixGetFileName;
+  Test_MIMECreate;
+  // Test_MIMEDestroy - not required
+  Test_MIMEGetProviderClass;
+  Test_MIMEOpen;
+  Test_MIMEClose;
+  Test_MIMETypes;
+  Test_MIMEActive;
+  Test_MIMEDefaultType;
+  Test_MIMEFileName;
+  Test_MIMEProvider;
 end.

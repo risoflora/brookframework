@@ -286,7 +286,7 @@ type
     function IsProvider: Boolean;
     procedure SetActive(AValue: Boolean);
     procedure SetDefaultType(const AValue: string);
-    procedure SetFileName(AValue: TFileName);
+    procedure SetFileName(const AValue: TFileName);
     procedure SetProvider(const AValue: string);
   protected
     class procedure LibNotifier(AClosure: Pointer); static; cdecl;
@@ -811,12 +811,13 @@ begin
     Exit;
   if not FStreamedActive then
     CheckInactive;
-  FDefaultType := AValue;
-  if FDefaultType.IsEmpty then
-    FDefaultType := BROOK_CT_OCTET_STREAM;
+  if FDefaultType.IsEmpty or (not TBrookMediaTypes.IsValid(AValue)) then
+    FDefaultType := BROOK_CT_OCTET_STREAM
+  else
+    FDefaultType := AValue;
 end;
 
-procedure TBrookMIME.SetFileName(AValue: TFileName);
+procedure TBrookMIME.SetFileName(const AValue: TFileName);
 begin
   if FFileName = AValue then
     Exit;
