@@ -81,6 +81,9 @@ type
     { Loads the library dynamically.
       @returns(@True if the library is succesfully loaded.) }
     class function Load: Boolean; overload; static;
+    { Unloads the library dynamically.
+      @returns(@True if the library is succesfully unloaded.) }
+    class function Unload: Boolean; overload; static;
     { Loads the library dynamically. }
     procedure Open; virtual;
     { Unloads the library dynamically. }
@@ -169,6 +172,11 @@ end;
 class function TBrookLibraryLoader.Load: Boolean;
 begin
   Result := SgLib.Load(LIB_NAME) <> NilHandle;
+end;
+
+class function TBrookLibraryLoader.Unload: Boolean;
+begin
+  Result := SgLib.Unload = NilHandle;
 end;
 
 procedure TBrookLibraryLoader.SetActive(AValue: Boolean);
