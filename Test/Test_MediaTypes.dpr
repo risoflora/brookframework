@@ -408,7 +408,7 @@ end;
 
 procedure DoMediaTypesParserCreateParamIsNilTypes(const AArgs: array of const);
 begin
-  TBrookMediaTypesParser.Create(TBrookTextReader(AArgs[1].VObject), nil);
+  TBrookMediaTypesParser.Create(TBrookTextReader(AArgs[0].VObject), nil);
 end;
 
 procedure Test_MediaTypesParserCreate;
