@@ -33,6 +33,7 @@ unit BrookUtility;
 interface
 
 uses
+  RTLConsts,
   SysUtils,
   Marshalling,
 {$IFDEF VER3_0_0}
@@ -41,6 +42,32 @@ uses
   libsagui;
 
 type
+  { Callback signature used to override the function which allocates a new
+    memory space.
+    @param(ASize[in] Memory size to be allocated.)
+    @returns(Pointer of the allocated memory.
+
+      @bold(Returns values:)
+      @definitionList(
+        @itemLabel(@code(nil))
+          @item(If size is @code(0) or no memory space.)
+      )
+    ) }
+  TSaguiMallocFunc = function(ASize: NativeUInt): Pointer;
+
+  { Callback signature used to override the function which reallocates an
+    existing memory block.
+    @param(APointer[in] Pointer of the memory to be reallocated.)
+    @param(ASize[in] Memory size to be reallocated.)
+    @returns(Pointer of the reallocated memory.) }
+  TSaguiReallocFunc = function(APointer: Pointer; ASize: NativeUInt): Pointer;
+
+  { Callback signature used to override the function which frees a memory space
+    previously allocated by @link(Sagui.Malloc), @link(Sagui.Alloc) or
+    @link(Sagui.Realloc).
+    @param(APointer[in] Pointer of the memory to be freed.) }
+  TSaguiFreeFunc = procedure(APointer: Pointer);
+
   { Callback signature used by stuff that handle errors.
     @param(ASender[in] Sender object.)
     @param(AException[in] Exception object.)}
@@ -63,6 +90,20 @@ type
       format @code(<MAJOR>.<MINOR>.<PATCH>).
       @returns(Library version packed into a static string.) }
     class function VersionStr: string; static;
+    { Overrides the standard functions @link(Sagui.Malloc), @link(Sagui.Realloc)
+      and @link(Sagui.Free).
+
+      @bold(NOTE:) It must be called before any other Sagui function or after
+        all resources have been freed.
+
+      @param(AMallocFunc[in] Reference to override the function
+        @link(Sagui.Malloc).)
+      @param(AReallocFunc[in] Reference to override the function
+        @link(Sagui.Realloc).)
+      @param(AFreeFunc[in] Reference to override the function
+        @link(Sagui.Free).) }
+    class procedure MMSet(AMallocFunc: TSaguiMallocFunc;
+      AReallocFunc: TSaguiReallocFunc; AFreeFunc: TSaguiFreeFunc); static;
     { Allocates a new memory space.
       @param(ASize[in] Memory size to be allocated.)
       @returns(Pointer of the allocated zero-initialized memory.
@@ -86,7 +127,7 @@ type
       ) }
     class function Alloc(ASize: NativeUInt): Pointer; static;
     { Reallocates an existing memory block.
-      @param(APointer[in,out] Pointer of the memory to be reallocated.)
+      @param(APointer[in] Pointer of the memory to be reallocated.)
       @param(ASize[in] Memory size to be allocated.)
       @returns(Pointer of the reallocated memory.) }
     class function Realloc(APointer: Pointer;
@@ -158,6 +199,35 @@ class function Sagui.VersionStr: string;
 begin
   SgLib.Check;
   Result := TMarshal.ToString(sg_version_str);
+end;
+
+class procedure Sagui.MMSet(AMallocFunc: TSaguiMallocFunc;
+  AReallocFunc: TSaguiReallocFunc; AFreeFunc: TSaguiFreeFunc);
+
+  function DoSgMallocFunc(Asize: csize_t): Pcvoid; cdecl;
+  begin
+    Result := AMallocFunc(Asize);
+  end;
+
+  function DoSgReallocFunc(Aptr: Pcvoid; Asize: csize_t): Pcvoid; cdecl;
+  begin
+    Result := AReallocFunc(Aptr, Asize);
+  end;
+
+  procedure DoSgFreeFunc(Aptr: Pcvoid); cdecl;
+  begin
+    AFreeFunc(Aptr);
+  end;
+
+begin
+  if not Assigned(AMallocFunc) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AMallocFunc']);
+  if not Assigned(AReallocFunc) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AReallocFunc']);
+  if not Assigned(AFreeFunc) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AFreeFunc']);
+  SgLib.CheckLastError(sg_mm_set(@DoSgMallocFunc, @DoSgReallocFunc,
+    @DoSgFreeFunc));
 end;
 
 class function Sagui.Malloc(ASize: NativeUInt): Pointer;
