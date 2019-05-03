@@ -641,7 +641,7 @@ end;
 
 procedure DoMediaTypesPathCreateFOpenError(const AArgs: array of const);
 begin
-  TBrookMediaTypesPath.Create(AArgs[0].VPChar);
+  TBrookMediaTypesPath.Create(string(AArgs[0].VPChar));
 end;
 
 procedure Test_MediaTypesPathCreate;
