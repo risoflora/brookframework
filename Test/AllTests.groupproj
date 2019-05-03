@@ -15,7 +15,7 @@
         <Projects Include="Test_StringMap.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Test_Utils.dproj">
+        <Projects Include="Test_Utility.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -62,23 +62,23 @@
     <Target Name="Test_StringMap:Make">
         <MSBuild Projects="Test_StringMap.dproj" Targets="Make"/>
     </Target>
-    <Target Name="Test_Utils">
-        <MSBuild Projects="Test_Utils.dproj"/>
+    <Target Name="Test_Utility">
+        <MSBuild Projects="Test_Utility.dproj"/>
     </Target>
-    <Target Name="Test_Utils:Clean">
-        <MSBuild Projects="Test_Utils.dproj" Targets="Clean"/>
+    <Target Name="Test_Utility:Clean">
+        <MSBuild Projects="Test_Utility.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="Test_Utils:Make">
-        <MSBuild Projects="Test_Utils.dproj" Targets="Make"/>
+    <Target Name="Test_Utility:Make">
+        <MSBuild Projects="Test_Utility.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Test_libsagui;Test_Reader;Test_String;Test_StringMap;Test_Utils"/>
+        <CallTarget Targets="Test_libsagui;Test_Reader;Test_String;Test_StringMap;Test_Utility"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Test_libsagui:Clean;Test_Reader:Clean;Test_String:Clean;Test_StringMap:Clean;Test_Utils:Clean"/>
+        <CallTarget Targets="Test_libsagui:Clean;Test_Reader:Clean;Test_String:Clean;Test_StringMap:Clean;Test_Utility:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Test_libsagui:Make;Test_Reader:Make;Test_String:Make;Test_StringMap:Make;Test_Utils:Make"/>
+        <CallTarget Targets="Test_libsagui:Make;Test_Reader:Make;Test_String:Make;Test_StringMap:Make;Test_Utility:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

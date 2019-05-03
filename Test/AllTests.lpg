@@ -22,7 +22,7 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target4>
-      <Target5 FileName="Test_Utils.lpi">
+      <Target5 FileName="Test_Utility.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target5>

@@ -24,11 +24,12 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
-program Test_Utils;
+program Test_Utility;
 
 {$I Tests.inc}
 
 uses
+  RTLConsts,
   SysUtils,
 {$IFNDEF FPC}
   IOUtils,
@@ -36,7 +37,8 @@ uses
   Platform,
   libsagui,
   BrookLibraryLoader,
-  BrookUtility;
+  BrookUtility,
+  Test;
 
 procedure Test_SaguiVersion;
 begin
@@ -160,6 +162,17 @@ begin
   Assert(Sagui.EOR(True) = -2);
 end;
 
+procedure DoSaguiIPParamIsNil;
+begin
+  Sagui.IP(nil);
+end;
+
+procedure Test_SaguiIP;
+begin
+  AssertExcept(DoSaguiIPParamIsNil, EArgumentNilException,
+    Format(SParamIsNil, ['ASocket']));
+end;
+
 procedure Test_BrookFixPath;
 begin
   Assert(Brook.FixPath('') = '/');
@@ -197,6 +210,7 @@ begin
   Test_SaguiExtractEntryPoint;
   Test_SaguiTmpDir;
   Test_SaguiEOR;
+  Test_SaguiIP;
   Test_BrookFixPath;
   Test_BrookFixEntryPoint;
 end.
