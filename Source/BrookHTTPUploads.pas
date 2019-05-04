@@ -24,6 +24,8 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
+{ Contains classes for upload handling. }
+
 unit BrookHTTPUploads;
 
 {$I BrookDefines.inc}
@@ -40,6 +42,8 @@ uses
 type
   TBrookHTTPUploads = class;
 
+  { Structured type which holds the upload properties and allows to save the
+    uploaded file. }
   TBrookHTTPUpload = record
   private
     FHandle: Psg_httpupld;
@@ -52,55 +56,115 @@ type
     FSize: UInt64;
     function GetHandle: Pointer;
   public
+    { Creates an instance of @link(TBrookHTTPUpload).
+      @param(AHandle[in] Upload handle.) }
     constructor Create(AHandle: Pointer);
+    { Saves the uploaded file defining the destination path by upload name and
+      directory.
+      @param(AOverwritten[in] Overwrite upload file if it exists.)
+      @param(AError[out] Variable reference to store string describing the error
+      if save fails.)
+      @returns(@True if the uploaded file is succefully saved.) }
     function Save(AOverwritten: Boolean; out AError: string): Boolean; overload;
+    { Saves the uploaded file defining the destination path by upload name and
+      directory.
+      @param(AError[out] Variable reference to store string describing the error
+      if save fails.)
+      @returns(@True if the uploaded file is succefully saved.) }
     function Save(out AError: string): Boolean; overload;
+    { Saves the uploaded file defining the destination path by upload name and
+      directory.
+      @param(AOverwritten[in] Overwrite upload file if it exists.) }
     procedure Save(AOverwritten: Boolean); overload;
+    { Saves the uploaded file defining the destination path by upload name and
+      directory. }
     procedure Save; overload;
+    { Saves the uploaded file allowing to define the destination path.
+      @param(APath[in] Absolute destination path.)
+      @param(AOverwritten[in] Overwrite upload file if it exists.)
+      @param(AError[out] Variable reference to store string describing the error
+      if save fails.)
+      @returns(@True if the uploaded file is succefully saved.) }
     function SaveAs(const APath: TFileName; AOverwritten: Boolean;
       out AError: string): Boolean; overload;
+    { Saves the uploaded file allowing to define the destination path.
+      @param(APath[in] Absolute destination path.)
+      @param(AError[out] Variable reference to store string describing the error
+      if save fails.)
+      @returns(@True if the uploaded file is succefully saved.) }
     function SaveAs(const APath: TFileName; out AError: string): Boolean; overload;
+    { Saves the uploaded file allowing to define the destination path.
+      @param(APath[in] Absolute destination path.)
+      @param(AOverwritten[in] Overwrite upload file if it exists.) }
     procedure SaveAs(const APath: TFileName; AOverwritten: Boolean); overload;
+    { Saves the uploaded file allowing to define the destination path.
+      @param(APath[in] Absolute destination path.) }
     procedure SaveAs(const APath: TFileName); overload;
+    { Handle of a upload. }
     property Handle: Pointer read GetHandle;
+    { Stream handle of the upload. }
     property StreamHandle: Pointer read FStreamHandle;
+    { Directory of the uploaded file. }
     property Directory: string read FDirectory;
+    { Field name of the upload. }
     property Field: string read FField;
+    { Name of the uploaded file. }
     property Name: string read FName;
+    { MIME (content-type) of the upload. }
     property Mime: string read FMime;
+    { Encoding (transfer-encoding) of the upload. }
     property Encoding: string read FEncoding;
+    { Size of the upload. }
     property Size: UInt64 read FSize;
   end;
 
+  { Enumerator used to iterate the map @link(TBrookHTTPUpload). }
   TBrookHTTPUploadsEnumerator = class
   private
     FUploads: TBrookHTTPUploads;
     FCurr: TBrookHTTPUpload;
     FBOF: Boolean;
   public
+    { Creates an instance of @link(TBrookHTTPUploadsEnumerator).
+      @param(AUploads[in] Uploads list.) }
     constructor Create(AUploads: TBrookHTTPUploads);
+    { Gets the current upload.
+      @returns(Current upload.) }
     function GetCurrent: TBrookHTTPUpload;
+    { Moves to the next upload.
+      @returns(@True when move next reachs the EOF.) }
     function MoveNext: Boolean;
+    { Same to @link(GetCurrent). }
     property Current: TBrookHTTPUpload read GetCurrent;
   end;
 
+  { Uploads list which contains all uploaded files and form fields. }
   TBrookHTTPUploads = class(TBrookHandledPersistent)
   private
     FHandle: Psg_httpupld;
-    FCurr: Psg_httpupld;
+    FCurrent: Psg_httpupld;
     function GetCount: Integer;
-    function GetCurr: Pointer;
+    function GetCurrent: Pointer;
   protected
-    property Curr: Pointer read GetCurr;
-  public
-    constructor Create(AHandle: Pointer); virtual;
     function GetHandle: Pointer; override;
-    function GetEnumerator: TBrookHTTPUploadsEnumerator;
-    { TODO: Iterate::sg_httpuplds_iter() }
-    procedure First(out AUpload: TBrookHTTPUpload); virtual;
-    procedure Next(out AUpload: TBrookHTTPUpload); virtual;
     function IsEOF: Boolean; virtual;
+    property Current: Pointer read GetCurrent;
+  public
+    { Creates an instance of @link(TBrookHTTPUploads).
+      @param(AHandle[in] Uploads handle.) }
+    constructor Create(AHandle: Pointer); virtual;
+    { Gets an instance of @link(TBrookHTTPUploadsEnumerator). }
+    function GetEnumerator: TBrookHTTPUploadsEnumerator;
+    { Retrieves the first upload in the list.
+      @param(AUpload[out] First upload returned.)
+      @returns(@True when upload is found, @False otherwise.) }
+    procedure First(out AUpload: TBrookHTTPUpload); virtual;
+    { Retrieves the next upload in the list.
+      @param(AUpload[out] Next upload returned.) }
+    procedure Next(out AUpload: TBrookHTTPUpload); virtual;
+    { Indicates the end of list. }
     property EOF: Boolean read IsEOF; //FI:C110
+    { Counts the total uploads present in the list. }
     property Count: Integer read GetCount;
   end;
 
@@ -224,6 +288,11 @@ begin
   Result := FHandle;
 end;
 
+function TBrookHTTPUploads.IsEOF: Boolean;
+begin
+  Result := not Assigned(FCurrent);
+end;
+
 function TBrookHTTPUploads.GetEnumerator: TBrookHTTPUploadsEnumerator;
 begin
   Result := TBrookHTTPUploadsEnumerator.Create(Self);
@@ -231,21 +300,16 @@ end;
 
 procedure TBrookHTTPUploads.First(out AUpload: TBrookHTTPUpload);
 begin
-  FCurr := FHandle;
-  AUpload := TBrookHTTPUpload.Create(FCurr);
+  FCurrent := FHandle;
+  AUpload := TBrookHTTPUpload.Create(FCurrent);
 end;
 
 procedure TBrookHTTPUploads.Next(out AUpload: TBrookHTTPUpload);
 begin
   SgLib.Check;
-  SgLib.CheckLastError(sg_httpuplds_next(@FCurr));
-  if Assigned(FCurr) then
-    AUpload := TBrookHTTPUpload.Create(FCurr);
-end;
-
-function TBrookHTTPUploads.IsEOF: Boolean;
-begin
-  Result := not Assigned(FCurr);
+  SgLib.CheckLastError(sg_httpuplds_next(@FCurrent));
+  if Assigned(FCurrent) then
+    AUpload := TBrookHTTPUpload.Create(FCurrent);
 end;
 
 function TBrookHTTPUploads.GetCount: Integer;
@@ -254,9 +318,9 @@ begin
   Result := sg_httpuplds_count(FHandle);
 end;
 
-function TBrookHTTPUploads.GetCurr: Pointer;
+function TBrookHTTPUploads.GetCurrent: Pointer;
 begin
-  Result := FCurr;
+  Result := FCurrent;
 end;
 
 end.
