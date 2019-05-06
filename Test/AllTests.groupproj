@@ -1,8 +1,11 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{A9DDDEC9-103F-4421-9B53-6E71323270DE}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="Test_HTTPUploads.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Test_LibraryLoader.dproj">
             <Dependencies/>
         </Projects>
@@ -32,6 +35,15 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="Test_HTTPUploads">
+        <MSBuild Projects="Test_HTTPUploads.dproj"/>
+    </Target>
+    <Target Name="Test_HTTPUploads:Clean">
+        <MSBuild Projects="Test_HTTPUploads.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Test_HTTPUploads:Make">
+        <MSBuild Projects="Test_HTTPUploads.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Test_LibraryLoader">
         <MSBuild Projects="Test_LibraryLoader.dproj"/>
     </Target>
@@ -96,13 +108,13 @@
         <MSBuild Projects="Test_Utility.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Test_LibraryLoader;Test_libsagui;Test_MediaTypes;Test_Reader;Test_String;Test_StringMap;Test_Utility"/>
+        <CallTarget Targets="Test_HTTPUploads;Test_LibraryLoader;Test_libsagui;Test_MediaTypes;Test_Reader;Test_String;Test_StringMap;Test_Utility"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Test_LibraryLoader:Clean;Test_libsagui:Clean;Test_MediaTypes:Clean;Test_Reader:Clean;Test_String:Clean;Test_StringMap:Clean;Test_Utility:Clean"/>
+        <CallTarget Targets="Test_HTTPUploads:Clean;Test_LibraryLoader:Clean;Test_libsagui:Clean;Test_MediaTypes:Clean;Test_Reader:Clean;Test_String:Clean;Test_StringMap:Clean;Test_Utility:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Test_LibraryLoader:Make;Test_libsagui:Make;Test_MediaTypes:Make;Test_Reader:Make;Test_String:Make;Test_StringMap:Make;Test_Utility:Make"/>
+        <CallTarget Targets="Test_HTTPUploads:Make;Test_LibraryLoader:Make;Test_libsagui:Make;Test_MediaTypes:Make;Test_Reader:Make;Test_String:Make;Test_StringMap:Make;Test_Utility:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
