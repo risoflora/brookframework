@@ -627,8 +627,8 @@ type
   private
     class procedure CallNotifiers; static; inline;
   public
-    class procedure Init; static; inline;
-    class procedure Done; static; inline;
+    class procedure Init; static;
+    class procedure Done; static;
     class procedure AddNotifier(ANotifier: TSgLibNotifier;
       AClosure: Pointer); static;
     class procedure RemoveNotifier(ANotifier: TSgLibNotifier); static;
