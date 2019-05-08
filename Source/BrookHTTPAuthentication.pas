@@ -24,6 +24,8 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
+{ Contains classes for basic HTTP authentication. }
+
 unit BrookHTTPAuthentication;
 
 {$I BrookDefines.inc}
@@ -37,9 +39,11 @@ uses
   BrookHandledClasses;
 
 resourcestring
+  { Error message @code('Invalid status code: <code>.'). }
   SBrookInvalidHTTPStatus = 'Invalid status code: %d.';
 
 type
+  { Class which holds the user authentication credentials. }
   TBrookHTTPCredentials = class(TBrookHandledPersistent)
   private
     FUserName: string;
@@ -50,12 +54,18 @@ type
   protected
     function GetHandle: Pointer; override;
   published
+    { Creates an instance of @link(TBrookHTTPCredentials).
+      @param(AHandle[in] Authentication handle.) }
     constructor Create(AHandle: Pointer); virtual;
+    { Authentication protection space (realm). }
     property Realm: string read GetRealm write SetRealm;
+    { Name of the authenticated user. }
     property UserName: string read FUserName;
+    { Password of the authenticated user. }
     property Password: string read FPassword;
   end;
 
+  { Management classe to grant, deny, cancel an authentication. }
   TBrookHTTPAuthentication = class(TBrookHandledPersistent)
   private
     FCredentials: TBrookHTTPCredentials;
@@ -66,16 +76,38 @@ type
     function CreateCredentials(
       AHandle: Pointer): TBrookHTTPCredentials; virtual;
   public
+    { Creates an instance of @link(TBrookHTTPAuthentication).
+      @param(AHandle[in] Authentication handle.) }
     constructor Create(AHandle: Pointer); virtual;
+    { Destroys an instance of @link(TBrookHTTPAuthentication). }
     destructor Destroy; override;
+    { Deny the authentication sending the reason to the user.
+      @param(AReason[in] Denial reason.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code.) }
     procedure Deny(const AReason, AContentType: string;
       AStatus: Word); overload; virtual;
+    { Deny the authentication sending the formatted reason to the user.
+      @param(AFmt[in] Formatted string.)
+      @param(AArgs[in] Arguments to compose the formatted reason.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code.) }
     procedure Deny(const AFmt: string; const AArgs: array of const;
       const AContentType: string; AStatus: Word); overload; virtual;
+    { Deny the authentication sending the reason to the user.
+      @param(AReason[in] Denial reason.)
+      @param(AContentType[in] Content type.) }
     procedure Deny(const AReason, AContentType: string); overload; virtual;
+    { Deny the authentication sending the formatted reason to the user.
+      @param(AFmt[in] Formatted string.)
+      @param(AArgs[in] Arguments to compose the formatted reason.)
+      @param(AContentType[in] Content type.) }
     procedure Deny(const AFmt: string; const AArgs: array of const;
       const AContentType: string); overload; virtual;
+    { Cancels the authentication loop while the user is trying to acess
+      the server. }
     procedure Cancel; virtual;
+    { Credentials holder. }
     property Credentials: TBrookHTTPCredentials read FCredentials;
   end;
 
