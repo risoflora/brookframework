@@ -287,10 +287,10 @@ var
 
   sg_httpauth_realm: function(auth: Psg_httpauth): pcchar; cdecl;
 
-  sg_httpauth_deny2: function(auth: Psg_httpauth; const justification: Pcchar;
+  sg_httpauth_deny2: function(auth: Psg_httpauth; const reason: Pcchar;
     const content_type: Pcchar; status: cuint): cint; cdecl;
 
-  sg_httpauth_deny: function(auth: Psg_httpauth; const justification: Pcchar;
+  sg_httpauth_deny: function(auth: Psg_httpauth; const reason: Pcchar;
     const content_type: Pcchar): cint; cdecl;
 
   sg_httpauth_cancel: function(auth: Psg_httpauth): cint; cdecl;
