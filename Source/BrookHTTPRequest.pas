@@ -24,6 +24,8 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
+{ Contains class which holds request properties. }
+
 unit BrookHTTPRequest;
 
 {$I BrookDefines.inc}
@@ -43,7 +45,11 @@ uses
   BrookStringMap,
   BrookHTTPUploads;
 
+{ TODO: signed cookies }
+
 type
+  { Class which provides headers, cookies, query-string, fields, payloads,
+    uploads and other data sent by the client. }
   TBrookHTTPRequest = class(TBrookHandledPersistent)
   private
     FUploads: TBrookHTTPUploads;
@@ -74,30 +80,55 @@ type
     function GetUserData: Pointer; virtual;
     procedure SetUserData(AValue: Pointer); virtual;
   public
+    { Creates an instance of @link(TBrookHTTPRequest).
+      @param(AHandle[in] Request handle.) }
     constructor Create(AHandle: Pointer); virtual;
+    { Frees an instance of @link(TBrookHTTPRequest). }
     destructor Destroy; override;
+    { Checks if the HTTP method is @code(POST), @code(PUT), @code(DELETE) or
+      @code(OPTIONS). }
     function IsPost: Boolean; inline;
+    { Checks if current path refers to @code('/favicon.ico'). }
     function IsFavicon: Boolean; inline;
+    { Checks if request contains a valid TLS session. }
     function IsSecure: Boolean; inline;
+    { Checks if the HTTP method is @code(HEAD) or @code(GET). }
     function IsCachable: Boolean; inline;
+    { Checks if the request was done by an ajax client. }
     function IsXhr: Boolean; inline;
+    { Hash table containing the request headers. }
     property Headers: TBrookStringMap read FHeaders;
+    { Hash table containing the request cookies. }
     property Cookies: TBrookStringMap read FCookies;
-    { TODO: signed cookies }
+    { Hash table containing the request parameters (query-string). }
     property Params: TBrookStringMap read FParams;
+    { Hash table containing the request fields (HTML form fields). }
     property Fields: TBrookStringMap read FFields;
+    { String buffer containing the request payload. }
     property Payload: TBrookString read FPayload;
+    { Contains the requested HTTP version. }
     property Version: string read FVersion;
+    { Contains the requested HTTP method. }
     property Method: string read FMethod;
+    { Contains the path component. }
     property Path: string read FPath;
+    { Contains the client IP. }
     property IP: string read GetIP;
+    { Contains the requested Content-Type. }
     property ContentType: string read GetContentType;
+    { Contains the client User-Agent. }
     property UserAgent: string read GetUserAgent;
+    { Where the request originated. }
     property Referer: string read GetReferer;
+    { Contains the levels of the path component. }
     property Paths: TArray<string> read GetPaths;
+    { Checks if the client is uploading data. }
     property IsUploading: Boolean read FIsUploading;
+    { List of the uploaded files. }
     property Uploads: TBrookHTTPUploads read FUploads;
+    { Contains the TLS session handle (GnuTLS). }
     property TLSSession: Pointer read FTLSSession;
+    { User-defined data to be stored temporally in the request object. }
     property UserData: Pointer read GetUserData write SetUserData;
   end;
 
