@@ -206,6 +206,9 @@ begin
 end;
 
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   Test_LibraryLoaderCreate;
   // Test_LibraryLoaderDestroy - not required
   Test_LibraryLoaderLoad;

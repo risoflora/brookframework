@@ -207,6 +207,9 @@ var
   VValB: TBytes;
   VStr: TBrookString;
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   TBrookLibraryLoader.Load;
   VValB := TEncoding.UTF8.GetBytes(VAL);
   VStr := TBrookString.Create(nil);

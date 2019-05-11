@@ -297,6 +297,9 @@ begin
 end;
 
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   TBrookLibraryLoader.Load;
   FakeHTTPAuth := TFakeHTTPAuth.Create;
   FakeHTTPAuthHandle := FakeHTTPAuth;

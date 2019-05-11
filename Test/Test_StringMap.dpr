@@ -584,6 +584,9 @@ var
   VMapHandle: Pointer;
   VMap: TBrookStringMap;
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   TBrookLibraryLoader.Load;
   Test_StringMapNameValue;
   Test_StringMapClearOnDestroy;

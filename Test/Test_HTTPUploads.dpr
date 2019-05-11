@@ -438,6 +438,9 @@ begin
 end;
 
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   TBrookLibraryLoader.Load;
   FakeUploads := TFakeUploads.Create(nil);
   FakeUpload := TFakeUpload.Create;

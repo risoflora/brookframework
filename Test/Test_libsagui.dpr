@@ -598,6 +598,9 @@ begin
 end;
 
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   Test_SgLibAddNotifier;
   Test_SgLibRemoveNotifier;
   Test_SgLibClearNotifiers;

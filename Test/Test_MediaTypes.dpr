@@ -968,6 +968,9 @@ begin
 end;
 
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   MIMEFileName := Concat(
 {$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
     BROOK_MIME_FILE);

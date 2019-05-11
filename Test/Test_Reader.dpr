@@ -625,6 +625,9 @@ begin
 end;
 
 begin
+{$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
+  ReportMemoryLeaksOnShutdown := True;
+{$ENDIF}
   Test_StreamReaderCreate;
   Test_StreamReaderReset;
   Test_StreamReaderClose;
