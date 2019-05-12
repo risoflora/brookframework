@@ -38,10 +38,10 @@ uses
 type
   TLocalString = class(TBrookString)
   public
-    procedure LocalDestroy;
+    destructor Destroy; override;
   end;
 
-procedure TLocalString.LocalDestroy;
+destructor TLocalString.Destroy;
 begin
   inherited Destroy;
   SgLib.Check;
@@ -90,7 +90,7 @@ begin
   try
     Assert(Assigned(VStr.Handle));
   finally
-    TLocalString(VStr).LocalDestroy;
+    VStr.Destroy;
   end;
 end;
 

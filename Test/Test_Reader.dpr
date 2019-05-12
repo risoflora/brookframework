@@ -231,12 +231,14 @@ begin
     VStream.Free;
     VReader.Free;
   end;
-  VReader := TMyStreamReader.Create(TBytesStream.Create);
+  VStream := TBytesStream.Create;
+  VReader := TMyStreamReader.Create(VStream);
   try
     Assert(not VReader.OwnsStream);
     Assert(Assigned(VReader.Stream));
     Assert(VReader.Encoding = TEncoding.UTF8);
   finally
+    VStream.Free;
     VReader.Free;
   end;
 

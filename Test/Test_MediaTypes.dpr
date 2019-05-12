@@ -31,6 +31,11 @@ program Test_MediaTypes;
 uses
   RTLConsts,
   SysUtils,
+{$IFDEF FPC}
+  FileUtil,
+{$ELSE}
+  IOUtils,
+{$ENDIF}
   Classes,
   BrookExtra,
   BrookLibraryLoader,
@@ -667,10 +672,10 @@ begin
   end;
 
   AssertExcept(DoMediaTypesPathCreateFOpenError, EFOpenError,
-    Format(SFOpenError, ['']), [PChar('')]);
+{$IFDEF FPC}Format(SFOpenError, ['']),{$ENDIF}[PChar('')]);
   DeleteFile('foo');
   AssertExcept(DoMediaTypesPathCreateFOpenError, EFOpenError,
-    Format(SFOpenError, ['foo']), [PChar('foo')]);
+{$IFDEF FPC}Format(SFOpenError, ['foo']),{$ENDIF}[PChar('foo')]);
 end;
 
 procedure Test_MediaTypesPathGetDescription;
@@ -967,6 +972,8 @@ begin
   end;
 end;
 
+var
+  F: TFileName;
 begin
 {$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
   ReportMemoryLeaksOnShutdown := True;
@@ -975,51 +982,61 @@ begin
 {$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
     BROOK_MIME_FILE);
   TBrookLibraryLoader.Load;
-  Test_MediaTypesCreate;
-  // Test_MediaTypesDestroy - not required
-  Test_MediaTypesGetRegisterAlias;
-  Test_MediaTypesGetDescription;
-  Test_MediaTypesIsValid;
-  Test_MediaTypesIsText;
-  Test_MediaTypesIsExt;
-  Test_MediaTypesNormalizeExt;
-  Test_MediaTypesPrepare;
-  Test_MediaTypesAdd;
-  Test_MediaTypesRemove;
-  Test_MediaTypesTryType;
-  Test_MediaTypesFind;
-  Test_MediaTypesCount;
-  Test_MediaTypesClear;
-  Test_MediaTypesDefaultType;
-  Test_MediaTypesPrepared;
-  Test_MediaTypesParserCreate;
-  Test_MediaTypesParserParse;
-  Test_MediaTypesParserReader;
-  Test_MediaTypesParserTypes;
-  Test_MediaTypesParserNginxParse;
-  Test_MediaTypesPathCreate;
-  // Test_MediaTypesPathDestroy - not required
-  Test_MediaTypesPathGetDescription;
-  Test_MediaTypesPathGetFileName;
-  Test_MediaTypesPathPrepare;
-  Test_MediaTypesPathClear;
-  Test_MediaTypesPathReader;
-  Test_MediaTypesPathParser;
-  Test_MediaTypesPathFileName;
-  Test_MediaTypesApacheGetDescription;
-  Test_MediaTypesNginxGetDescription;
-  Test_MediaTypesNginxGetFileName;
-  Test_MediaTypesWindowsGetDescription;
-  Test_MediaTypesUnixGetDescription;
-  Test_MediaTypesUnixGetFileName;
-  Test_MIMECreate;
-  // Test_MIMEDestroy - not required
-  Test_MIMEGetProviderClass;
-  Test_MIMEOpen;
-  Test_MIMEClose;
-  Test_MIMETypes;
-  Test_MIMEActive;
-  Test_MIMEDefaultType;
-  Test_MIMEFileName;
-  Test_MIMEProvider;
+  F := Concat(ExtractFilePath(ParamStr(0)), BROOK_MIME_FILE);
+{$IFDEF FPC}
+  CopyFile(MIME_TYPES_FILE, F);
+{$ELSE}
+  TFile.Copy(MIME_TYPES_FILE, F, True);
+{$ENDIF}
+  try
+    Test_MediaTypesCreate;
+    // Test_MediaTypesDestroy - not required
+    Test_MediaTypesGetRegisterAlias;
+    Test_MediaTypesGetDescription;
+    Test_MediaTypesIsValid;
+    Test_MediaTypesIsText;
+    Test_MediaTypesIsExt;
+    Test_MediaTypesNormalizeExt;
+    Test_MediaTypesPrepare;
+    Test_MediaTypesAdd;
+    Test_MediaTypesRemove;
+    Test_MediaTypesTryType;
+    Test_MediaTypesFind;
+    Test_MediaTypesCount;
+    Test_MediaTypesClear;
+    Test_MediaTypesDefaultType;
+    Test_MediaTypesPrepared;
+    Test_MediaTypesParserCreate;
+    Test_MediaTypesParserParse;
+    Test_MediaTypesParserReader;
+    Test_MediaTypesParserTypes;
+    Test_MediaTypesParserNginxParse;
+    Test_MediaTypesPathCreate;
+    // Test_MediaTypesPathDestroy - not required
+    Test_MediaTypesPathGetDescription;
+    Test_MediaTypesPathGetFileName;
+    Test_MediaTypesPathPrepare;
+    Test_MediaTypesPathClear;
+    Test_MediaTypesPathReader;
+    Test_MediaTypesPathParser;
+    Test_MediaTypesPathFileName;
+    Test_MediaTypesApacheGetDescription;
+    Test_MediaTypesNginxGetDescription;
+    Test_MediaTypesNginxGetFileName;
+    Test_MediaTypesWindowsGetDescription;
+    Test_MediaTypesUnixGetDescription;
+    Test_MediaTypesUnixGetFileName;
+    Test_MIMECreate;
+    // Test_MIMEDestroy - not required
+    Test_MIMEGetProviderClass;
+    Test_MIMEOpen;
+    Test_MIMEClose;
+    Test_MIMETypes;
+    Test_MIMEActive;
+    Test_MIMEDefaultType;
+    Test_MIMEFileName;
+    Test_MIMEProvider;
+  finally
+    DeleteFile(F);
+  end;
 end.
