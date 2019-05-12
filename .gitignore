@@ -96,3 +96,15 @@ BrookTardigrade.pas
 
 # Generated documentation
 Doc/
+
+# Generated tests
+Test/Test_HTTPAuthentication
+Test/Test_HTTPRequest
+Test/Test_HTTPUploads
+Test/Test_LibraryLoader
+Test/Test_MediaTypes
+Test/Test_Reader
+Test/Test_String
+Test/Test_StringMap
+Test/Test_Utility
+Test/Test_libsagui

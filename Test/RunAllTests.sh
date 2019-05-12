@@ -27,11 +27,13 @@
 
 set -e
 
+DIR="./Test_*"
 COUNT=0
-for file in ./* ./Sagui/*; do
-    if [ "$file" != "$0" ] && [ -f "$file" ] && [ -x "$file" ] ; then
-        echo -n "$file "
-        sh -c "$file"
+
+for f in $DIR; do
+    if [ -f "$f" ] && [ -x "$f" ] && [ ! "${f%.*}" ]; then
+        echo -n "$f "
+        sh -c "$f"
         echo "OK"
         COUNT=$((COUNT+1))
     fi
