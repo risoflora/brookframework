@@ -123,7 +123,7 @@ end;
 
 procedure DoStringWrite2(const AArgs: array of const);
 begin
-  TBrookString(AArgs[0].VObject).Write(AArgs[1].VString^, nil);
+  TBrookString(AArgs[0].VObject).Write(string(AArgs[1].VString^), nil);
 end;
 
 procedure Test_StringWrite(AStr: TBrookString; const AVal: string;
