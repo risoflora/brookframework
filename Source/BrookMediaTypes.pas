@@ -52,9 +52,9 @@ const
   BROOK_MIME_TAG = 'BrookMIME_';
 
 resourcestring
-  { Error message @code('Invalid media type'). }
+  { Error message @code('Invalid media type: <media-type>'). }
   SBrookInvalidMediaType = 'Invalid media type: %s.';
-  { Error message @code('Invalid media extension: XXX'). }
+  { Error message @code('Invalid media extension: <ext>'). }
   SBrookInvalidMediaExt = 'Invalid media extension: %s.';
   { Error message @code('Empty media type'). }
   SBrookEmptyMediaType = 'Empty media type.';
@@ -66,9 +66,9 @@ resourcestring
   SBrookInactiveMIMETypes = 'Inactive MIME types.';
   { Error message @code('Empty MIME provider'). }
   SBrookEmptyMIMEProvider = 'Empty MIME provider.';
-  { Error message @code('Invalid MIME provider class: XXX'). }
+  { Error message @code('Invalid MIME provider class: <class-name>'). }
   SBrookInvalidMIMEProviderClass = 'Invalid MIME provider class: %s.';
-  { Error message @code('Unknown MIME provider: XXX'). }
+  { Error message @code('Unknown MIME provider: <unknown-mime>'). }
   SBrookUnknownMIMEProvider = 'Unknown MIME provider: %s.';
 
 type

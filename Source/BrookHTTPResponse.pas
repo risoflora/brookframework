@@ -24,6 +24,8 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
+{ Contains class which dispatches data to the client. }
+
 unit BrookHTTPResponse;
 
 {$I BrookDefines.inc}
@@ -42,13 +44,19 @@ uses
   BrookStringMap;
 
 resourcestring
+  { Error message @code('Invalid status code: <code>.'). }
   SBrookInvalidHTTPStatus = 'Invalid status code: %d.';
+  { Error message @code('Response already sent.'). }
   SBrookResponseAlreadySent = 'Response already sent.';
+  { Error message @code('Generic ZLib error.'). }
   SBrookZLibError = 'Generic ZLib error.';
 
 type
+  { Handles exceptions related to response classe. }
   EBrookHTTPResponse = class(Exception);
 
+  { Class which dispatches headers, contents, binaries, files and other data to
+    the client. }
   TBrookHTTPResponse = class(TBrookHandledPersistent)
   private
     FCompressed: Boolean;
@@ -65,32 +73,101 @@ type
     procedure CheckAlreadySent(Aret: cint); inline;
     procedure CheckZLib(Aret: cint); inline;
   public
+    { Creates an instance of @link(TBrookHTTPResponse).
+      @param(AHandle[in] Request handle.) }
     constructor Create(AHandle: Pointer); virtual;
+    { Frees an instance of @link(TBrookHTTPResponse). }
     destructor Destroy; override;
+    { Sets server cookie to the response handle.
+      @param(AName[in] Cookie name.)
+      @param(AValue[in] Cookie value.) }
     procedure SetCookie(const AName, AValue: string); virtual;
+    { Sends a string content to the client.
+      @param(AValue[in] String to be sent.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code.) }
     procedure Send(const AValue, AContentType: string;
       AStatus: Word); overload; virtual;
+    { Sends a formatted string content to the client.
+      @param(AFmt[in] Formatted string.)
+      @param(AArgs[in] Arguments to compose the formatted string.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code.) }
     procedure Send(const AFmt: string; const AArgs: array of const;
       const AContentType: string; AStatus: Word); overload; virtual;
+    { Sends an array of Bytes content to the client.
+      @param(ABytes[in] Array of Bytes to be sent.)
+      @param(ASize[in] Content size.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code.) }
     procedure Send(const ABytes: TBytes; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); overload; virtual;
+    { Sends a binary content to the client.
+      @param(ABinary[in] Binary content to be sent.)
+      @param(ASize[in] Content size.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code.) }
     procedure SendBinary(ABuffer: Pointer; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); virtual;
+    { Sends a file to the client.
+      @param(ASize[in] Size of the file to be sent. Use zero to calculate
+        automatically.)
+      @param(AMaxSize[in] Maximum allowed file size. Use zero for no limit.)
+      @param(AOffset[in] Offset to start reading from in the file to be sent.)
+      @param(AFileName[in] Path of the file to be sent.)
+      @param(ADownloaded[in] If @True it offer the file as download.)
+      @param(AStatus[in] HTTP status code.) }
     procedure SendFile(ASize: NativeUInt; AMaxSize, AOffset: UInt64;
       const AFileName: TFileName; ADownloaded: Boolean; AStatus: Word); virtual;
+    { Sends a stream to the client.
+      @param(AStream[in] Stream to be sent.)
+      @param(AStatus[in] HTTP status code.)
+      @param(AFreed[in] @True frees the stream automatically as soon as it
+        is sent.) }
     procedure SendStream(AStream: TStream; AStatus: Word;
       AFreed: Boolean); overload; virtual;
+    { Sends a stream to the client. The stream is freed automatically as soon as
+      it is sent.
+      @param(AStream[in] Stream to be sent.)
+      @param(AStatus[in] HTTP status code.) }
     procedure SendStream(AStream: TStream; AStatus: Word); overload; virtual;
+    { Sends a HTTP status 204 to the client indicating the server has fulfilled
+      the request, but does not need to return a content.
+      @param(AContentType[in] Content type.) }
     procedure SendEmpty(const AContentType: string); overload; virtual;
+    { Sends a HTTP status 204 to the client indicating the server has fulfilled
+      the request, but does not need to return a content. }
     procedure SendEmpty; overload; virtual;
+    { Sends a string content to the client and redirects it to a new location.
+      @param(AValue[in] String to be sent.)
+      @param(ADestination[in] Destination to which it will be redirected as soon
+        as the content is sent.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code (must be >=300 and <=307).) }
     procedure SendAndRedirect(const AValue, ADestination, AContentType: string;
       AStatus: Word); overload; virtual;
+    { Sends a string content to the client with HTTP status 302 and redirects it
+      to a new location.
+      @param(AValue[in] String to be sent.)
+      @param(ADestination[in] Destination to which it will be redirected as soon
+        as the content is sent.)
+      @param(AContentType[in] Content type.) }
     procedure SendAndRedirect(const AValue, ADestination,
       AContentType: string); overload; virtual;
+    { Offer a file as download.
+      @param(AFileName[in] Path of the file to be sent.) }
     procedure Download(const AFileName: TFileName); virtual;
+    { Sends a file to be rendered.
+      @param(AFileName[in] Path of the file to be sent.) }
     procedure Render(const AFileName: TFileName); virtual;
+    { Clears all headers, cookies, statuses and internal buffers of the response
+      object. }
     procedure Clear; virtual;
+    { Determines if the content must be compressed while sending.
+      The compression is done by zlib library using the DEFLATE compression
+      algorithm. It uses the Gzip format when the content is a file. }
     property Compressed: Boolean read FCompressed write FCompressed;
+    { Hash table containing the headers to be sent to the client. }
     property Headers: TBrookStringMap read FHeaders;
   end;
 

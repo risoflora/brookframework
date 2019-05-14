@@ -24,7 +24,7 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
-{ Contains class which holds request properties. }
+{ Contains class which receives data sent by the client. }
 
 unit BrookHTTPRequest;
 

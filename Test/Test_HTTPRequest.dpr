@@ -136,7 +136,6 @@ procedure Test_HTTPRequestCreate;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -188,7 +187,6 @@ procedure Test_HTTPRequestIsPost;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_method := fake_httpreq_method_get;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -226,7 +224,6 @@ procedure Test_HTTPRequestIsFavicon;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_path := fake_httpreq_path_nofavicon;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -260,7 +257,6 @@ procedure Test_HTTPRequestIsSecure;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_tls_session := fake_httpreq_tls_session_nil;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -290,7 +286,6 @@ procedure Test_HTTPRequestIsCachable;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_method := fake_httpreq_method_head;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -312,7 +307,6 @@ procedure Test_HTTPRequestIsXhr;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -334,7 +328,6 @@ procedure Test_HTTPRequestHeaders;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -350,7 +343,6 @@ procedure Test_HTTPRequestCookies;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_cookies := fake_httpreq_headers;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -367,7 +359,6 @@ procedure Test_HTTPRequestParams;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_params := fake_httpreq_headers;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -384,7 +375,6 @@ procedure Test_HTTPRequestFields;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_fields := fake_httpreq_headers;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -408,7 +398,6 @@ procedure Test_HTTPRequestPayload;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_payload := fake_httpreq_payload;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -425,7 +414,6 @@ procedure Test_HTTPRequestVersion;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -439,7 +427,6 @@ procedure Test_HTTPRequestMethod;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   AssignFakeAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -454,7 +441,6 @@ procedure Test_HTTPRequestPath;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -479,7 +465,6 @@ procedure Test_HTTPRequestIP;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   sg_httpreq_client := fake_httpreq_client_nil;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -511,7 +496,6 @@ procedure Test_HTTPRequestContentType;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -527,7 +511,6 @@ procedure Test_HTTPRequestUserAgent;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -543,7 +526,6 @@ procedure Test_HTTPRequestReferer;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -568,7 +550,6 @@ procedure Test_HTTPRequestPaths;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -590,7 +571,6 @@ procedure Test_HTTPRequestIsUploading;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
   AssignFakeAPI;
@@ -612,7 +592,6 @@ procedure Test_HTTPRequestUploads;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
   sg_httpreq_uploads := fake_httpreq_uploads;
@@ -634,7 +613,6 @@ procedure Test_HTTPRequestTLSSession;
 var
   R: TBrookHTTPRequest;
 begin
-  FakeRequestHandle := FakeRequest;
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
   sg_httpreq_tls_session := fake_httpreq_tls_session;
@@ -665,7 +643,6 @@ var
   R: TBrookHTTPRequest;
   X: Integer;
 begin
-  FakeRequestHandle := FakeRequest;
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
   sg_httpreq_set_user_data := fake_httpreq_set_user_data;
@@ -689,6 +666,7 @@ begin
   TBrookLibraryLoader.Load;
   FakeRequest := TFakeRequest.Create;
   try
+    FakeRequestHandle := FakeRequest;
     Test_HTTPRequestCreate;
     // Test_HTTPRequestDestroy - not required
     Test_HTTPRequestIsPost;
