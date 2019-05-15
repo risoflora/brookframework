@@ -100,6 +100,7 @@ Doc/
 # Generated tests
 Test/Test_HTTPAuthentication
 Test/Test_HTTPRequest
+Test/Test_HTTPResponse
 Test/Test_HTTPUploads
 Test/Test_LibraryLoader
 Test/Test_MediaTypes

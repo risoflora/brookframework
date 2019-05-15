@@ -30,7 +30,7 @@
         <PackageName Value="BrookTardigrade"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="3">
       <Unit0>
         <Filename Value="Test_HTTPAuthentication.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -38,6 +38,16 @@
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="Tests.inc"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="Test.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -680,7 +680,7 @@ end;
 
 procedure Test_MediaTypesPathGetDescription;
 begin
-  Assert(TBrookMediaTypesPath.GetDescription = 'Default');
+  Assert(TBrookMediaTypesPath.GetDescription = 'Path');
 end;
 
 procedure Test_MediaTypesPathGetFileName;
@@ -822,7 +822,7 @@ begin
     TBrookLibraryLoader.Load;
     Assert(M.DefaultType = BROOK_CT_OCTET_STREAM);
     Assert(M.FileName = MIMEFileName);
-    Assert(M.Provider = 'Default');
+    Assert(M.Provider = BROOK_MIME_PROVIDER);
   finally
     M.Free;
     C.Free;
@@ -883,9 +883,15 @@ var
 begin
   M := TBrookMIME.Create(nil);
   try
-    M.Provider := 'Default';
+    M.Provider := BROOK_MIME_PROVIDER;
     M.Open;
+{$IF DEFINED(MSWINDOWS)}
+    Assert(M.Types is TBrookMediaTypesWindows);
+{$ELSEIF DEFINED(UNIX)}
+    Assert(M.Types is TBrookMediaTypesUnix);
+{$ELSE}
     Assert(M.Types is TBrookMediaTypesPath);
+{$ENDIF}
   finally
     M.Free;
   end;
@@ -960,9 +966,9 @@ var
 begin
   M := TBrookMIME.Create(nil);
   try
-    Assert(M.Provider = 'Default');
+    Assert(M.Provider = BROOK_MIME_PROVIDER);
     M.Provider := '';
-    Assert(M.Provider = 'Default');
+    Assert(M.Provider = BROOK_MIME_PROVIDER);
     M.Provider := 'abc';
     Assert(M.Provider = 'abc');
     M.Provider := 'Unix';

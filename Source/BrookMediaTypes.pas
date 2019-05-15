@@ -45,11 +45,22 @@ uses
   BrookHandledClasses,
   BrookStringMap;
 
+{ TODO: On Windows, get the media types from registry (HKEY_CLASSES_ROOT). }
+
 const
   { Default MIME types file name. }
   BROOK_MIME_FILE = 'mime.types';
   { Register prefix for MIME types class. }
   BROOK_MIME_TAG = 'BrookMIME_';
+  { Default MIME provider. }
+  BROOK_MIME_PROVIDER =
+{$IF DEFINED(MSWINDOWS)}
+    'Windows'
+{$ELSEIF DEFINED(UNIX)}
+    'Unix'
+{$ELSE}
+    'Path'
+{$ENDIF};
 
 resourcestring
   { Error message @code('Invalid media type: <media-type>'). }
@@ -489,7 +500,7 @@ begin
         if Pos(#9, VLine) > 0 then
           VSep := #9
         else
-          VSep := #32;
+          VSep := ' ';
       end;
       VPair := VLine.Split([VSep], TStringSplitOptions.ExcludeEmpty);
       if Length(VPair) > 1 then
@@ -562,7 +573,7 @@ end;
 
 class function TBrookMediaTypesPath.GetDescription: string;
 begin
-  Result := 'Default';
+  Result := 'Path';
 end;
 
 class function TBrookMediaTypesPath.GetFileName: TFileName;
@@ -654,7 +665,7 @@ begin
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
   FDefaultType := BROOK_CT_OCTET_STREAM;
   FFileName := GBrookMIMEFileName;
-  FProvider := 'Default';
+  FProvider := BROOK_MIME_PROVIDER;
 end;
 
 destructor TBrookMIME.Destroy;
@@ -776,7 +787,7 @@ end;
 
 function TBrookMIME.IsProvider: Boolean;
 begin
-  Result := FProvider <> 'Default';
+  Result := FProvider <> BROOK_MIME_PROVIDER;
 end;
 
 procedure TBrookMIME.SetActive(AValue: Boolean);
@@ -836,7 +847,7 @@ begin
     CheckInactive;
   FProvider := AValue;
   if FProvider.IsEmpty then
-    FProvider := 'Default';
+    FProvider := BROOK_MIME_PROVIDER;
 end;
 
 procedure TBrookMIME.Open;
@@ -860,10 +871,10 @@ initialization
   RegisterClassAlias(TBrookMediaTypesUnix, TBrookMediaTypesUnix.GetRegisterAlias);
 
 finalization
-  UnRegisterClass(TBrookMediaTypesPath);
-  UnRegisterClass(TBrookMediaTypesApache);
-  UnRegisterClass(TBrookMediaTypesNginx);
-  UnRegisterClass(TBrookMediaTypesWindows);
-  UnRegisterClass(TBrookMediaTypesUnix);
+  UnregisterClass(TBrookMediaTypesPath);
+  UnregisterClass(TBrookMediaTypesApache);
+  UnregisterClass(TBrookMediaTypesNginx);
+  UnregisterClass(TBrookMediaTypesWindows);
+  UnregisterClass(TBrookMediaTypesUnix);
 
 end.
