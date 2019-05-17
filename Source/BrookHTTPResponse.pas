@@ -94,19 +94,19 @@ type
       @param(AStatus[in] HTTP status code.) }
     procedure SendFmt(const AFormat: string; const AArgs: array of const;
       const AContentType: string; AStatus: Word); virtual;
-    { Sends an array of Bytes content to the client.
-      @param(ABytes[in] Array of Bytes to be sent.)
-      @param(ASize[in] Content size.)
-      @param(AContentType[in] Content type.)
-      @param(AStatus[in] HTTP status code.) }
-    procedure SendBytes(const ABytes: TBytes; ASize: NativeUInt;
-      const AContentType: string; AStatus: Word); virtual;
     { Sends a binary content to the client.
       @param(ABinary[in] Binary content to be sent.)
       @param(ASize[in] Content size.)
       @param(AContentType[in] Content type.)
       @param(AStatus[in] HTTP status code.) }
     procedure SendBinary(ABuffer: Pointer; ASize: NativeUInt;
+      const AContentType: string; AStatus: Word); virtual;
+    { Sends an array of Bytes content to the client.
+      @param(ABytes[in] Array of Bytes to be sent.)
+      @param(ASize[in] Content size.)
+      @param(AContentType[in] Content type.)
+      @param(AStatus[in] HTTP status code.) }
+    procedure SendBytes(const ABytes: TBytes; ASize: NativeUInt;
       const AContentType: string; AStatus: Word); virtual;
     { Sends a file to the client.
       @param(ASize[in] Size of the file to be sent. Use zero to calculate
@@ -120,11 +120,11 @@ type
       const AFileName: TFileName; ADownloaded: Boolean; AStatus: Word); virtual;
     { Sends a stream to the client.
       @param(AStream[in] Stream to be sent.)
-      @param(AStatus[in] HTTP status code.)
       @param(AFreed[in] @True frees the stream automatically as soon as it
-        is sent.) }
-    procedure SendStream(AStream: TStream; AStatus: Word;
-      AFreed: Boolean); overload; virtual;
+        is sent.)
+      @param(AStatus[in] HTTP status code.) }
+    procedure SendStream(AStream: TStream; AFreed: Boolean;
+      AStatus: Word); overload; virtual;
     { Sends a stream to the client. The stream is freed automatically as soon as
       it is sent.
       @param(AStream[in] Stream to be sent.)
@@ -276,12 +276,6 @@ begin
   Send(Format(AFormat, AArgs), AContentType, AStatus);
 end;
 
-procedure TBrookHTTPResponse.SendBytes(const ABytes: TBytes; ASize: NativeUInt;
-  const AContentType: string; AStatus: Word);
-begin
-  SendBinary(@ABytes[0], ASize, AContentType, AStatus);
-end;
-
 procedure TBrookHTTPResponse.SendBinary(ABuffer: Pointer; ASize: NativeUInt;
   const AContentType: string; AStatus: Word);
 var
@@ -301,6 +295,12 @@ begin
       M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
+end;
+
+procedure TBrookHTTPResponse.SendBytes(const ABytes: TBytes; ASize: NativeUInt;
+  const AContentType: string; AStatus: Word);
+begin
+  SendBinary(@ABytes[0], ASize, AContentType, AStatus);
 end;
 
 procedure TBrookHTTPResponse.SendFile(ASize: NativeUInt; AMaxSize,
@@ -327,8 +327,8 @@ begin
   SgLib.CheckLastError(R);
 end;
 
-procedure TBrookHTTPResponse.SendStream(AStream: TStream; AStatus: Word;
-  AFreed: Boolean);
+procedure TBrookHTTPResponse.SendStream(AStream: TStream; AFreed: Boolean;
+  AStatus: Word);
 var
   FCb: sg_free_cb;
   R: cint;
@@ -355,7 +355,7 @@ end;
 
 procedure TBrookHTTPResponse.SendStream(AStream: TStream; AStatus: Word);
 begin
-  SendStream(AStream, AStatus, True);
+  SendStream(AStream, True, AStatus);
 end;
 
 procedure TBrookHTTPResponse.SendEmpty(const AContentType: string);
