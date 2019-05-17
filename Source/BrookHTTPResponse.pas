@@ -86,22 +86,21 @@ type
       @param(AValue[in] String to be sent.)
       @param(AContentType[in] Content type.)
       @param(AStatus[in] HTTP status code.) }
-    procedure Send(const AValue, AContentType: string;
-      AStatus: Word); overload; virtual;
+    procedure Send(const AValue, AContentType: string; AStatus: Word); virtual;
     { Sends a formatted string content to the client.
-      @param(AFmt[in] Formatted string.)
+      @param(AFmt[in] Format string.)
       @param(AArgs[in] Arguments to compose the formatted string.)
       @param(AContentType[in] Content type.)
       @param(AStatus[in] HTTP status code.) }
-    procedure Send(const AFmt: string; const AArgs: array of const;
-      const AContentType: string; AStatus: Word); overload; virtual;
+    procedure SendFmt(const AFormat: string; const AArgs: array of const;
+      const AContentType: string; AStatus: Word); virtual;
     { Sends an array of Bytes content to the client.
       @param(ABytes[in] Array of Bytes to be sent.)
       @param(ASize[in] Content size.)
       @param(AContentType[in] Content type.)
       @param(AStatus[in] HTTP status code.) }
-    procedure Send(const ABytes: TBytes; ASize: NativeUInt;
-      const AContentType: string; AStatus: Word); overload; virtual;
+    procedure SendBytes(const ABytes: TBytes; ASize: NativeUInt;
+      const AContentType: string; AStatus: Word); virtual;
     { Sends a binary content to the client.
       @param(ABinary[in] Binary content to be sent.)
       @param(ASize[in] Content size.)
@@ -271,13 +270,13 @@ begin
   SgLib.CheckLastError(R);
 end;
 
-procedure TBrookHTTPResponse.Send(const AFmt: string;
+procedure TBrookHTTPResponse.SendFmt(const AFormat: string;
   const AArgs: array of const; const AContentType: string; AStatus: Word);
 begin
-  Send(Format(AFmt, AArgs), AContentType, AStatus);
+  Send(Format(AFormat, AArgs), AContentType, AStatus);
 end;
 
-procedure TBrookHTTPResponse.Send(const ABytes: TBytes; ASize: NativeUInt;
+procedure TBrookHTTPResponse.SendBytes(const ABytes: TBytes; ASize: NativeUInt;
   const AContentType: string; AStatus: Word);
 begin
   SendBinary(@ABytes[0], ASize, AContentType, AStatus);

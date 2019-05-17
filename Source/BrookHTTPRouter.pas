@@ -539,7 +539,7 @@ end;
 procedure TBrookHTTPRoute.SendMethodNotAllowed(const AMethod: string;
   AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send(SBrookRequestMethodNotAllowed, [AMethod],
+  AResponse.SendFmt(SBrookRequestMethodNotAllowed, [AMethod],
     BROOK_CT_TEXT_PLAIN, 405);
 end;
 
@@ -891,7 +891,7 @@ begin
   if Assigned(FOnNotFound) then
     FOnNotFound(ASender, ARoute, ARequest, AResponse)
   else
-    AResponse.Send(SBrookRouteNotFound, [ARoute], BROOK_CT_TEXT_PLAIN, 404);
+    AResponse.SendFmt(SBrookRouteNotFound, [ARoute], BROOK_CT_TEXT_PLAIN, 404);
 end;
 
 function TBrookHTTPRouter.DispatchRoute(const APath: string;
