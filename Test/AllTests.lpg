@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="10">
+    <Targets Count="11">
       <Target0 FileName="Test_HTTPAuthentication.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
@@ -10,38 +10,42 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target1>
-      <Target2 FileName="Test_HTTPUploads.lpi">
+      <Target2 FileName="Test_HTTPResponse.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target2>
-      <Target3 FileName="Test_LibraryLoader.lpi">
+      <Target3 FileName="Test_HTTPUploads.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target3>
-      <Target4 FileName="Test_libsagui.lpi">
+      <Target4 FileName="Test_LibraryLoader.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target4>
-      <Target5 FileName="Test_MediaTypes.lpi">
+      <Target5 FileName="Test_libsagui.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target5>
-      <Target6 FileName="Test_Reader.lpi">
+      <Target6 FileName="Test_MediaTypes.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target6>
-      <Target7 FileName="Test_String.lpi">
+      <Target7 FileName="Test_Reader.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target7>
-      <Target8 FileName="Test_StringMap.lpi">
+      <Target8 FileName="Test_String.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target8>
-      <Target9 FileName="Test_Utility.lpi">
+      <Target9 FileName="Test_StringMap.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target9>
+      <Target10 FileName="Test_Utility.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target10>
     </Targets>
   </ProjectGroup>
 </CONFIG>
