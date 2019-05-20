@@ -24,6 +24,8 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
+{ Contains useful extra types for the framework. }
+
 unit BrookExtra;
 
 {$I BrookDefines.inc}
@@ -31,15 +33,23 @@ unit BrookExtra;
 interface
 
 const
+  { Default post buffer size (in bytes). }
   BROOK_POST_BUFFER_SIZE = {$IFDEF CPUARM}1024{~1Kb}{$ELSE}4096{~4kB}{$ENDIF};
+  { Default payload limit (in bytes). }
   BROOK_PAYLOAD_LIMIT = {$IFDEF CPUARM}1048576{~1MB}{$ELSE}4194304{~4MB}{$ENDIF};
+  { Deafult upload(s) limit (in bytes). }
   BROOK_UPLOADS_LIMIT = {$IFDEF CPUARM}16777216{~16MB}{$ELSE}67108864{~64MB}{$ENDIF};
 
+  { Default minimal buffer size (in bytes). }
   BROOK_MIN_BUFFER_SIZE = 128;
+  { Default buffer size (in bytes). }
   BROOK_BUFFER_SIZE = 4096;
+  { Default file rights (under Unix, 438 = &666 = owner/group/others can read/write). }
   BROOK_FILE_RIGHTS = 438;
 
+  { Default content type for text content (text/plain in UTF-8). }
   BROOK_CT_TEXT_PLAIN = 'text/plain; charset=utf-8';
+  { Default content type for binary content (octet-stream). }
   BROOK_CT_OCTET_STREAM = 'application/octet-stream';
 
 implementation
