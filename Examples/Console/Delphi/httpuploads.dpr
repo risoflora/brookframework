@@ -1,4 +1,4 @@
-﻿(*   _                     _
+(*   _                     _
  *  | |__  _ __ ___   ___ | | __
  *  | '_ \| '__/ _ \ / _ \| |/ /
  *  | |_) | | | (_) | (_) |   <
@@ -92,7 +92,7 @@ begin
         VList := Concat(VList, '<li><font color="red">', VUpload.Name,
           ' - failed - ', VError, '</font></li>');
     VList := Concat(VList, '</ol>');
-    AResponse.Send(PAGE_DONE, [VList], CONTENT_TYPE, 200);
+    AResponse.SendFmt(PAGE_DONE, [VList], CONTENT_TYPE, 200);
   end
   else
   begin

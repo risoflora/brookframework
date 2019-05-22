@@ -189,7 +189,7 @@ begin
         VList := Concat(VList, '<li><font color="red">', VUpload.Name,
           ' - failed - ', VError, '</font></li>');
     VList := Concat(VList, '</ol>');
-    AResponse.Send(PAGE_DONE, [VList], CONTENT_TYPE, 200);
+    AResponse.SendFmt(PAGE_DONE, [VList], CONTENT_TYPE, 200);
   end
   else
   begin
@@ -205,7 +205,7 @@ procedure TfrMain.BrookHTTPServer1RequestError(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
   AException: Exception);
 begin
-  AResponse.Send(
+  AResponse.SendFmt(
     '<html><head><title>Error</title></head><body><font color="red">%s</font></body></html>',
     [AException.Message], 'text/html; charset=utf-8', 500);
 end;

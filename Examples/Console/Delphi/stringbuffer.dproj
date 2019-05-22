@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{8BB5B0D5-36A9-4290-B0A9-BA1F4B53DD95}</ProjectGuid>
         <MainSource>stringbuffer.dpr</MainSource>

@@ -1,4 +1,4 @@
-﻿(*   _                     _
+(*   _                     _
  *  | |__  _ __ ___   ___ | | __
  *  | '_ \| '__/ _ \ / _ \| |/ /
  *  | |_) | | | (_) | (_) |   <
@@ -66,7 +66,7 @@ begin
   end
   else
   begin
-    AResponse.Send(COUNT_PAGE, [VCount], CONTENT_TYPE, 200);
+    AResponse.SendFmt(COUNT_PAGE, [VCount], CONTENT_TYPE, 200);
     Inc(VCount);
   end;
   AResponse.SetCookie(COOKIE_NAME, VCount.ToString);

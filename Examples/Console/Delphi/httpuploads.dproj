@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{F3E6F476-C785-4695-9B3F-1EBB34812493}</ProjectGuid>
         <MainSource>httpuploads.dpr</MainSource>

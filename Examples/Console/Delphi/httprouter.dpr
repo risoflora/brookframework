@@ -1,4 +1,4 @@
-﻿(*   _                     _
+(*   _                     _
  *  | |__  _ __ ___   ___ | | __
  *  | '_ \| '__/ _ \ / _ \| |/ /
  *  | |_) | | | (_) | (_) |   <
@@ -117,7 +117,7 @@ end;
 procedure TRouteDownload.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send('Downloaded file: %s',
+  AResponse.SendFmt('Downloaded file: %s',
     [ARoute.Variables['file']], 'text/plain', 200);
 end;
 
@@ -132,7 +132,7 @@ end;
 procedure TRoutePage.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send('Page number: %d', [ARoute.Segments[0].ToInteger],
+  AResponse.SendFmt('Page number: %d', [ARoute.Segments[0].ToInteger],
     'text/plain', 200);
 end;
 

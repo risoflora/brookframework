@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{011E6BAD-442A-40FF-8C49-5DA0C6CCA354}</ProjectGuid>
         <MainSource>stringmap.dpr</MainSource>

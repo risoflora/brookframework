@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{C49533AF-738D-40AE-9D6E-5E5B31EAAA20}</ProjectGuid>
         <MainSource>httpauth.dpr</MainSource>

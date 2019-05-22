@@ -161,7 +161,7 @@ begin
   end
   else
   begin
-    AResponse.Send(COUNT_PAGE, [VCount], CONTENT_TYPE, 200);
+    AResponse.SendFmt(COUNT_PAGE, [VCount], CONTENT_TYPE, 200);
     Inc(VCount);
   end;
   AResponse.SetCookie(COOKIE_NAME, VCount.ToString);
@@ -171,7 +171,7 @@ procedure TfrMain.BrookHTTPServer1RequestError(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
   AException: Exception);
 begin
-  AResponse.Send(
+  AResponse.SendFmt(
     '<html><head><title>Error</title></head><body><font color="red">%s</font></body></html>',
     [AException.Message], 'text/html; charset=utf-8', 500);
 end;

@@ -162,7 +162,7 @@ procedure TfrMain.BrookHTTPServer1RequestError(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
   AException: Exception);
 begin
-  AResponse.Send(
+  AResponse.SendFmt(
     '<html><head><title>Error</title></head><body><font color="red">%s</font></body></html>',
     [AException.Message], 'text/html; charset=utf-8', 500);
 end;
@@ -171,7 +171,7 @@ procedure TfrMain.BrookHTTPRouter1NotFound(ASender: TObject;
   const ARoute: string; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send(
+  AResponse.SendFmt(
     '<html><head><title>Not found</title></head><body>Page not found: %s</body></html>',
     [ARequest.Path], 'text/html; charset=utf-8', 404);
 end;
@@ -189,7 +189,7 @@ procedure TfrMain.BrookHTTPRouter1Routes1Request(ASender: TObject;
   ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send(
+  AResponse.SendFmt(
     '<html><head><title>Downloads</title></head><body>Downloaded file: %s</body></html>',
     [ARoute.Variables['file']], 'text/html; charset=utf-8', 200);
 end;
@@ -198,7 +198,7 @@ procedure TfrMain.BrookHTTPRouter1Routes2Request(ASender: TObject;
   ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send(
+  AResponse.SendFmt(
     '<html><head><title>Page</title></head><body>Page number: %d</body></html>',
     [ARoute.Segments[0].ToInteger], 'text/html; charset=utf-8', 200);
 end;

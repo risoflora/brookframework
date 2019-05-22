@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{253A98BA-46A0-4551-BBA4-B35C85CF4732}</ProjectGuid>
         <MainSource>httprouter.dpr</MainSource>

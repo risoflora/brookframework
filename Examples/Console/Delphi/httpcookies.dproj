@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{96A0C39B-153E-44B8-80B3-1FC2A277AD7E}</ProjectGuid>
         <MainSource>httpcookies.dpr</MainSource>

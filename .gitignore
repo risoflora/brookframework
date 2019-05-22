@@ -97,15 +97,24 @@ BrookTardigrade.pas
 # Generated documentation
 Doc/
 
+# Generated examples:
+HTTPAuth_Example
+HTTPCookie_Example
+HTTPRouter_Example
+HTTPServer_Example
+HTTPUpload_Example
+StringMap_Example
+String_Example
+
 # Generated tests
-Test/Test_HTTPAuthentication
-Test/Test_HTTPRequest
-Test/Test_HTTPResponse
-Test/Test_HTTPUploads
-Test/Test_LibraryLoader
-Test/Test_MediaTypes
-Test/Test_Reader
-Test/Test_String
-Test/Test_StringMap
-Test/Test_Utility
-Test/Test_libsagui
+Test_HTTPAuthentication
+Test_HTTPRequest
+Test_HTTPResponse
+Test_HTTPUploads
+Test_LibraryLoader
+Test_MediaTypes
+Test_Reader
+Test_String
+Test_StringMap
+Test_Utility
+Test_libsagui
