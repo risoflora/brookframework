@@ -24,6 +24,8 @@
  * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
  *)
 
+{ Contains classes which composes a fast event-driven HTTP(S) server. }
+
 unit BrookHTTPServer;
 
 {$I BrookDefines.inc}
@@ -46,15 +48,22 @@ uses
   BrookHTTPResponse;
 
 resourcestring
+  { Error message @code('Active server.'). }
   SBrookActiveServer = 'Active server.';
+  { Error message @code('Cannot create server handle.'). }
   SBrookCannotCreateServerHandle = 'Cannot create server handle.';
+  { Error message @code('TLS is not available.'). }
   SBrookTLSNotAvailable = 'TLS is not available.';
+  { Error message @code('Private key cannot be empty.'). }
   SBrookEmptyPrivateKey = 'Private key cannot be empty.';
+  { Error message @code('Certificate cannot be empty.'). }
   SBrookEmptyCertificate = 'Certificate cannot be empty.';
 
 type
+  { Handles exceptions related to HTTP server security. }
   EBrookHTTPServerSecurity = class(Exception);
 
+  { Class which holds the TLS properties for the HTTPS server. }
   TBrookHTTPServerSecurity = class(TPersistent)
   private
     FActive: Boolean;
@@ -65,36 +74,55 @@ type
     FDHParams: string;
     function IsActive: Boolean;
   public
+    { Copies properties from another security source.
+      @param(ASource[in] Security source.) }
     procedure Assign(ASource: TPersistent); override;
+    { Clears the common TLS properties. }
     procedure Clear; virtual;
+    { Validates the common TLS properties. }
     procedure Validate; inline;
   published
+    { Activates the TLS support. }
     property Active: Boolean read FActive write FActive stored IsActive;
+    { Content of the private key (key.pem) to be used by the HTTPS server. }
     property PrivateKey: string read FPrivateKey write FPrivateKey;
+    { Password of the private key. }
     property PrivatePassword: string read FPrivatePassword
       write FPrivatePassword;
+    { Content of the certificate (cert.pem) to be used by the HTTPS server. }
     property Certificate: string read FCertificate write FCertificate;
+    { Content of the certificate (ca.pem) to be used by the HTTPS server for
+      client authentication. }
     property Trust: string read FTrust write FTrust;
+    { Content of the Diffie Hellman parameters (dh.pem) to be used by the HTTPS
+      server for key exchange. }
     property DHParams: string read FDHParams write FDHParams;
   end;
 
+  { Event signature used by HTTP server to handle the clients authentication. }
   TBrookHTTPAuthenticateEvent = function(ASender: TObject;
     AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
     AResponse: TBrookHTTPResponse): Boolean of object;
 
+  { Event signature used by HTTP server to handle errors in the clients
+    authentication. }
   TBrookHTTPAuthenticateErrorEvent = procedure(ASender: TObject;
     AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
     AResponse: TBrookHTTPResponse; AException: Exception) of object;
 
+  { Event signature used by HTTP server to handle requests. }
   TBrookHTTPRequestEvent = procedure(ASender: TObject;
     ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse) of object;
 
+  { Event signature used by HTTP server to handle error in the requests. }
   TBrookHTTPRequestErrorEvent = procedure(ASender: TObject;
     ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
     AException: Exception) of object;
 
+  { Handles exceptions related to HTTP server. }
   EBrookHTTPServer = class(Exception);
 
+  { Fast event-driven HTTP(S) server class. }
   TBrookHTTPServer = class(TBrookHandledComponent)
   private
     FHandle: Psg_httpsrv;
@@ -196,45 +224,72 @@ type
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
   public
+    { Creates an instance of @link(TBrookHTTPServer).
+      @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
+    { Destroys an instance of @link(TBrookHTTPServer). }
     destructor Destroy; override;
+    { Starts the HTTP(S) server. }
     procedure Open;
+    { Stops the HTTP(S) server. }
     procedure Close;
   published
+    { Activates the HTTP(S) server. }
     property Active: Boolean read FActive write SetActive stored IsActive;
+    { Enables/disables the basic HTTP authentication. }
     property Authenticated: Boolean read FAuthenticated write SetAuthenticated
       stored IsAuthenticated;
+    { Port for listening to connections. }
     property Port: UInt16 read GetPort write SetPort stored IsPort default 0;
+    { Enables/disables the threaded model. If @true, the server creates one
+      thread per connection. }
     property Threaded: Boolean read GetThreaded write SetThreaded
       stored IsThreaded default False;
+    { Directory to store the uploaded files. }
     property UploadsDir: string read GetUploadsDir write SetUploadsDir
       stored IsUploadsDir;
+    { Post buffering size. }
     property PostBufferSize: NativeUInt read GetPostBufferSize
       write SetPostBufferSize stored IsPostBufferSize
       default BROOK_POST_BUFFER_SIZE;
+    { Total payload limit. Use zero for no limit. }
     property PayloadLimit: NativeUInt read GetPayloadLimit
       write SetPayloadLimit stored IsPayloadLimit default BROOK_PAYLOAD_LIMIT;
+    { Total uploads limit. Use zero for no limit. }
     property UploadsLimit: UInt64 read GetUploadsLimit write SetUploadsLimit
       stored IsUploadsLimit default BROOK_UPLOADS_LIMIT;
+    { Thread pool size. Size greater than 1 enables the thread pooling. }
     property ThreadPoolSize: Cardinal read GetThreadPoolSize
       write SetThreadPoolSize stored IsThreadPoolSize default 0;
+    { Inactivity time (in seconds) to a client get time out. }
     property ConnectionTimeout: Cardinal read GetConnectionTimeout
       write SetConnectionTimeout stored IsConnectionTimeout default 0;
+    { Concurrent connections limit. Use zero for no limit. }
     property ConnectionLimit: Cardinal read GetConnectionLimit
       write SetConnectionLimit stored IsConnectionLimit default 0;
+    { Enables/disables the favicon handling. If @true, it avoids @code(404) errors
+      by sending an empty content (@code(204)) if path is @code('/favicon.ico'). }
     property NoFavicon: Boolean read FNoFavicon write FNoFavicon
       stored IsNoFavicon default False;
+    { Holds the TLS properties for the HTTPS server. }
     property Security: TBrookHTTPServerSecurity read FSecurity
       write SetSecurity;
+    { Event triggered when a client requests authentication. }
     property OnAuthenticate: TBrookHTTPAuthenticateEvent read FOnAuthenticate
       write FOnAuthenticate;
+    { Event triggered when a client authentication raises errors. }
     property OnAuthenticateError: TBrookHTTPAuthenticateErrorEvent
       read FOnAuthenticateError write FOnAuthenticateError;
+    { Event triggered when a client requests a content. }
     property OnRequest: TBrookHTTPRequestEvent read FOnRequest write FOnRequest;
+    { Event triggered when a client request raises errors. }
     property OnRequestError: TBrookHTTPRequestErrorEvent read FOnRequestError
       write FOnRequestError;
+    { Event triggered when the HTTP server raises errors. }
     property OnError: TBrookErrorEvent read FOnError write FOnError;
+    { Event triggered when the HTTP server successfully starts. }
     property OnStart: TNotifyEvent read FOnStart write FOnStart;
+    { Event triggered when the HTTP server successfully stops. }
     property OnStop: TNotifyEvent read FOnStop write FOnStop;
   end;
 
@@ -322,7 +377,7 @@ end;
 
 procedure TBrookHTTPServer.InternalFreeServerHandle;
 begin
-  { sg_httpsrv_shutdown() is called internally by sg_httpsrv_free(). }
+  { sg_httpsrv_shutdown() is already called by sg_httpsrv_free() internally. }
   sg_httpsrv_free(FHandle);
   FHandle := nil;
 end;

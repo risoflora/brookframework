@@ -51,7 +51,7 @@ type
     @value(sgmoRemove Pair removed from the map.) }
   TBrookStringMapOperation = (sgmoNone, sgmoAdd, sgmoAddOrSet, sgmoRemove);
 
-  { Event to notify a change in the map.
+  { Event signature used to notify a change in the map.
     @param(ASender Event caller.)
     @param(AOperation Operation kind.) }
   TBrookStringMapChangeEvent = procedure(ASender: TObject;

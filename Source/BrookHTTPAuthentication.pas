@@ -65,7 +65,7 @@ type
     property Password: string read FPassword;
   end;
 
-  { Management classe to grant, deny, cancel an authentication. }
+  { Management class to grant, deny, cancel an authentication. }
   TBrookHTTPAuthentication = class(TBrookHandledPersistent)
   private
     FCredentials: TBrookHTTPCredentials;

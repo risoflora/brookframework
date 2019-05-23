@@ -309,7 +309,8 @@ type
     procedure CheckActive; inline;
     procedure CheckInactive; inline;
   public
-    { Creates an instance of @link(TBrookMIME). }
+    { Creates an instance of @link(TBrookMIME).
+      @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
     { Destroys an instance of @link(TBrookMIME). }
     destructor Destroy; override;

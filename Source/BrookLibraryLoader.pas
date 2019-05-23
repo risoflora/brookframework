@@ -70,7 +70,8 @@ type
     procedure CheckUnloaded; inline;
     function GetHandle: Pointer; override;
   public
-    { Creates an instance of @link(TBrookLibraryLoader). }
+    { Creates an instance of @link(TBrookLibraryLoader).
+      @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
     { Destroys an instance of @link(TBrookLibraryLoader). }
     destructor Destroy; override;
