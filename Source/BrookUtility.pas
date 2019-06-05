@@ -35,6 +35,12 @@ interface
 uses
   RTLConsts,
   SysUtils,
+  DateUtils,
+{$IFDEF FPC}
+  HttpProtocol,
+{$ELSE}
+  System.NetEncoding,
+{$ENDIF}
   Marshalling,
 {$IFDEF VER3_0_0}
   FPC300Fixes,
@@ -131,12 +137,31 @@ type
 
   { Global Brook object containing general purpose functions. }
   Brook = record
+  public const
+{$IFNDEF FPC}
+  {$WRITEABLECONST ON}
+{$ENDIF}
+    { TODO: WARNING: This constant is experimental! }
+    MONTHS: array[1..12] of string = ('Jan', 'Feb', 'Mar', 'Apr', 'May',
+      'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+    { TODO: WARNING: This constant is experimental! }
+    DAYS: array[1..7] of string = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu',
+      'Fri', 'Sat');
+{$IFNDEF FPC}
+  {$WRITEABLECONST OFF}
+{$ENDIF}
     { Fixes a path by including the leading path delimiter and excluding the
       trailing one. }
     class function FixPath(const APath: string): string; static; inline;
     { Extracts and fixes an entry-point by including the leading path delimiter
       and excluding the trailing one. }
-    class function FixEntryPoint(const APath: string): string; static;
+    class function FixEntryPoint(const APath: string): string; static; inline;
+    { TODO: WARNING: This method is experimental! }
+    class function DateTimeToUTC(ADateTime: TDateTime): TDateTime; static; inline;
+    { TODO: WARNING: This method is experimental! }
+    class function DateTimeToGMT(ADateTime: TDateTime): string; static; inline;
+    { TODO: WARNING: This method is experimental! }
+    class function EncodeURL(const S: string): string; static; inline;
   end;
 
 implementation
@@ -276,6 +301,35 @@ begin
   Result := '/';
   if Length(PS) > 0 then
     Result := Concat(Result, PS[0]);
+end;
+
+class function Brook.DateTimeToUTC(ADateTime: TDateTime): TDateTime;
+begin
+  Result :=
+{$IFDEF FPC}
+    LocalTimeToUniversal
+{$ELSE}
+    TTimeZone.Local.ToUniversalTime
+{$ENDIF}(ADateTime);
+end;
+
+class function Brook.DateTimeToGMT(ADateTime: TDateTime): string;
+var
+  Y, M, D: Word;
+begin
+  DecodeDate(ADateTime, Y, M, D);
+  DateTimeToString(Result, Format('"%s", dd "%s" yyy hh":"mm":"ss "GMT"', [
+    DAYS[DayOfWeek(ADateTime)], MONTHS[M]]), ADateTime);
+end;
+
+class function Brook.EncodeURL(const S: string): string;
+begin
+  Result :=
+{$IFDEF FPC}
+    StringReplace(HTTPEncode(S), '+', '%20', [rfReplaceAll])
+{$ELSE}
+    TNetEncoding.URL.Encode(S)
+{$ENDIF};
 end;
 
 end.
