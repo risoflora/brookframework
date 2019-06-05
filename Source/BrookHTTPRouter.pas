@@ -95,7 +95,7 @@ type
 
   TBrookHTTPRoutes = class;
 
-  TBrookHTTPRoute = class(TBrookHandleCollectionItem)
+  TBrookHTTPRoute = class(TBrookHandledCollectionItem)
   public const
     DefaultReqMethods = [rmGET, rmPOST];
   private
@@ -176,7 +176,7 @@ type
 
   EBrookHTTPRoutes = class(Exception);
 
-  TBrookHTTPRoutes = class(TBrookHandleOwnedCollection)
+  TBrookHTTPRoutes = class(TBrookHandledOwnedCollection)
   private
     FHandle: Psg_route;
   protected

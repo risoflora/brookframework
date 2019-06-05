@@ -46,7 +46,7 @@ type
   end;
 
   { The base handled collection item. }
-  TBrookHandleCollectionItem = class abstract(TCollectionItem)
+  TBrookHandledCollectionItem = class abstract(TCollectionItem)
   protected
     function GetHandle: Pointer; virtual; abstract;
   public
@@ -55,7 +55,7 @@ type
   end;
 
   { The base handled collection. }
-  TBrookHandleOwnedCollection = class abstract(TOwnedCollection)
+  TBrookHandledOwnedCollection = class abstract(TOwnedCollection)
   protected
     function GetHandle: Pointer; virtual; abstract;
   public

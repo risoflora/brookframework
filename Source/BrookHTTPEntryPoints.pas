@@ -62,7 +62,7 @@ type
 
   EBrookHTTPEntryPoint = class(Exception);
 
-  TBrookHTTPEntryPoint = class(TBrookHandleCollectionItem)
+  TBrookHTTPEntryPoint = class(TBrookHandledCollectionItem)
   private
     FList: TBrookHTTPEntryPointList;
     FHandle: Psg_entrypoint;
@@ -95,7 +95,7 @@ type
 
   EBrookHTTPEntryPointList = class(Exception);
 
-  TBrookHTTPEntryPointList = class(TBrookHandleOwnedCollection)
+  TBrookHTTPEntryPointList = class(TBrookHandledOwnedCollection)
   private
     FHandle: Psg_entrypoints;
   protected
