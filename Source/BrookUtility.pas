@@ -37,8 +37,10 @@ uses
   SysUtils,
   DateUtils,
 {$IFDEF FPC}
+  SHA1,
   HttpProtocol,
 {$ELSE}
+  System.Hash,
   System.NetEncoding,
 {$ENDIF}
   Marshalling,
@@ -162,6 +164,8 @@ type
     class function DateTimeToGMT(ADateTime: TDateTime): string; static; inline;
     { TODO: WARNING: This method is experimental! }
     class function EncodeURL(const S: string): string; static; inline;
+    { TODO: WARNING: This method is experimental! }
+    class function Sha1(const S: string): string; static; inline;
   end;
 
 implementation
@@ -330,6 +334,12 @@ begin
 {$ELSE}
     TNetEncoding.URL.Encode(S)
 {$ENDIF};
+end;
+
+class function Brook.Sha1(const S: string): string;
+begin
+  Result :=
+{$IFDEF FPC}SHA1Print(SHA1String(S)){$ELSE}THashSHA1.GetHashString(S){$ENDIF};
 end;
 
 end.

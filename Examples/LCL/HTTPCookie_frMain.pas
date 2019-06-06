@@ -85,7 +85,7 @@ const
   EMPTY_FAVICON = '<link rel="icon" href="data:,">';
   CONTENT_TYPE = 'text/html; charset=utf-8';
   INITIAL_PAGE = Concat('<html><head>', EMPTY_FAVICON, '<title>Cookies</title></head><body>Use F5 to refresh this page ...</body></html>');
-  COUNT_PAGE = Concat('<html><head>', EMPTY_FAVICON, '<title>Cookies</title></head><body>Refresh number: %d</body></html>');
+  COUNT_PAGE = Concat('<html><head>', EMPTY_FAVICON, '<title>Cookies</title></head><body>Refresh count: %d</body></html>');
   COOKIE_NAME = 'refresh_count';
 
 var

@@ -10,6 +10,13 @@ uses
   SysUtils,
   DateUtils,
   Classes,
+{$IFDEF FPC}
+  HMAC,
+  Base64,
+{$ELSE}
+  System.Hash,
+  System.NetEncoding,
+{$ENDIF}
   BrookUtility;
 
 resourcestring
@@ -21,9 +28,18 @@ type
   TBrookHTTPCookieSameSite = (ssNone, ssStrict, ssLax);
 
   TBrookHTTPCookie = class(TCollectionItem)
+  public const
+{$IFNDEF FPC}
+  {$WRITEABLECONST ON}
+{$ENDIF}
+    SIG_PREFIX: string = 's:';
+{$IFNDEF FPC}
+  {$WRITEABLECONST OFF}
+{$ENDIF}
   private
     FName: string;
     FValue: string;
+    FOldValue: string;
     FDomain: string;
     FPath: string;
     FExpires: TDateTime;
@@ -33,9 +49,18 @@ type
     FSameSite: TBrookHTTPCookieSameSite;
     procedure SetMaxAge(AValue: Integer);
     procedure SetName(const AValue: string);
+    class function InternalSign(const ASecret,
+      AValue: string): string; static; inline;
+    class function InternalUnsign(const ASecret,
+      AValue: string): string; static; inline;
+    class function InternalIsSigned(
+      const AValue: string): Boolean; static; inline;
   public
     constructor Create(ACollection: TCollection); override;
     procedure Assign(ASource: TPersistent); override;
+    function IsSigned: Boolean; virtual;
+    procedure Sign(const ASecret: string); virtual;
+    procedure Unsign(const ASecret: string); virtual;
     function ToHeader: string; inline;
     function ToString: string; override;
     procedure Clear; virtual;
@@ -92,6 +117,71 @@ begin
   FPath := '/';
 end;
 
+class function TBrookHTTPCookie.InternalSign(const ASecret,
+  AValue: string): string;
+var
+{$IFDEF FPC}
+  VEncoder: TBase64EncodingStream;
+  VStream: TStringStream;
+  VDigest: THMACSHA1Digest;
+{$ENDIF}
+  VPos: Integer;
+begin
+  if InternalIsSigned(AValue) then
+    Exit(AValue);
+{$IFDEF FPC}
+  VStream := TStringStream.Create('');
+  try
+    VEncoder := TBase64EncodingStream.Create(VStream);
+    try
+      VDigest := HMACSHA1Digest(ASecret, AValue);
+      VEncoder.Write(VDigest[0], Length(VDigest));
+    finally
+      VEncoder.Free;
+    end;
+    Result := VStream.DataString;
+  finally
+    VStream.Free;
+  end
+{$ELSE}
+  Result := TNetEncoding.Base64.EncodeBytesToString(
+    THashSHA2.GetHMACAsBytes(AValue, ASecret))
+{$ENDIF};
+  VPos := Pos('=', Result);
+  if VPos > 0 then
+    System.Delete(Result, VPos, MaxInt);
+  Result := Concat(SIG_PREFIX, AValue, '.', Result);
+end;
+
+class function TBrookHTTPCookie.InternalUnsign(const ASecret,
+  AValue: string): string;
+var
+  VValue: string;
+  VPos: Integer;
+begin
+  if InternalIsSigned(AValue) then
+  begin
+    VValue := AValue;
+    System.Delete(VValue, 1, Length(SIG_PREFIX));
+    VPos := Pos('.', VValue);
+    if VPos > 0 then
+    begin
+      VValue := Copy(VValue, 1, Pred(VPos));
+      if (Length(VValue) > 0) and
+        (CompareStr(Brook.Sha1(InternalSign(ASecret, VValue)),
+          Brook.Sha1(AValue)) = 0) then
+        Exit(VValue);
+    end;
+  end;
+  Result := AValue;
+end;
+
+class function TBrookHTTPCookie.InternalIsSigned(const AValue: string): Boolean;
+begin
+  Result := (Length(AValue) > 0) and CompareMem(@AValue[1], @SIG_PREFIX[1],
+    Length(SIG_PREFIX) * SizeOf(Char));
+end;
+
 procedure TBrookHTTPCookie.Assign(ASource: TPersistent);
 var
   VSrc: TBrookHTTPCookie;
@@ -113,11 +203,31 @@ begin
     inherited Assign(ASource);
 end;
 
+function TBrookHTTPCookie.IsSigned: Boolean;
+begin
+  Result := InternalIsSigned(FValue);
+end;
+
+procedure TBrookHTTPCookie.Sign(const ASecret: string);
+begin
+  FValue := InternalSign(ASecret, FValue);
+end;
+
+procedure TBrookHTTPCookie.Unsign(const ASecret: string);
+begin
+  FValue := InternalUnsign(ASecret, FValue);
+end;
+
 function TBrookHTTPCookie.ToString: string;
 begin
   if FName.IsEmpty then
     Exit('');
-  Result := Concat(FName, '=', Brook.EncodeURL(FValue));
+  Result := Concat(FName, '=');
+  if IsSigned then
+    Result := Concat(Result, SIG_PREFIX, Brook.EncodeURL(FOldValue),
+      FValue.SubString(SIG_PREFIX.Length + FOldValue.Length))
+  else
+    Result := Concat(Result, Brook.EncodeURL(FValue));
   if FMaxAge > -1 then
     Result := Concat(Result, '; Max-Age=', IntToStr(FMaxAge));
   if Length(FDomain) > 0 then
