@@ -38,9 +38,9 @@ type
     procedure Assign(ASource: TPersistent); override;
     function ToHeader: string; inline;
     function ToString: string; override;
-    function Clear: TBrookHTTPCookie; virtual;
-    function Expire: TBrookHTTPCookie; virtual;
-    function Persist: TBrookHTTPCookie; virtual;
+    procedure Clear; virtual;
+    procedure Expire; virtual;
+    procedure Persist; virtual;
     property Name: string read FName write SetName;
     property Value: string read FValue write FValue;
     property Domain: string read FDomain write FDomain;
@@ -161,9 +161,8 @@ begin
   FName := AValue;
 end;
 
-function TBrookHTTPCookie.Clear: TBrookHTTPCookie;
+procedure TBrookHTTPCookie.Clear;
 begin
-  Result := Self;
   FName := '';
   FValue := '';
   FMaxAge := -1;
@@ -175,15 +174,13 @@ begin
   FSameSite := ssNone;
 end;
 
-function TBrookHTTPCookie.Expire: TBrookHTTPCookie;
+procedure TBrookHTTPCookie.Expire;
 begin
-  Result := Self;
   FExpires := EncodeDate(1970, 1, 1);
 end;
 
-function TBrookHTTPCookie.Persist: TBrookHTTPCookie;
+procedure TBrookHTTPCookie.Persist;
 begin
-  Result := Self;
   FExpires := EncodeDate(9999, 12, 31) + EncodeTime(23, 59, 59, 999);
 end;
 
