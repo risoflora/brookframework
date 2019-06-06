@@ -86,7 +86,7 @@ const
   EMPTY_FAVICON = '<link rel="icon" href="data:,">';
   CONTENT_TYPE = 'text/html; charset=utf-8';
   INITIAL_PAGE = Concat('<html><head>', EMPTY_FAVICON, '<title>Cookies</title></head><body>Use F5 to refresh this page ...</body></html>');
-  COUNT_PAGE = Concat('<html><head>', EMPTY_FAVICON, '<title>Cookies</title></head><body>Refresh number: %d</body></html>');
+  COUNT_PAGE = Concat('<html><head>', EMPTY_FAVICON, '<title>Cookies</title></head><body>Refresh count: %d</body></html>');
   COOKIE_NAME = 'refresh_count';
 
 var
@@ -143,16 +143,20 @@ var
   VCount: Integer;
 begin
   if ARequest.Cookies.IsEmpty then
+    VCount := 0
+  else
+    VCount := StrToIntDef(ARequest.Cookies.Get(COOKIE_NAME), 0);
+  if VCount = 0  then
   begin
     AResponse.Send(INITIAL_PAGE, CONTENT_TYPE, 200);
-    AResponse.SetCookie(COOKIE_NAME, '1');
+    VCount := 1;
   end
   else
   begin
-    VCount := ARequest.Cookies.Get(COOKIE_NAME).ToInteger;
     AResponse.SendFmt(COUNT_PAGE, [VCount], CONTENT_TYPE, 200);
-    AResponse.SetCookie(COOKIE_NAME, Succ(VCount).ToString);
+    Inc(VCount);
   end;
+  AResponse.SetCookie(COOKIE_NAME, VCount.ToString);
 end;
 
 procedure TfrMain.BrookHTTPServer1RequestError(ASender: TObject;

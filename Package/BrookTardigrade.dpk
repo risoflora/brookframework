@@ -71,6 +71,7 @@ contains
   BrookReader in '..\Source\BrookReader.pas',
   BrookMediaTypes in '..\Source\BrookMediaTypes.pas',
   BrookHTTPAuthentication in '..\Source\BrookHTTPAuthentication.pas',
+  BrookHTTPCookies in '..\Source\BrookHTTPCookies.pas',
   BrookHTTPUploads in '..\Source\BrookHTTPUploads.pas',
   BrookHTTPRequest in '..\Source\BrookHTTPRequest.pas',
   BrookHTTPResponse in '..\Source\BrookHTTPResponse.pas',
