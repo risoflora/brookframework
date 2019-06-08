@@ -13,13 +13,27 @@ uses
 {$IFDEF FPC}
   HMAC,
   Base64,
+ {$IFDEF VER3_0_0}
+  FPC300Fixes,
+ {$ENDIF}
 {$ELSE}
   System.Hash,
   System.NetEncoding,
 {$ENDIF}
   BrookUtility;
 
+const
+  BROOK_COOKIE_NAME = 'BrookCookie';
+{$IFNDEF FPC}
+  {$WRITEABLECONST ON}
+{$ENDIF}
+  BROOK_COOKIE_SIG_PREFIX: string = 's:';
+{$IFNDEF FPC}
+  {$WRITEABLECONST OFF}
+{$ENDIF}
+
 resourcestring
+  SBrookEmptyCookieName = 'Empty cookie name.';
   SBrookInvalidCookieName = 'Invalid cookie name: %s.';
 
 type
@@ -28,14 +42,6 @@ type
   TBrookHTTPCookieSameSite = (ssNone, ssStrict, ssLax);
 
   TBrookHTTPCookie = class(TCollectionItem)
-  public const
-{$IFNDEF FPC}
-  {$WRITEABLECONST ON}
-{$ENDIF}
-    SIG_PREFIX: string = 's:';
-{$IFNDEF FPC}
-  {$WRITEABLECONST OFF}
-{$ENDIF}
   private
     FName: string;
     FValue: string;
@@ -115,6 +121,9 @@ implementation
 constructor TBrookHTTPCookie.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
+  FName := BROOK_COOKIE_NAME;
+  if Assigned(ACollection) then
+    FName := Concat(FName, Succ(ID).ToString);
   FExpires := -1;
   FMaxAge := -1;
   FPath := '/';
@@ -153,7 +162,7 @@ begin
   VPos := Pos('=', Result);
   if VPos > 0 then
     System.Delete(Result, VPos, MaxInt);
-  Result := Concat(SIG_PREFIX, AUnsignedValue, '.', Result);
+  Result := Concat(BROOK_COOKIE_SIG_PREFIX, AUnsignedValue, '.', Result);
 end;
 
 class function TBrookHTTPCookie.TryUnsign(const ASecret, ASignedValue: string;
@@ -164,7 +173,7 @@ begin
   if not IsSigned(ASignedValue) then
     Exit(False);
   AUnsignedValue := ASignedValue;
-  System.Delete(AUnsignedValue, 1, Length(SIG_PREFIX));
+  System.Delete(AUnsignedValue, 1, Length(BROOK_COOKIE_SIG_PREFIX));
   VPos := Pos('.', AUnsignedValue);
   if VPos > 0 then
   begin
@@ -187,7 +196,7 @@ end;
 class function TBrookHTTPCookie.IsSigned(const ASignedValue: string): Boolean;
 begin
   Result := (Length(ASignedValue) > 0) and CompareMem(@ASignedValue[1],
-    @SIG_PREFIX[1], Length(SIG_PREFIX) * SizeOf(Char));
+    @BROOK_COOKIE_SIG_PREFIX[1], Length(BROOK_COOKIE_SIG_PREFIX) * SizeOf(Char));
 end;
 
 procedure TBrookHTTPCookie.Assign(ASource: TPersistent);
@@ -237,12 +246,10 @@ end;
 
 function TBrookHTTPCookie.ToString: string;
 begin
-  if FName.IsEmpty then
-    Exit('');
   Result := Concat(FName, '=');
   if IsSigned then
-    Result := Concat(Result, SIG_PREFIX, Brook.EncodeURL(FOldValue),
-      FValue.SubString(SIG_PREFIX.Length + FOldValue.Length))
+    Result := Concat(Result, BROOK_COOKIE_SIG_PREFIX, Brook.EncodeURL(FOldValue),
+      FValue.SubString(BROOK_COOKIE_SIG_PREFIX.Length + FOldValue.Length))
   else
     Result := Concat(Result, Brook.EncodeURL(FValue));
   if FMaxAge > -1 then
@@ -283,6 +290,8 @@ procedure TBrookHTTPCookie.SetName(const AValue: string);
 begin
   if AValue = FName then
     Exit;
+  if AValue.IsEmpty then
+    raise EBrookHTTPCookie.Create(SBrookEmptyCookieName);
   if not IsValidIdent(AValue) then
     raise EBrookHTTPCookie.CreateFmt(SBrookInvalidCookieName, [AValue]);
   FName := AValue;
