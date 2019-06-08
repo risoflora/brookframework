@@ -49,18 +49,21 @@ type
     FSameSite: TBrookHTTPCookieSameSite;
     procedure SetMaxAge(AValue: Integer);
     procedure SetName(const AValue: string);
-    class function InternalSign(const ASecret,
-      AValue: string): string; static; inline;
-    class function InternalUnsign(const ASecret,
-      AValue: string): string; static; inline;
-    class function InternalIsSigned(
-      const AValue: string): Boolean; static; inline;
   public
     constructor Create(ACollection: TCollection); override;
     procedure Assign(ASource: TPersistent); override;
+    class function Sign(const ASecret,
+      AUnsignedValue: string): string; overload; static; inline;
+    class function TryUnsign(const ASecret, ASignedValue: string;
+      out AUnsignedValue: string): Boolean; overload; static; inline;
+    class function Unsign(const ASecret,
+      ASignedValue: string): string; overload; static; inline;
+    class function IsSigned(
+      const ASignedValue: string): Boolean; overload; static; inline;
     function IsSigned: Boolean; virtual;
-    procedure Sign(const ASecret: string); virtual;
-    procedure Unsign(const ASecret: string); virtual;
+    procedure Sign(const ASecret: string); overload; virtual;
+    function TryUnsign(const ASecret: string): Boolean; overload; virtual;
+    procedure Unsign(const ASecret: string); overload; virtual;
     function ToHeader: string; inline;
     function ToString: string; override;
     procedure Clear; virtual;
@@ -117,8 +120,8 @@ begin
   FPath := '/';
 end;
 
-class function TBrookHTTPCookie.InternalSign(const ASecret,
-  AValue: string): string;
+class function TBrookHTTPCookie.Sign(const ASecret,
+  AUnsignedValue: string): string;
 var
 {$IFDEF FPC}
   VEncoder: TBase64EncodingStream;
@@ -127,14 +130,14 @@ var
 {$ENDIF}
   VPos: Integer;
 begin
-  if InternalIsSigned(AValue) then
-    Exit(AValue);
+  if IsSigned(AUnsignedValue) then
+    Exit(AUnsignedValue);
 {$IFDEF FPC}
   VStream := TStringStream.Create('');
   try
     VEncoder := TBase64EncodingStream.Create(VStream);
     try
-      VDigest := HMACSHA1Digest(ASecret, AValue);
+      VDigest := HMACSHA1Digest(ASecret, AUnsignedValue);
       VEncoder.Write(VDigest[0], Length(VDigest));
     finally
       VEncoder.Free;
@@ -150,36 +153,41 @@ begin
   VPos := Pos('=', Result);
   if VPos > 0 then
     System.Delete(Result, VPos, MaxInt);
-  Result := Concat(SIG_PREFIX, AValue, '.', Result);
+  Result := Concat(SIG_PREFIX, AUnsignedValue, '.', Result);
 end;
 
-class function TBrookHTTPCookie.InternalUnsign(const ASecret,
-  AValue: string): string;
+class function TBrookHTTPCookie.TryUnsign(const ASecret, ASignedValue: string;
+  out AUnsignedValue: string): Boolean;
 var
-  VValue: string;
   VPos: Integer;
 begin
-  if InternalIsSigned(AValue) then
+  if not IsSigned(ASignedValue) then
+    Exit(False);
+  AUnsignedValue := ASignedValue;
+  System.Delete(AUnsignedValue, 1, Length(SIG_PREFIX));
+  VPos := Pos('.', AUnsignedValue);
+  if VPos > 0 then
   begin
-    VValue := AValue;
-    System.Delete(VValue, 1, Length(SIG_PREFIX));
-    VPos := Pos('.', VValue);
-    if VPos > 0 then
-    begin
-      VValue := Copy(VValue, 1, Pred(VPos));
-      if (Length(VValue) > 0) and
-        (CompareStr(Brook.Sha1(InternalSign(ASecret, VValue)),
-          Brook.Sha1(AValue)) = 0) then
-        Exit(VValue);
-    end;
+    AUnsignedValue := Copy(AUnsignedValue, 1, Pred(VPos));
+    if (Length(AUnsignedValue) > 0) and
+      (CompareStr(Brook.Sha1(Sign(ASecret, AUnsignedValue)),
+        Brook.Sha1(ASignedValue)) = 0) then
+      Exit(True);
   end;
-  Result := AValue;
+  Result := False;
 end;
 
-class function TBrookHTTPCookie.InternalIsSigned(const AValue: string): Boolean;
+class function TBrookHTTPCookie.Unsign(const ASecret,
+  ASignedValue: string): string;
 begin
-  Result := (Length(AValue) > 0) and CompareMem(@AValue[1], @SIG_PREFIX[1],
-    Length(SIG_PREFIX) * SizeOf(Char));
+  if not TryUnsign(ASecret, ASignedValue, Result) then
+    Result := EmptyStr;
+end;
+
+class function TBrookHTTPCookie.IsSigned(const ASignedValue: string): Boolean;
+begin
+  Result := (Length(ASignedValue) > 0) and CompareMem(@ASignedValue[1],
+    @SIG_PREFIX[1], Length(SIG_PREFIX) * SizeOf(Char));
 end;
 
 procedure TBrookHTTPCookie.Assign(ASource: TPersistent);
@@ -205,17 +213,26 @@ end;
 
 function TBrookHTTPCookie.IsSigned: Boolean;
 begin
-  Result := InternalIsSigned(FValue);
+  Result := IsSigned(FValue);
 end;
 
 procedure TBrookHTTPCookie.Sign(const ASecret: string);
 begin
-  FValue := InternalSign(ASecret, FValue);
+  FValue := Sign(ASecret, FValue);
+end;
+
+function TBrookHTTPCookie.TryUnsign(const ASecret: string): Boolean;
+var
+  R: string;
+begin
+  Result := TryUnsign(ASecret, FValue, R);
+  if Result then
+    FValue := R;
 end;
 
 procedure TBrookHTTPCookie.Unsign(const ASecret: string);
 begin
-  FValue := InternalUnsign(ASecret, FValue);
+  FValue := Unsign(ASecret, FValue);
 end;
 
 function TBrookHTTPCookie.ToString: string;
