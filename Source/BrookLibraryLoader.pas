@@ -59,8 +59,8 @@ type
     FStreamedActive: Boolean;
     FOnLoad: TNotifyEvent;
     FOnUnload: TNotifyEvent;
-    function IsActive: Boolean;
-    function IsLibraryName: Boolean;
+    function IsActiveStored: Boolean;
+    function IsLibraryNameStored: Boolean;
     procedure SetActive(AValue: Boolean);
     procedure SetLibraryName(const AValue: TFileName);
     procedure InternalOpen; inline;
@@ -93,10 +93,10 @@ type
     procedure DefineProperties(AFiler: TFiler); override;
   published
     { Loads/Unloads the library dynamically. }
-    property Active: Boolean read FActive write SetActive stored IsActive;
+    property Active: Boolean read FActive write SetActive stored IsActiveStored;
     { Specifies the library to be loaded dynamically. }
     property LibraryName: TFileName read FLibraryName write SetLibraryName
-      stored IsLibraryName;
+      stored IsLibraryNameStored;
     { Version of the loaded library. }
     property Version: string read FVersion stored False;
     { Notifies that the library is loaded. }
@@ -197,12 +197,12 @@ begin
       Close;
 end;
 
-function TBrookLibraryLoader.IsActive: Boolean;
+function TBrookLibraryLoader.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;
 
-function TBrookLibraryLoader.IsLibraryName: Boolean;
+function TBrookLibraryLoader.IsLibraryNameStored: Boolean;
 begin
   Result := CompareText(FLibraryName, SG_LIB_NAME) <> 0;
 end;

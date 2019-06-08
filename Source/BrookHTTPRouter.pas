@@ -115,10 +115,10 @@ type
     function GetVariables: TBrookStringMap;
     function GetRegexHandle: Pointer;
     function GetUserData: Pointer;
-    function IsDefault: Boolean;
+    function IsDefaultStored: Boolean;
     procedure SetDefault(AValue: Boolean);
     procedure SetPattern(const AValue: string);
-    function IsMethods: Boolean;
+    function IsMethodsStored: Boolean;
     function GetSegments: TArray<string>;
   protected
     class procedure DoRouteCallback(Acls: Pcvoid;
@@ -155,10 +155,10 @@ type
     property UserData: Pointer read GetUserData;
   published
     property Default: Boolean read FDefault write SetDefault
-      stored IsDefault default False;
+      stored IsDefaultStored default False;
     property Pattern: string read GetPattern write SetPattern;
     property Methods: TBrookHTTPRouteRequestMethods read FMethods write FMethods
-      stored IsMethods default TBrookHTTPRoute.DefaultReqMethods;
+      stored IsMethodsStored default TBrookHTTPRoute.DefaultReqMethods;
     property OnMath: TBrookHTTPRouteMatchEvent read FOnMath write FOnMath;
     property OnRequestMethod: TBrookHTTPRouteRequestMethodEvent
       read FOnRequestMethod write FOnRequestMethod;
@@ -220,7 +220,7 @@ type
     FOnRoute: TBrookHTTPRouterRouteEvent;
     FOnActivate: TNotifyEvent;
     FOnDeactivate: TNotifyEvent;
-    function IsActive: Boolean;
+    function IsActiveStored: Boolean;
     procedure SetActive(AValue: Boolean);
     procedure SetRoutes(AValue: TBrookHTTPRoutes);
   protected
@@ -249,7 +249,7 @@ type
     procedure Route(ASender: TObject; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); overload; virtual;
   published
-    property Active: Boolean read FActive write SetActive stored IsActive;
+    property Active: Boolean read FActive write SetActive stored IsActiveStored;
     property Routes: TBrookHTTPRoutes read FRoutes write SetRoutes;
     property OnRoute: TBrookHTTPRouterRouteEvent read FOnRoute write FOnRoute;
     property OnNotFound: TBrookHTTPRouterRouteEvent read FOnNotFound
@@ -439,7 +439,7 @@ begin
   Result := sg_route_user_data(FHandle);
 end;
 
-function TBrookHTTPRoute.IsDefault: Boolean;
+function TBrookHTTPRoute.IsDefaultStored: Boolean;
 begin
   Result := FDefault;
 end;
@@ -526,7 +526,7 @@ begin
     SendMethodNotAllowed(ARequest.Method, AResponse);
 end;
 
-function TBrookHTTPRoute.IsMethods: Boolean;
+function TBrookHTTPRoute.IsMethodsStored: Boolean;
 begin
   Result := FMethods <> DefaultReqMethods;
 end;
@@ -813,7 +813,7 @@ begin
     FRoutes.Clear;
 end;
 
-function TBrookHTTPRouter.IsActive: Boolean;
+function TBrookHTTPRouter.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;

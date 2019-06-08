@@ -291,10 +291,10 @@ type
     FStreamedActive: Boolean;
     FProvider: string;
     function GetTypes: TBrookMediaTypes;
-    function IsActive: Boolean;
-    function IsDefaultType: Boolean;
-    function IsFileName: Boolean;
-    function IsProvider: Boolean;
+    function IsActiveStored: Boolean;
+    function IsDefaultTypeStored: Boolean;
+    function IsFileNameStored: Boolean;
+    function IsProviderStored: Boolean;
     procedure SetActive(AValue: Boolean);
     procedure SetDefaultType(const AValue: string);
     procedure SetFileName(const AValue: TFileName);
@@ -324,15 +324,16 @@ type
     property Types: TBrookMediaTypes read GetTypes;
   published
     { Activates the cached media types provider. }
-    property Active: Boolean read FActive write SetActive stored IsActive;
+    property Active: Boolean read FActive write SetActive stored IsActiveStored;
     { Default media type identifier returned by @link(TBrookMediaTypes.Find). }
     property DefaultType: string read FDefaultType write SetDefaultType
-      stored IsDefaultType;
+      stored IsDefaultTypeStored;
     { File name of the media types source. }
     property FileName: TFileName read FFileName write SetFileName
-      stored IsFileName;
+      stored IsFileNameStored;
     { Media types provider description. }
-    property Provider: string read FProvider write SetProvider stored IsProvider;
+    property Provider: string read FProvider write SetProvider
+      stored IsProviderStored;
   end;
 
 implementation
@@ -765,7 +766,7 @@ begin
   FActive := False;
 end;
 
-function TBrookMIME.IsActive: Boolean;
+function TBrookMIME.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;
@@ -776,17 +777,17 @@ begin
   Result := FTypes;
 end;
 
-function TBrookMIME.IsDefaultType: Boolean;
+function TBrookMIME.IsDefaultTypeStored: Boolean;
 begin
   Result := FDefaultType <> BROOK_CT_OCTET_STREAM;
 end;
 
-function TBrookMIME.IsFileName: Boolean;
+function TBrookMIME.IsFileNameStored: Boolean;
 begin
   Result := FFileName <> GBrookMIMEFileName;
 end;
 
-function TBrookMIME.IsProvider: Boolean;
+function TBrookMIME.IsProviderStored: Boolean;
 begin
   Result := FProvider <> BROOK_MIME_PROVIDER;
 end;

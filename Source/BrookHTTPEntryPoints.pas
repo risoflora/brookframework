@@ -139,7 +139,7 @@ type
     FOnNotFound: TBrookHTTPEntryPointsNotFoundEvent;
     FOnActivate: TNotifyEvent;
     FOnDeactivate: TNotifyEvent;
-    function IsActive: Boolean;
+    function IsActiveStored: Boolean;
     procedure SetActive(AValue: Boolean);
     function GetItem(AIndex: Integer): TBrookHTTPEntryPoint;
     procedure SetItem(AIndex: Integer; AValue: TBrookHTTPEntryPoint);
@@ -176,7 +176,7 @@ type
     property Items[AIndex: Integer]: TBrookHTTPEntryPoint read GetItem
       write SetItem; default;
   published
-    property Active: Boolean read FActive write SetActive stored IsActive;
+    property Active: Boolean read FActive write SetActive stored IsActiveStored;
     property List: TBrookHTTPEntryPointList read FList write SetList;
     property OnNotFound: TBrookHTTPEntryPointsNotFoundEvent read FOnNotFound
       write FOnNotFound;
@@ -592,7 +592,7 @@ begin
     FList.Clear;
 end;
 
-function TBrookHTTPEntryPoints.IsActive: Boolean;
+function TBrookHTTPEntryPoints.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;

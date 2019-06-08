@@ -72,7 +72,7 @@ type
     FCertificate: string;
     FTrust: string;
     FDHParams: string;
-    function IsActive: Boolean;
+    function IsActiveStored: Boolean;
   public
     { Copies properties from another security source.
       @param(ASource[in] Security source.) }
@@ -83,7 +83,7 @@ type
     procedure Validate; inline;
   published
     { Activates the TLS support. }
-    property Active: Boolean read FActive write FActive stored IsActive;
+    property Active: Boolean read FActive write FActive stored IsActiveStored;
     { Content of the private key (key.pem) to be used by the HTTPS server. }
     property PrivateKey: string read FPrivateKey write FPrivateKey;
     { Password of the private key. }
@@ -157,18 +157,18 @@ type
     function GetThreaded: Boolean;
     function GetThreadPoolSize: Cardinal;
     function GetUploadsDir: string;
-    function IsActive: Boolean;
-    function IsAuthenticated: Boolean;
-    function IsConnectionLimit: Boolean;
-    function IsConnectionTimeout: Boolean;
-    function IsNoFavicon: Boolean;
-    function IsPayloadLimit: Boolean;
-    function IsUploadsLimit: Boolean;
-    function IsPort: Boolean;
-    function IsPostBufferSize: Boolean;
-    function IsThreaded: Boolean;
-    function IsThreadPoolSize: Boolean;
-    function IsUploadsDir: Boolean;
+    function IsActiveStored: Boolean;
+    function IsAuthenticatedStored: Boolean;
+    function IsConnectionLimitStored: Boolean;
+    function IsConnectionTimeoutStored: Boolean;
+    function IsNoFaviconStored: Boolean;
+    function IsPayloadLimitStored: Boolean;
+    function IsUploadsLimitStored: Boolean;
+    function IsPortStored: Boolean;
+    function IsPostBufferSizeStored: Boolean;
+    function IsThreadedStored: Boolean;
+    function IsThreadPoolSizeStored: Boolean;
+    function IsUploadsDirStored: Boolean;
     procedure SetAuthenticated(AValue: Boolean);
     procedure SetConnectionLimit(AValue: Cardinal);
     procedure SetConnectionTimeout(AValue: Cardinal);
@@ -235,42 +235,43 @@ type
     procedure Close;
   published
     { Activates the HTTP(S) server. }
-    property Active: Boolean read FActive write SetActive stored IsActive;
+    property Active: Boolean read FActive write SetActive stored IsActiveStored;
     { Enables/disables the basic HTTP authentication. }
     property Authenticated: Boolean read FAuthenticated write SetAuthenticated
-      stored IsAuthenticated;
+      stored IsAuthenticatedStored;
     { Port for listening to connections. }
-    property Port: UInt16 read GetPort write SetPort stored IsPort default 0;
+    property Port: UInt16 read GetPort write SetPort stored IsPortStored
+      default 0;
     { Enables/disables the threaded model. If @true, the server creates one
       thread per connection. }
     property Threaded: Boolean read GetThreaded write SetThreaded
-      stored IsThreaded default False;
+      stored IsThreadedStored default False;
     { Directory to store the uploaded files. }
     property UploadsDir: string read GetUploadsDir write SetUploadsDir
-      stored IsUploadsDir;
+      stored IsUploadsDirStored;
     { Post buffering size. }
     property PostBufferSize: NativeUInt read GetPostBufferSize
-      write SetPostBufferSize stored IsPostBufferSize
+      write SetPostBufferSize stored IsPostBufferSizeStored
       default BROOK_POST_BUFFER_SIZE;
     { Total payload limit. Use zero for no limit. }
-    property PayloadLimit: NativeUInt read GetPayloadLimit
-      write SetPayloadLimit stored IsPayloadLimit default BROOK_PAYLOAD_LIMIT;
+    property PayloadLimit: NativeUInt read GetPayloadLimit write SetPayloadLimit
+      stored IsPayloadLimitStored default BROOK_PAYLOAD_LIMIT;
     { Total uploads limit. Use zero for no limit. }
     property UploadsLimit: UInt64 read GetUploadsLimit write SetUploadsLimit
-      stored IsUploadsLimit default BROOK_UPLOADS_LIMIT;
+      stored IsUploadsLimitStored default BROOK_UPLOADS_LIMIT;
     { Thread pool size. Size greater than 1 enables the thread pooling. }
     property ThreadPoolSize: Cardinal read GetThreadPoolSize
-      write SetThreadPoolSize stored IsThreadPoolSize default 0;
+      write SetThreadPoolSize stored IsThreadPoolSizeStored default 0;
     { Inactivity time (in seconds) to a client get time out. }
     property ConnectionTimeout: Cardinal read GetConnectionTimeout
-      write SetConnectionTimeout stored IsConnectionTimeout default 0;
+      write SetConnectionTimeout stored IsConnectionTimeoutStored default 0;
     { Concurrent connections limit. Use zero for no limit. }
     property ConnectionLimit: Cardinal read GetConnectionLimit
-      write SetConnectionLimit stored IsConnectionLimit default 0;
+      write SetConnectionLimit stored IsConnectionLimitStored default 0;
     { Enables/disables the favicon handling. If @true, it avoids @code(404) errors
       by sending an empty content (@code(204)) if path is @code('/favicon.ico'). }
     property NoFavicon: Boolean read FNoFavicon write FNoFavicon
-      stored IsNoFavicon default False;
+      stored IsNoFaviconStored default False;
     { Holds the TLS properties for the HTTPS server. }
     property Security: TBrookHTTPServerSecurity read FSecurity
       write SetSecurity;
@@ -314,7 +315,7 @@ begin
     inherited Assign(ASource);
 end;
 
-function TBrookHTTPServerSecurity.IsActive: Boolean;
+function TBrookHTTPServerSecurity.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;
@@ -694,32 +695,32 @@ begin
   FUploadsDir := AValue;
 end;
 
-function TBrookHTTPServer.IsConnectionLimit: Boolean;
+function TBrookHTTPServer.IsConnectionLimitStored: Boolean;
 begin
   Result := FConnectionLimit > 0;
 end;
 
-function TBrookHTTPServer.IsConnectionTimeout: Boolean;
+function TBrookHTTPServer.IsConnectionTimeoutStored: Boolean;
 begin
   Result := FConnectionTimeout > 0;
 end;
 
-function TBrookHTTPServer.IsNoFavicon: Boolean;
+function TBrookHTTPServer.IsNoFaviconStored: Boolean;
 begin
   Result := FNoFavicon;
 end;
 
-function TBrookHTTPServer.IsPayloadLimit: Boolean;
+function TBrookHTTPServer.IsPayloadLimitStored: Boolean;
 begin
   Result := FPayloadLimit <> BROOK_PAYLOAD_LIMIT;
 end;
 
-function TBrookHTTPServer.IsUploadsLimit: Boolean;
+function TBrookHTTPServer.IsUploadsLimitStored: Boolean;
 begin
   Result := FUploadsLimit <> BROOK_UPLOADS_LIMIT;
 end;
 
-function TBrookHTTPServer.IsActive: Boolean;
+function TBrookHTTPServer.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;
@@ -814,32 +815,32 @@ begin
   Result := FConnectionLimit;
 end;
 
-function TBrookHTTPServer.IsAuthenticated: Boolean;
+function TBrookHTTPServer.IsAuthenticatedStored: Boolean;
 begin
   Result := FAuthenticated;
 end;
 
-function TBrookHTTPServer.IsPort: Boolean;
+function TBrookHTTPServer.IsPortStored: Boolean;
 begin
   Result := FPort <> 0;
 end;
 
-function TBrookHTTPServer.IsPostBufferSize: Boolean;
+function TBrookHTTPServer.IsPostBufferSizeStored: Boolean;
 begin
   Result := FPostBufferSize <> BROOK_POST_BUFFER_SIZE;
 end;
 
-function TBrookHTTPServer.IsThreaded: Boolean;
+function TBrookHTTPServer.IsThreadedStored: Boolean;
 begin
   Result := FThreaded;
 end;
 
-function TBrookHTTPServer.IsThreadPoolSize: Boolean;
+function TBrookHTTPServer.IsThreadPoolSizeStored: Boolean;
 begin
   Result := FThreadPoolSize > 0;
 end;
 
-function TBrookHTTPServer.IsUploadsDir: Boolean;
+function TBrookHTTPServer.IsUploadsDirStored: Boolean;
 begin
   Result := not FUploadsDir.IsEmpty;
 end;
