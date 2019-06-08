@@ -60,7 +60,7 @@ type
       ASignedValue: string): string; overload; static; inline;
     class function IsSigned(
       const ASignedValue: string): Boolean; overload; static; inline;
-    function IsSigned: Boolean; virtual;
+    function IsSigned: Boolean; overload; virtual;
     procedure Sign(const ASecret: string); overload; virtual;
     function TryUnsign(const ASecret: string): Boolean; overload; virtual;
     procedure Unsign(const ASecret: string); overload; virtual;
@@ -148,7 +148,7 @@ begin
   end
 {$ELSE}
   Result := TNetEncoding.Base64.EncodeBytesToString(
-    THashSHA2.GetHMACAsBytes(AValue, ASecret))
+    THashSHA2.GetHMACAsBytes(AUnsignedValue, ASecret))
 {$ENDIF};
   VPos := Pos('=', Result);
   if VPos > 0 then
