@@ -425,7 +425,7 @@ begin
     Exit;
   FCookiesAlreadySent := True;
   for C in FCookies do
-    FHeaders.AddOrSet('Set-Cookie', C.ToString);
+    FHeaders.Add('Set-Cookie', C.ToString);
     { TODO: should we use SetCookie() instead? }
 end;
 
