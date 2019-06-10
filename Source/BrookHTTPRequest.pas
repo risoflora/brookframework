@@ -45,8 +45,6 @@ uses
   BrookStringMap,
   BrookHTTPUploads;
 
-{ TODO: signed cookies }
-
 type
   { Class which provides headers, cookies, query-string, fields, payloads,
     uploads and other data sent by the client. }
@@ -138,7 +136,7 @@ constructor TBrookHTTPRequest.Create(AHandle: Pointer);
 begin
   inherited Create;
   FHandle := AHandle;
-  FUploads := CreateUploads(sg_httpreq_uploads(AHandle));
+  FUploads := CreateUploads(sg_httpreq_uploads(FHandle));
   FHeaders := CreateHeaders(sg_httpreq_headers(FHandle));
   FCookies := CreateCookies(sg_httpreq_cookies(FHandle));
   FParams := CreateParams(sg_httpreq_params(FHandle));

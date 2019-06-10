@@ -23,7 +23,6 @@ uses
   BrookUtility;
 
 const
-  BROOK_COOKIE_NAME = 'BrookCookie';
 {$IFNDEF FPC}
   {$WRITEABLECONST ON}
 {$ENDIF}
@@ -70,7 +69,6 @@ type
     procedure Sign(const ASecret: string); overload; virtual;
     function TryUnsign(const ASecret: string): Boolean; overload; virtual;
     procedure Unsign(const ASecret: string); overload; virtual;
-    function ToHeader: string; inline;
     function ToString: string; override;
     procedure Clear; virtual;
     procedure Expire; virtual;
@@ -88,13 +86,13 @@ type
 
   TBrookHTTPCookieClass = class of TBrookHTTPCookie;
 
-  TBrookHTTPCookieListEnumerator = class(TCollectionEnumerator)
+  TBrookHTTPCookiesEnumerator = class(TCollectionEnumerator)
   public
     function GetCurrent: TBrookHTTPCookie;
     property Current: TBrookHTTPCookie read GetCurrent;
   end;
 
-  TBrookHTTPCookieList = class(TOwnedCollection)
+  TBrookHTTPCookies = class(TOwnedCollection)
   protected
     function GetItem(AIndex: Integer): TBrookHTTPCookie; virtual;
     procedure SetItem(AIndex: Integer; AValue: TBrookHTTPCookie); virtual;
@@ -102,14 +100,13 @@ type
     constructor Create(AOwner: TPersistent); virtual;
     class function GetCookieClass: TBrookHTTPCookieClass; virtual;
     procedure Assign(ASource: TPersistent); override;
-    function GetEnumerator: TBrookHTTPCookieListEnumerator;
+    function GetEnumerator: TBrookHTTPCookiesEnumerator;
     function Add: TBrookHTTPCookie; virtual;
     function Remove(const AName: string): Boolean; virtual;
     function IndexOf(const AName: string): Integer; virtual;
     function Find(const AName: string): TBrookHTTPCookie; virtual;
     function First: TBrookHTTPCookie; virtual;
     function Last: TBrookHTTPCookie; virtual;
-    function ToString: string; override;
     property Items[AIndex: Integer]: TBrookHTTPCookie read GetItem
       write SetItem; default;
   end;
@@ -121,7 +118,7 @@ implementation
 constructor TBrookHTTPCookie.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
-  FName := BROOK_COOKIE_NAME;
+  FName := 'BrookCookie';
   if Assigned(ACollection) then
     FName := Concat(FName, Succ(ID).ToString);
   FExpires := -1;
@@ -270,11 +267,6 @@ begin
   end;
 end;
 
-function TBrookHTTPCookie.ToHeader: string;
-begin
-  Result := Concat('Set-Cookie: ', ToString);
-end;
-
 procedure TBrookHTTPCookie.SetMaxAge(AValue: Integer);
 begin
   if AValue = FMaxAge then
@@ -320,61 +312,61 @@ begin
   FExpires := EncodeDate(9999, 12, 31) + EncodeTime(23, 59, 59, 999);
 end;
 
-{ TBrookHTTPCookieListEnumerator }
+{ TBrookHTTPCookiesEnumerator }
 
-function TBrookHTTPCookieListEnumerator.GetCurrent: TBrookHTTPCookie;
+function TBrookHTTPCookiesEnumerator.GetCurrent: TBrookHTTPCookie;
 begin
   Result := TBrookHTTPCookie(inherited GetCurrent);
 end;
 
-{ TBrookHTTPCookieList }
+{ TBrookHTTPCookies }
 
-constructor TBrookHTTPCookieList.Create(AOwner: TPersistent);
+constructor TBrookHTTPCookies.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetCookieClass);
 end;
 
-class function TBrookHTTPCookieList.GetCookieClass: TBrookHTTPCookieClass;
+class function TBrookHTTPCookies.GetCookieClass: TBrookHTTPCookieClass;
 begin
   Result := TBrookHTTPCookie;
 end;
 
-function TBrookHTTPCookieList.GetEnumerator: TBrookHTTPCookieListEnumerator;
+function TBrookHTTPCookies.GetEnumerator: TBrookHTTPCookiesEnumerator;
 begin
-  Result := TBrookHTTPCookieListEnumerator.Create(Self);
+  Result := TBrookHTTPCookiesEnumerator.Create(Self);
 end;
 
-procedure TBrookHTTPCookieList.Assign(ASource: TPersistent);
+procedure TBrookHTTPCookies.Assign(ASource: TPersistent);
 var
   C: TBrookHTTPCookie;
 begin
-  if ASource is TBrookHTTPCookieList then
+  if ASource is TBrookHTTPCookies then
   begin
     Clear;
-    for C in (ASource as TBrookHTTPCookieList) do
+    for C in (ASource as TBrookHTTPCookies) do
       Add.Assign(C);
   end
   else
     inherited Assign(ASource);
 end;
 
-function TBrookHTTPCookieList.GetItem(AIndex: Integer): TBrookHTTPCookie;
+function TBrookHTTPCookies.GetItem(AIndex: Integer): TBrookHTTPCookie;
 begin
   Result := TBrookHTTPCookie(inherited GetItem(AIndex));
 end;
 
-procedure TBrookHTTPCookieList.SetItem(AIndex: Integer;
+procedure TBrookHTTPCookies.SetItem(AIndex: Integer;
   AValue: TBrookHTTPCookie);
 begin
   inherited SetItem(AIndex, AValue);
 end;
 
-function TBrookHTTPCookieList.Add: TBrookHTTPCookie;
+function TBrookHTTPCookies.Add: TBrookHTTPCookie;
 begin
   Result := TBrookHTTPCookie(inherited Add);
 end;
 
-function TBrookHTTPCookieList.Remove(const AName: string): Boolean;
+function TBrookHTTPCookies.Remove(const AName: string): Boolean;
 var
   I: Integer;
 begin
@@ -384,7 +376,7 @@ begin
     inherited Delete(I);
 end;
 
-function TBrookHTTPCookieList.IndexOf(const AName: string): Integer;
+function TBrookHTTPCookies.IndexOf(const AName: string): Integer;
 begin
   for Result := 0 to Pred(Count) do
     if SameText(GetItem(Result).Name, AName) then
@@ -392,7 +384,7 @@ begin
   Result := -1;
 end;
 
-function TBrookHTTPCookieList.Find(const AName: string): TBrookHTTPCookie;
+function TBrookHTTPCookies.Find(const AName: string): TBrookHTTPCookie;
 var
   C: TBrookHTTPCookie;
 begin
@@ -402,30 +394,18 @@ begin
   Result := nil;
 end;
 
-function TBrookHTTPCookieList.First: TBrookHTTPCookie;
+function TBrookHTTPCookies.First: TBrookHTTPCookie;
 begin
   if Count = 0 then
     Exit(nil);
   Result := GetItem(0);
 end;
 
-function TBrookHTTPCookieList.Last: TBrookHTTPCookie;
+function TBrookHTTPCookies.Last: TBrookHTTPCookie;
 begin
   if Count = 0 then
     Exit(nil);
   Result := GetItem(Pred(Count));
-end;
-
-function TBrookHTTPCookieList.ToString: string;
-const
-  CRLF = #13#10;
-var
-  C: TBrookHTTPCookie;
-begin
-  Result := '';
-  for C in Self do
-    Result := Concat(Result, C.ToHeader, CRLF);
-  SetLength(Result, Length(Result) - Length(CRLF));
 end;
 
 end.
