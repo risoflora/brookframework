@@ -64,8 +64,8 @@ type
     FHeaders: TBrookStringMap;
     FHandle: Psg_httpres;
     FCompressed: Boolean;
-    FCookiesAlreadySent: Boolean;
     procedure SetCookies(AValue: TBrookHTTPCookies);
+    procedure InternalSendCookies; inline;
   protected
     class function DoStreamRead(Acls: Pcvoid; Aoffset: cuint64_t; Abuf: Pcchar;
       Asize: csize_t): cssize_t; cdecl; static;
@@ -77,8 +77,6 @@ type
     function GetHandle: Pointer; override;
     procedure CheckAlreadySent(Aret: cint); inline;
     procedure CheckZLib(Aret: cint); inline;
-    property CookiesAlreadySent: Boolean read FCookiesAlreadySent
-      write FCookiesAlreadySent;
   public
     { Creates an instance of @link(TBrookHTTPResponse).
       @param(AHandle[in] Request handle.) }
@@ -160,8 +158,6 @@ type
       @param(AContentType[in] Content type.) }
     procedure SendAndRedirect(const AValue, ADestination,
       AContentType: string); overload; virtual;
-    { TODO: WARNING: This method is experimental! }
-    procedure SendCookies; virtual;
     { Offer a file as download.
       @param(AFileName[in] Path of the file to be sent.) }
     procedure Download(const AFileName: TFileName); virtual;
@@ -193,6 +189,7 @@ end;
 
 destructor TBrookHTTPResponse.Destroy;
 begin
+  InternalSendCookies;
   FCookies.Free;
   FHeaders.Free;
   inherited Destroy;
@@ -201,6 +198,15 @@ end;
 function TBrookHTTPResponse.GetHandle: Pointer;
 begin
   Result := FHandle;
+end;
+
+procedure TBrookHTTPResponse.InternalSendCookies;
+var
+  C: TBrookHTTPCookie;
+begin
+  for C in FCookies do
+    FHeaders.Add('Set-Cookie', C.ToString);
+    { TODO: should we use SetCookie() instead? }
 end;
 
 procedure TBrookHTTPResponse.CheckAlreadySent(Aret: cint);
@@ -296,7 +302,6 @@ begin
       M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
-  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendFmt(const AFormat: string;
@@ -324,7 +329,6 @@ begin
       M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
-  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendBytes(const ABytes: TBytes; ASize: NativeUInt;
@@ -355,7 +359,6 @@ begin
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
-  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendStream(AStream: TStream; AFreed: Boolean;
@@ -382,7 +385,6 @@ begin
 {$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
-  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendStream(AStream: TStream; AStatus: Word);
@@ -417,18 +419,6 @@ begin
   SendAndRedirect(AValue, ADestination, AContentType, 302);
 end;
 
-procedure TBrookHTTPResponse.SendCookies;
-var
-  C: TBrookHTTPCookie;
-begin
-  if FCookiesAlreadySent then
-    Exit;
-  FCookiesAlreadySent := True;
-  for C in FCookies do
-    FHeaders.Add('Set-Cookie', C.ToString);
-    { TODO: should we use SetCookie() instead? }
-end;
-
 procedure TBrookHTTPResponse.Download(const AFileName: TFileName);
 var
   M: TMarshaller;
@@ -446,7 +436,6 @@ begin
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
-  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.Render(const AFileName: TFileName);
@@ -466,14 +455,12 @@ begin
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
-  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.Clear;
 begin
   SgLib.Check;
   SgLib.CheckLastError(sg_httpres_clear(FHandle));
-  FCookiesAlreadySent := False;
 end;
 
 end.
