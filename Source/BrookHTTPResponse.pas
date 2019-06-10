@@ -41,7 +41,8 @@ uses
   Marshalling,
   libsagui,
   BrookHandledClasses,
-  BrookStringMap;
+  BrookStringMap,
+  BrookHTTPCookies;
 
 resourcestring
   { Error message @code('Invalid status code: <code>.'). }
@@ -60,8 +61,10 @@ type
   TBrookHTTPResponse = class(TBrookHandledPersistent)
   private
     FCompressed: Boolean;
+    FCookies: TBrookHTTPCookies;
     FHeaders: TBrookStringMap;
     FHandle: Psg_httpres;
+    procedure SetCookies(AValue: TBrookHTTPCookies);
   protected
     class function DoStreamRead(Acls: Pcvoid; Aoffset: cuint64_t; Abuf: Pcchar;
       Asize: csize_t): cssize_t; cdecl; static;
@@ -69,9 +72,11 @@ type
     class procedure CheckStatus(AStatus: Word); static; inline;
     class procedure CheckStream(AStream: TStream); static; inline;
     function CreateHeaders(AHandle: Pointer): TBrookStringMap; virtual;
+    function CreateCookies(AOwner: TPersistent): TBrookHTTPCookies; virtual;
     function GetHandle: Pointer; override;
     procedure CheckAlreadySent(Aret: cint); inline;
     procedure CheckZLib(Aret: cint); inline;
+    procedure SendCookies; inline;
   public
     { Creates an instance of @link(TBrookHTTPResponse).
       @param(AHandle[in] Request handle.) }
@@ -168,6 +173,8 @@ type
     property Compressed: Boolean read FCompressed write FCompressed;
     { Hash table containing the headers to be sent to the client. }
     property Headers: TBrookStringMap read FHeaders;
+    { TODO: WARNING: This property is experimental! }
+    property Cookies: TBrookHTTPCookies read FCookies write SetCookies;
   end;
 
 implementation
@@ -177,10 +184,12 @@ begin
   inherited Create;
   FHandle := AHandle;
   FHeaders := CreateHeaders(sg_httpres_headers(FHandle));
+  FCookies := CreateCookies(Self);
 end;
 
 destructor TBrookHTTPResponse.Destroy;
 begin
+  FCookies.Free;
   FHeaders.Free;
   inherited Destroy;
 end;
@@ -202,6 +211,15 @@ begin
     raise EBrookHTTPResponse.Create(SBrookZLibError);
 end;
 
+procedure TBrookHTTPResponse.SendCookies;
+var
+  C: TBrookHTTPCookie;
+begin
+  for C in FCookies do
+    FHeaders.AddOrSet('Set-Cookie', C.ToString);
+    { TODO: should we use SetCookie() instead? }
+end;
+
 class procedure TBrookHTTPResponse.CheckStatus(AStatus: Word);
 begin
   if (AStatus < 100) or (AStatus > 599) then
@@ -218,6 +236,11 @@ function TBrookHTTPResponse.CreateHeaders(AHandle: Pointer): TBrookStringMap;
 begin
   Result := TBrookStringMap.Create(AHandle);
   Result.ClearOnDestroy := False;
+end;
+
+function TBrookHTTPResponse.CreateCookies(AOwner: TPersistent): TBrookHTTPCookies;
+begin
+  Result := TBrookHTTPCookies.Create(AOwner);
 end;
 
 {$IFDEF FPC}
@@ -240,6 +263,16 @@ end;
 class procedure TBrookHTTPResponse.DoStreamFree(Acls: Pcvoid);
 begin
   TStream(Acls).Free;
+end;
+
+procedure TBrookHTTPResponse.SetCookies(AValue: TBrookHTTPCookies);
+begin
+  if AValue = FCookies then
+    Exit;
+  if Assigned(AValue) then
+    FCookies.Assign(AValue)
+  else
+    FCookies.Clear;
 end;
 
 procedure TBrookHTTPResponse.SetCookie(const AName, AValue: string);
@@ -268,6 +301,7 @@ begin
       M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
+  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendFmt(const AFormat: string;
@@ -295,6 +329,7 @@ begin
       M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
+  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendBytes(const ABytes: TBytes; ASize: NativeUInt;
@@ -325,6 +360,7 @@ begin
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
+  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendStream(AStream: TStream; AFreed: Boolean;
@@ -351,6 +387,7 @@ begin
 {$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
+  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.SendStream(AStream: TStream; AStatus: Word);
@@ -402,6 +439,7 @@ begin
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
+  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.Render(const AFileName: TFileName);
@@ -421,6 +459,7 @@ begin
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
   SgLib.CheckLastError(R);
+  SendCookies;
 end;
 
 procedure TBrookHTTPResponse.Clear;
