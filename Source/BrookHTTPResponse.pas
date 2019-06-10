@@ -60,10 +60,11 @@ type
     the client. }
   TBrookHTTPResponse = class(TBrookHandledPersistent)
   private
-    FCompressed: Boolean;
     FCookies: TBrookHTTPCookies;
     FHeaders: TBrookStringMap;
     FHandle: Psg_httpres;
+    FCompressed: Boolean;
+    FCookiesAlreadySent: Boolean;
     procedure SetCookies(AValue: TBrookHTTPCookies);
   protected
     class function DoStreamRead(Acls: Pcvoid; Aoffset: cuint64_t; Abuf: Pcchar;
@@ -76,7 +77,8 @@ type
     function GetHandle: Pointer; override;
     procedure CheckAlreadySent(Aret: cint); inline;
     procedure CheckZLib(Aret: cint); inline;
-    procedure SendCookies; inline;
+    property CookiesAlreadySent: Boolean read FCookiesAlreadySent
+      write FCookiesAlreadySent;
   public
     { Creates an instance of @link(TBrookHTTPResponse).
       @param(AHandle[in] Request handle.) }
@@ -158,6 +160,8 @@ type
       @param(AContentType[in] Content type.) }
     procedure SendAndRedirect(const AValue, ADestination,
       AContentType: string); overload; virtual;
+    { TODO: WARNING: This method is experimental! }
+    procedure SendCookies; virtual;
     { Offer a file as download.
       @param(AFileName[in] Path of the file to be sent.) }
     procedure Download(const AFileName: TFileName); virtual;
@@ -209,15 +213,6 @@ procedure TBrookHTTPResponse.CheckZLib(Aret: cint);
 begin
   if Aret < 0 then
     raise EBrookHTTPResponse.Create(SBrookZLibError);
-end;
-
-procedure TBrookHTTPResponse.SendCookies;
-var
-  C: TBrookHTTPCookie;
-begin
-  for C in FCookies do
-    FHeaders.AddOrSet('Set-Cookie', C.ToString);
-    { TODO: should we use SetCookie() instead? }
 end;
 
 class procedure TBrookHTTPResponse.CheckStatus(AStatus: Word);
@@ -422,6 +417,18 @@ begin
   SendAndRedirect(AValue, ADestination, AContentType, 302);
 end;
 
+procedure TBrookHTTPResponse.SendCookies;
+var
+  C: TBrookHTTPCookie;
+begin
+  if FCookiesAlreadySent then
+    Exit;
+  FCookiesAlreadySent := True;
+  for C in FCookies do
+    FHeaders.AddOrSet('Set-Cookie', C.ToString);
+    { TODO: should we use SetCookie() instead? }
+end;
+
 procedure TBrookHTTPResponse.Download(const AFileName: TFileName);
 var
   M: TMarshaller;
@@ -466,6 +473,7 @@ procedure TBrookHTTPResponse.Clear;
 begin
   SgLib.Check;
   SgLib.CheckLastError(sg_httpres_clear(FHandle));
+  FCookiesAlreadySent := False;
 end;
 
 end.
