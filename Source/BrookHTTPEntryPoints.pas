@@ -109,6 +109,7 @@ type
     procedure CheckPrepared; inline;
   public
     constructor Create(AOwner: TPersistent); virtual;
+    destructor Destroy; override;
     class function GetEntryPointClass: TBrookHTTPEntryPointClass; virtual;
     procedure Assign(ASource: TPersistent); override;
     function GetEnumerator: TBrookHTTPEntryPointListEnumerator;
@@ -293,6 +294,12 @@ end;
 constructor TBrookHTTPEntryPointList.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetEntryPointClass);
+end;
+
+destructor TBrookHTTPEntryPointList.Destroy;
+begin
+  Unprepare;
+  inherited Destroy;
 end;
 
 class function TBrookHTTPEntryPointList.GetEntryPointClass: TBrookHTTPEntryPointClass;
