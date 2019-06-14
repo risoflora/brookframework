@@ -106,14 +106,14 @@ type
     function GetItem(AIndex: Integer): TBrookHTTPEntryPoint; virtual;
     procedure SetItem(AIndex: Integer; AValue: TBrookHTTPEntryPoint); virtual;
     procedure InternalAdd(AEntryPoint: TBrookHTTPEntryPoint); virtual;
-    procedure Prepare; virtual;
-    procedure Unprepare; virtual;
     procedure CheckPrepared; inline;
   public
     constructor Create(AOwner: TPersistent); virtual;
     class function GetEntryPointClass: TBrookHTTPEntryPointClass; virtual;
     procedure Assign(ASource: TPersistent); override;
     function GetEnumerator: TBrookHTTPEntryPointListEnumerator;
+    procedure Prepare; virtual;
+    procedure Unprepare; virtual;
     function IsPrepared: Boolean; virtual;
     function NewName: string; virtual;
     function Add: TBrookHTTPEntryPoint; virtual;
@@ -311,6 +311,12 @@ begin
   Result := AEntryPoint.FName;
 end;
 
+procedure TBrookHTTPEntryPointList.CheckPrepared;
+begin
+  if not Assigned(FHandle) then
+    raise EInvalidPointer.Create(SBrookEntryPointListUnprepared);
+end;
+
 function TBrookHTTPEntryPointList.GetHandle: Pointer;
 begin
   Result := FHandle;
@@ -333,37 +339,6 @@ end;
 function TBrookHTTPEntryPointList.GetEnumerator: TBrookHTTPEntryPointListEnumerator;
 begin
   Result := TBrookHTTPEntryPointListEnumerator.Create(Self);
-end;
-
-procedure TBrookHTTPEntryPointList.Prepare;
-var
-  EP: TBrookHTTPEntryPoint;
-begin
-  if Assigned(FHandle) or (Count = 0) then
-    Exit;
-  SgLib.Check;
-  FHandle := sg_entrypoints_new;
-  SgLib.CheckLastError(sg_entrypoints_clear(FHandle));
-  for EP in Self do
-  begin
-    EP.Validate;
-    InternalAdd(EP);
-  end;
-end;
-
-procedure TBrookHTTPEntryPointList.Unprepare;
-begin
-  if not Assigned(FHandle) then
-    Exit;
-  SgLib.Check;
-  sg_entrypoints_free(FHandle);
-  FHandle := nil;
-end;
-
-procedure TBrookHTTPEntryPointList.CheckPrepared;
-begin
-  if not Assigned(FHandle) then
-    raise EInvalidPointer.Create(SBrookEntryPointListUnprepared);
 end;
 
 procedure TBrookHTTPEntryPointList.InternalAdd(AEntryPoint: TBrookHTTPEntryPoint);
@@ -390,6 +365,31 @@ begin
     Result := Concat(GetEntryPointLabel, I.ToString);
     Inc(I);
   until IndexOf(Result) < 0;
+end;
+
+procedure TBrookHTTPEntryPointList.Prepare;
+var
+  EP: TBrookHTTPEntryPoint;
+begin
+  if Assigned(FHandle) or (Count = 0) then
+    Exit;
+  SgLib.Check;
+  FHandle := sg_entrypoints_new;
+  SgLib.CheckLastError(sg_entrypoints_clear(FHandle));
+  for EP in Self do
+  begin
+    EP.Validate;
+    InternalAdd(EP);
+  end;
+end;
+
+procedure TBrookHTTPEntryPointList.Unprepare;
+begin
+  if not Assigned(FHandle) then
+    Exit;
+  SgLib.Check;
+  sg_entrypoints_free(FHandle);
+  FHandle := nil;
 end;
 
 function TBrookHTTPEntryPointList.IsPrepared: Boolean;
