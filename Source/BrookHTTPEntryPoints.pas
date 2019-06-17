@@ -126,6 +126,7 @@ type
     procedure Clear; virtual;
     property Items[AIndex: Integer]: TBrookHTTPEntryPoint read GetItem
       write SetItem; default;
+    property Prepared: Boolean read IsPrepared;
   end;
 
   TBrookHTTPEntryPointsNotFoundEvent = procedure(ASender: TObject;
