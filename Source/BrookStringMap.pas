@@ -116,6 +116,8 @@ type
     function GetCount: Integer;
     function GetValue(const AName: string): string;
     procedure SetValue(const AName, AValue: string);
+    function InternalTryValue(const AName: string;
+      out AValue: string): Boolean; inline;
   protected
     class function CreatePair(
       Apair: Psg_strmap): TBrookStringPair; static; inline;
@@ -165,8 +167,12 @@ type
     function Contains(const AName: string): Boolean; virtual;
     { Gets a pair by name and return its value.
       @param(AName[in] Name of the pair.)
-      @returns(Pair value.)}
-    function Get(const AName: string): string; virtual;
+      @returns(Pair value.) }
+    function Get(const AName: string): string; overload; virtual;
+    { Gets a pair by name and return its value.
+      @param(AName[in] Name of the pair.)
+      @returns(Pair value.) }
+    function Get(const AName, ADefValue: string): string; overload; virtual;
     { Tries to find a pair value by its name.
       @param(AName[in] Name of the pair.)
       @param(AValue[out] Reference to store found value.)
@@ -309,6 +315,19 @@ begin
     CreatePair(Apair_b));
 end;
 
+function TBrookStringMap.InternalTryValue(const AName: string;
+  out AValue: string): Boolean;
+var
+  P: Pcchar;
+  M: TMarshaller;
+begin
+  SgLib.Check;
+  P := sg_strmap_get(FHandle^, M.ToCString(AName));
+  Result := Assigned(P);
+  if Result then
+    AValue := TMarshal.ToString(P);
+end;
+
 function TBrookStringMap.GetEnumerator: TBrookStringMapEnumerator;
 begin
   Result := TBrookStringMapEnumerator.Create(Self);
@@ -428,17 +447,16 @@ begin
   Result := TMarshal.ToString(sg_strmap_get(FHandle^, M.ToCString(AName)));
 end;
 
+function TBrookStringMap.Get(const AName, ADefValue: string): string;
+begin
+  if not InternalTryValue(AName, Result) then
+    Result := ADefValue;
+end;
+
 function TBrookStringMap.TryValue(const AName: string;
   out AValue: string): Boolean;
-var
-  P: Pcchar;
-  M: TMarshaller;
 begin
-  SgLib.Check;
-  P := sg_strmap_get(FHandle^, M.ToCString(AName));
-  Result := Assigned(P);
-  if Result then
-    AValue := TMarshal.ToString(P);
+  Result := InternalTryValue(AName, AValue);
 end;
 
 function TBrookStringMap.First(out APair: TBrookStringPair): Boolean;
