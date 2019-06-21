@@ -236,25 +236,18 @@ begin
   AMap.Add(AName, AValue);
   Assert(AMap.Count = 1);
   Assert(AMap.Get('').IsEmpty);
-  Assert(AMap.Get('', '').IsEmpty);
   Assert(AMap.Get('xxx').IsEmpty);
-  Assert(AMap.Get('xxx', '').IsEmpty);
   Assert(AMap.Get('yyy').IsEmpty);
-  Assert(AMap.Get('yyy', '').IsEmpty);
-  Assert(not AMap.Get('', 'abc').IsEmpty);
 
   AMap.Add('', '');
   AMap.Add('xxx', 'yyy');
   AMap.Add('yyy', 'xxx');
   Assert(AMap.Count = 4);
   Assert(AMap.Get(AName).Equals(AValue));
-  Assert(AMap.Get(AName, '').Equals(AValue));
 
   Assert(AMap.Get('').IsEmpty);
   Assert(AMap.Get('xxx').Equals('yyy'));
   Assert(AMap.Get('yyy').Equals('xxx'));
-  Assert(AMap.Get('foo', 'yyy').Equals('yyy'));
-  Assert(AMap.Get('bar', 'xxx').Equals('xxx'));
 end;
 
 procedure Test_StringMapRemove(AMap: TBrookStringMap; const AName,

@@ -95,14 +95,14 @@ type
 
   { Function signature used by @link(TBrookStringMap.Iterate).
     @param(AData[in,out] User-defined data.)
-    @param(APair[out] Current iterated pair.)}
+    @param(APair[out] Current iterated pair.) }
   TBrookStringMapIterator = function(AData: Pointer;
     APair: TBrookStringPair): Integer;
 
   { Function signature used by @link(TBrookStringMap.Sort).
     @param(AData[in,out] User-defined data.)
     @param(APairA[out] Current left pair (A).)
-    @param(APairB[out] Current right pair (B).)}
+    @param(APairB[out] Current right pair (B).) }
   TBrookStringMapComparator = function(AData: Pointer;
     APairA, APairB: TBrookStringPair): Integer;
 
@@ -116,8 +116,6 @@ type
     function GetCount: Integer;
     function GetValue(const AName: string): string;
     procedure SetValue(const AName, AValue: string);
-    function InternalTryValue(const AName: string;
-      out AValue: string): Boolean; inline;
   protected
     class function CreatePair(
       Apair: Psg_strmap): TBrookStringPair; static; inline;
@@ -130,7 +128,7 @@ type
     procedure DoChange(AOperation: TBrookStringMapOperation); virtual;
   public
     { Creates an instance of @link(TBrookStringMap).
-      @param(AHandle[in] Pointer to store the string map handle.)}
+      @param(AHandle[in] Pointer to store the string map handle.) }
     constructor Create(AHandle: Pointer); virtual;
     { Frees an instance of @link(TBrookStringMap). }
     destructor Destroy; override;
@@ -168,11 +166,7 @@ type
     { Gets a pair by name and return its value.
       @param(AName[in] Name of the pair.)
       @returns(Pair value.) }
-    function Get(const AName: string): string; overload; virtual;
-    { Gets a pair by name and return its value.
-      @param(AName[in] Name of the pair.)
-      @returns(Pair value.) }
-    function Get(const AName, ADefValue: string): string; overload; virtual;
+    function Get(const AName: string): string; virtual;
     { Tries to find a pair value by its name.
       @param(AName[in] Name of the pair.)
       @param(AValue[out] Reference to store found value.)
@@ -315,19 +309,6 @@ begin
     CreatePair(Apair_b));
 end;
 
-function TBrookStringMap.InternalTryValue(const AName: string;
-  out AValue: string): Boolean;
-var
-  P: Pcchar;
-  M: TMarshaller;
-begin
-  SgLib.Check;
-  P := sg_strmap_get(FHandle^, M.ToCString(AName));
-  Result := Assigned(P);
-  if Result then
-    AValue := TMarshal.ToString(P);
-end;
-
 function TBrookStringMap.GetEnumerator: TBrookStringMapEnumerator;
 begin
   Result := TBrookStringMapEnumerator.Create(Self);
@@ -447,16 +428,17 @@ begin
   Result := TMarshal.ToString(sg_strmap_get(FHandle^, M.ToCString(AName)));
 end;
 
-function TBrookStringMap.Get(const AName, ADefValue: string): string;
-begin
-  if not InternalTryValue(AName, Result) then
-    Result := ADefValue;
-end;
-
 function TBrookStringMap.TryValue(const AName: string;
   out AValue: string): Boolean;
+var
+  P: Pcchar;
+  M: TMarshaller;
 begin
-  Result := InternalTryValue(AName, AValue);
+  SgLib.Check;
+  P := sg_strmap_get(FHandle^, M.ToCString(AName));
+  Result := Assigned(P);
+  if Result then
+    AValue := TMarshal.ToString(P);
 end;
 
 function TBrookStringMap.First(out APair: TBrookStringPair): Boolean;

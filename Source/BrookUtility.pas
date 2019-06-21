@@ -52,7 +52,7 @@ uses
 type
   { Event signature used by stuff that handle errors.
     @param(ASender[in] Sender object.)
-    @param(AException[in] Exception object.)}
+    @param(AException[in] Exception object.) }
   TBrookErrorEvent = procedure(ASender: TObject;
     AException: Exception) of object;
 
