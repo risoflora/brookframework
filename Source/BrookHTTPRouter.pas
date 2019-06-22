@@ -181,6 +181,7 @@ type
     FHandle: Psg_route;
   protected
     function GetHandle: Pointer; override;
+    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     class function GetRoutePattern(ARoute: TBrookHTTPRoute): string; virtual;
     class function GetRouteLabel: string; virtual;
     function GetItem(AIndex: Integer): TBrookHTTPRoute; virtual;
@@ -555,12 +556,19 @@ end;
 constructor TBrookHTTPRoutes.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetRouterClass);
+  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
 end;
 
 destructor TBrookHTTPRoutes.Destroy;
 begin
   Unprepare;
+  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   inherited Destroy;
+end;
+
+class procedure TBrookHTTPRoutes.LibNotifier(AClosure: Pointer);
+begin
+  TBrookHTTPRoutes(AClosure).Unprepare;
 end;
 
 class function TBrookHTTPRoutes.GetRouterClass: TBrookHTTPRouteClass;
@@ -748,13 +756,10 @@ end;
 
 destructor TBrookHTTPRouter.Destroy;
 begin
-  try
-    SetActive(False);
-    SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
-  finally
-    inherited Destroy;
-    FRoutes.Free;
-  end;
+  FRoutes.Free;
+  SetActive(False);
+  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
+  inherited Destroy;
 end;
 
 function TBrookHTTPRouter.CreateRoutes: TBrookHTTPRoutes;

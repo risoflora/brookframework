@@ -99,6 +99,7 @@ type
   private
     FHandle: Psg_entrypoints;
   protected
+    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     class function GetEntryPointLabel: string; virtual;
     class function GetEntryPointName(
       AEntryPoint: TBrookHTTPEntryPoint): string; virtual;
@@ -295,12 +296,19 @@ end;
 constructor TBrookHTTPEntryPointList.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetEntryPointClass);
+  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
 end;
 
 destructor TBrookHTTPEntryPointList.Destroy;
 begin
   Unprepare;
+  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   inherited Destroy;
+end;
+
+class procedure TBrookHTTPEntryPointList.LibNotifier(AClosure: Pointer);
+begin
+  TBrookHTTPEntryPointList(AClosure).Unprepare;
 end;
 
 class function TBrookHTTPEntryPointList.GetEntryPointClass: TBrookHTTPEntryPointClass;
@@ -491,13 +499,10 @@ end;
 
 destructor TBrookHTTPEntryPoints.Destroy;
 begin
-  try
-    SetActive(False);
-    SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
-  finally
-    inherited Destroy;
-    FList.Free;
-  end;
+  FList.Free;
+  SetActive(False);
+  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
+  inherited Destroy;
 end;
 
 function TBrookHTTPEntryPoints.CreateList: TBrookHTTPEntryPointList;
