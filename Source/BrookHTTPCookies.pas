@@ -1,4 +1,30 @@
-{ TODO: WARNING: This unit is experimental! }
+(*   _                     _
+ *  | |__  _ __ ___   ___ | | __
+ *  | '_ \| '__/ _ \ / _ \| |/ /
+ *  | |_) | | | (_) | (_) |   <
+ *  |_.__/|_|  \___/ \___/|_|\_\
+ *
+ * Microframework which helps to develop web Pascal applications.
+ *
+ * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ *
+ * This file is part of Brook framework.
+ *
+ * Brook framework is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Brook framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Brook framework.  If not, see <http://www.gnu.org/licenses/>.
+ *)
+
+{ Contains classes which handles server side cookies. }
 
 unit BrookHTTPCookies;
 
@@ -32,14 +58,19 @@ const
 {$ENDIF}
 
 resourcestring
+  { Error message @code('Empty cookie name.'). }
   SBrookEmptyCookieName = 'Empty cookie name.';
+  { Error message @code('Invalid cookie name: <cookie-name>.'). }
   SBrookInvalidCookieName = 'Invalid cookie name: %s.';
 
 type
+  { Handles exceptions related to HTTP cookies classes. }
   EBrookHTTPCookie = class(Exception);
 
+  { SameSite cookie attribute types. }
   TBrookHTTPCookieSameSite = (ssNone, ssStrict, ssLax);
 
+  { Server side HTTP cookie item. }
   TBrookHTTPCookie = class(TCollectionItem)
   private
     FName: string;
@@ -84,14 +115,19 @@ type
     property SameSite: TBrookHTTPCookieSameSite read FSameSite write FSameSite;
   end;
 
+  { Class-reference for @link(TBrookHTTPCookie). }
   TBrookHTTPCookieClass = class of TBrookHTTPCookie;
 
+  { List enumerator for @code(TBrookHTTPCookies). }
   TBrookHTTPCookiesEnumerator = class(TCollectionEnumerator)
   public
+    { Get current cookie item. }
     function GetCurrent: TBrookHTTPCookie;
+    { Current cookie item. }
     property Current: TBrookHTTPCookie read GetCurrent;
   end;
 
+  { Server side HTTP cookie list. }
   TBrookHTTPCookies = class(TOwnedCollection)
   protected
     function GetItem(AIndex: Integer): TBrookHTTPCookie; virtual;
@@ -154,7 +190,7 @@ begin
   end
 {$ELSE}
   Result := TNetEncoding.Base64.EncodeBytesToString(
-    THashSHA2.GetHMACAsBytes(AUnsignedValue, ASecret))
+    THashSHA1.GetHMACAsBytes(AUnsignedValue, ASecret))
 {$ENDIF};
   VPos := Pos('=', Result);
   if VPos > 0 then

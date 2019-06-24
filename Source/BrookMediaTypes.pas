@@ -212,7 +212,7 @@ type
     function IsPrepared: Boolean; override;
   public
     { Creates an instance of @link(TBrookMediaTypesPath).
-      @param(Media types file.) }
+      @param(AFileName[in] Media types file.) }
     constructor Create(const AFileName: string); reintroduce; overload; virtual;
     { Creates an instance of @link(TBrookMediaTypesPath). }
     constructor Create; overload; override;
