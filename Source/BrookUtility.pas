@@ -163,8 +163,6 @@ type
     { TODO: WARNING: This method is experimental! }
     class function DateTimeToGMT(ADateTime: TDateTime): string; static; inline;
     { TODO: WARNING: This method is experimental! }
-    class function EncodeURL(const S: string): string; static; inline;
-    { TODO: WARNING: This method is experimental! }
     class function Sha1(const S: string): string; static; inline;
   end;
 
@@ -324,16 +322,6 @@ begin
   DecodeDate(ADateTime, Y, M, D);
   DateTimeToString(Result, Format('"%s", dd "%s" yyy hh":"mm":"ss "GMT"', [
     DAYS[DayOfWeek(ADateTime)], MONTHS[M]]), ADateTime);
-end;
-
-class function Brook.EncodeURL(const S: string): string;
-begin
-  Result :=
-{$IFDEF FPC}
-    StringReplace(HTTPEncode(S), '+', '%20', [rfReplaceAll])
-{$ELSE}
-    TNetEncoding.URL.Encode(S)
-{$ENDIF};
 end;
 
 class function Brook.Sha1(const S: string): string;

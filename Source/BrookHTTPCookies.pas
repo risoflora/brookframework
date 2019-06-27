@@ -75,7 +75,7 @@ type
   private
     FName: string;
     FValue: string;
-    FOldValue: string;
+    FOriginalValue: string;
     FDomain: string;
     FPath: string;
     FExpires: TDateTime;
@@ -85,6 +85,7 @@ type
     FSameSite: TBrookHTTPCookieSameSite;
     procedure SetMaxAge(AValue: Integer);
     procedure SetName(const AValue: string);
+    procedure SetValue(const AValue: string);
   public
     constructor Create(ACollection: TCollection); override;
     procedure Assign(ASource: TPersistent); override;
@@ -105,7 +106,7 @@ type
     procedure Expire; virtual;
     procedure Persist; virtual;
     property Name: string read FName write SetName;
-    property Value: string read FValue write FValue;
+    property Value: string read FValue write SetValue;
     property Domain: string read FDomain write FDomain;
     property Path: string read FPath write FPath;
     property Expires: TDateTime read FExpires write FExpires;
@@ -281,10 +282,10 @@ function TBrookHTTPCookie.ToString: string;
 begin
   Result := Concat(FName, '=');
   if IsSigned then
-    Result := Concat(Result, BROOK_COOKIE_SIG_PREFIX, Brook.EncodeURL(FOldValue),
-      FValue.SubString(BROOK_COOKIE_SIG_PREFIX.Length + FOldValue.Length))
+    Result := Concat(Result, BROOK_COOKIE_SIG_PREFIX, FOriginalValue,
+      FValue.SubString(BROOK_COOKIE_SIG_PREFIX.Length + FOriginalValue.Length))
   else
-    Result := Concat(Result, Brook.EncodeURL(FValue));
+    Result := Concat(Result, FValue);
   if FMaxAge > -1 then
     Result := Concat(Result, '; Max-Age=', IntToStr(FMaxAge));
   if Length(FDomain) > 0 then
@@ -323,6 +324,14 @@ begin
   if not IsValidIdent(AValue) then
     raise EBrookHTTPCookie.CreateFmt(SBrookInvalidCookieName, [AValue]);
   FName := AValue;
+end;
+
+procedure TBrookHTTPCookie.SetValue(const AValue: string);
+begin
+  if AValue = FValue then
+    Exit;
+  FValue := AValue;
+  FOriginalValue := FValue;
 end;
 
 procedure TBrookHTTPCookie.Clear;
