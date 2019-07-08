@@ -456,12 +456,34 @@ var
   T: TBrookMediaTypes;
   P: TBrookMediaTypesParser;
 begin
+  R := TBrookFileReader.Create(MIME_TYPES_FILE);
+  T := TFakeMediaTypes.Create;
+  P := TBrookMediaTypesParser.Create(R, T);
+  try
+    Assert(P.Types.Count = 0);
+    P.Parse;
+    Assert(P.Types.Count = 1239);
+    Assert(P.Types.Find('.txt') = 'text/plain');
+    Assert(P.Types.Find('.html') = 'text/html');
+    Assert(P.Types.Find('.htm') = 'text/html');
+    Assert(P.Types.Find('.pas') = 'text/x-pascal');
+    Assert(P.Types.Find('.p') = 'text/x-pascal');
+    Assert(P.Types.Find('.xhtml') = 'application/xhtml+xml');
+    Assert(P.Types.Find('.json') = 'application/json');
+    Assert(P.Types.Find('.pdf') = 'application/pdf');
+    Assert(P.Types.Find('.foobar') = P.Types.DefaultType);
+  finally
+    T.Free;
+    R.Free;
+    P.Free;
+  end;
+
   R := TBrookStringReader.Create(Concat(
-    'text/plain', #9,'txt', sLineBreak,
-    'text/html', #9,'html htm xhtml', sLineBreak,
-    'application/json', #9,'json', sLineBreak,
-    '#application/docbook+xml', #9,'docbook dbk', sLineBreak,
-    'application/pdf', #9,'pdf', sLineBreak,
+    'text/plain', #9, #9, #9,'txt', sLineBreak,
+    'text/html', #9, #9, #9,'html htm xhtml', sLineBreak,
+    'application/json', #9, #9, #9,'json', sLineBreak,
+    '#application/docbook+xml', #9, #9, #9,'docbook dbk', sLineBreak,
+    'application/pdf', #9, #9, #9,'pdf', sLineBreak,
     'foo bar', sLineBreak,
     'foo=bar'
   ));

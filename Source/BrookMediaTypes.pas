@@ -485,13 +485,15 @@ end;
 
 procedure TBrookMediaTypesParser.Parse;
 var
-  I: Integer;
-  VSep: Char;
-  VLine, VMediaType: string;
   VPair, VExtensions: TArray<string>;
+  VLine, VMediaType: string;
+  VSep: Char;
+  VSameSep: Boolean;
+  I: Integer;
 begin
   FTypes.Cache.Clear;
   VSep := #0;
+  VSameSep := False;
   while not FReader.EOF do
   begin
     VLine := FReader.Read;
@@ -502,15 +504,24 @@ begin
         if Pos(#9, VLine) > 0 then
           VSep := #9
         else
+        begin
           VSep := ' ';
+          VSameSep := True;
+        end;
       end;
       VPair := VLine.Split([VSep], TStringSplitOptions.ExcludeEmpty);
       if Length(VPair) > 1 then
       begin
         VMediaType := VPair[0];
-        VExtensions := VPair[1].Split([' '], TStringSplitOptions.ExcludeEmpty);
-        for I := Low(VExtensions) to High(VExtensions) do
-          FTypes.Add(VExtensions[I], VMediaType);
+        if VSameSep then
+          for I := Succ(Low(VPair)) to High(VPair) do
+            FTypes.Add(VPair[I], VMediaType)
+        else
+        begin
+          VExtensions := VPair[1].Split([' '], TStringSplitOptions.ExcludeEmpty);
+          for I := Low(VExtensions) to High(VExtensions) do
+            FTypes.Add(VExtensions[I], VMediaType);
+        end;
       end;
     end;
   end;
