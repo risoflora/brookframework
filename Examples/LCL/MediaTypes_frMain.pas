@@ -52,7 +52,7 @@ uses
 
 const
   // Allowed file extensions
-  ALLOWED_EXTS = '*.html;*.css;*.js;*.png;*.jpeg;*.jpg;*.gif;*.pas;*.lfm;*.lpr';
+  ALLOWED_EXTS = '*.txt;*.html;*.css;*.js;*.png;*.jpeg;*.jpg;*.gif;*.pas;*.lfm;*.lpr';
 
 type
   TfrMain = class(TForm)
@@ -78,6 +78,7 @@ type
     procedure BrookHTTPServer1Start(Sender: TObject);
     procedure BrookHTTPServer1Stop(Sender: TObject);
     procedure edPortChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure lbLinkClick(Sender: TObject);
     procedure lbLinkMouseEnter(Sender: TObject);
     procedure lbLinkMouseLeave(Sender: TObject);
@@ -93,6 +94,11 @@ var
 implementation
 
 {$R *.lfm}
+
+procedure TfrMain.FormCreate(Sender: TObject);
+begin
+  BrookMIME1.FileName := '../Common/mime.types';
+end;
 
 procedure TfrMain.DoError(AData: PtrInt);
 var
@@ -121,8 +127,8 @@ end;
 procedure TfrMain.acStartExecute(Sender: TObject);
 begin
   BrookLibraryLoader1.Open;
-  BrookHTTPServer1.Open;
   BrookMIME1.Open;
+  BrookHTTPServer1.Open;
 end;
 
 procedure TfrMain.acStopExecute(Sender: TObject);
@@ -174,6 +180,7 @@ begin
   // ... otherwise, list all files to the screen.
   VFileNames := FindAllFiles(GetCurrentDir, ALLOWED_EXTS, False);
   try
+    VFileNames.Sort;
     VFileLinks := '<ul style="list-style: none;">';
     for I := 0 to Pred(VFileNames.Count) do
     begin

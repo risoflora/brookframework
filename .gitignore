@@ -98,6 +98,14 @@ BrookTardigrade.pas
 Doc/
 
 # Generated examples:
+hellohttpsrv
+httpauth
+httpcookies
+httprouter
+httpuploads
+mediatypes
+stringbuffer
+stringmap
 HTTPAuth_Example
 HTTPCookie_Example
 HTTPRouter_Example

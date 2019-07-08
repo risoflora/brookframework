@@ -6,6 +6,7 @@ object frMain: TfrMain
   Caption = 'Media types example'
   ClientHeight = 160
   ClientWidth = 320
+  OnCreate = FormCreate
   Position = poDesktopCenter
   LCLVersion = '2.0.2.0'
   object lbPort: TLabel

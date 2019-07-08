@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="7">
+    <Targets Count="8">
       <Target0 FileName="hellohttpsrv.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
@@ -14,22 +14,26 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target2>
-      <Target3 FileName="httpuploads.lpi">
+      <Target3 FileName="httprouter.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target3>
-      <Target4 FileName="httprouter.lpi">
+      <Target4 FileName="httpuploads.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target4>
-      <Target5 FileName="stringbuffer.lpi">
+      <Target5 FileName="mediatypes.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target5>
-      <Target6 FileName="stringmap.lpi">
+      <Target6 FileName="stringbuffer.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target6>
+      <Target7 FileName="stringmap.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target7>
     </Targets>
   </ProjectGroup>
 </CONFIG>
