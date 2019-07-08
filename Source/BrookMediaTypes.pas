@@ -504,9 +504,11 @@ begin
           VSep := #9
         else
         begin
+          if Pos(' ', VLine) = 0 then
+            Continue;
           VSep := ' ';
-          VSameSep := True;
         end;
+        VSameSep := VSep = ' ';
       end;
       VPair := VLine.Split([VSep], TStringSplitOptions.ExcludeEmpty);
       if Length(VPair) > 1 then

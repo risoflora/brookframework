@@ -44,6 +44,7 @@ uses
 
 const
   MIME_TYPES_FILE = '../Examples/Common/mime.types';
+  FAKE_MIME_TYPES_FILE = 'fakemime.types';
 
 var
   MIMEFileName: TFileName;
@@ -455,6 +456,26 @@ var
   T: TBrookMediaTypes;
   P: TBrookMediaTypesParser;
 begin
+  R := TBrookFileReader.Create(FAKE_MIME_TYPES_FILE);
+  T := TFakeMediaTypes.Create;
+  P := TBrookMediaTypesParser.Create(R, T);
+  try
+    Assert(P.Types.Count = 0);
+    P.Parse;
+    Assert(P.Types.Count = 7);
+    Assert(P.Types.Find('.json') = 'application/json');
+    Assert(P.Types.Find('.html') = 'text/html');
+    Assert(P.Types.Find('.htm') = 'text/html');
+    Assert(P.Types.Find('.pas') = 'text/x-pascal');
+    Assert(P.Types.Find('.p') = 'text/x-pascal');
+    Assert(P.Types.Find('.jpgv') = 'video/jpeg');
+    Assert(P.Types.Find('.foobar') = P.Types.DefaultType);
+  finally
+    T.Free;
+    R.Free;
+    P.Free;
+  end;
+
   R := TBrookFileReader.Create(MIME_TYPES_FILE);
   T := TFakeMediaTypes.Create;
   P := TBrookMediaTypesParser.Create(R, T);
