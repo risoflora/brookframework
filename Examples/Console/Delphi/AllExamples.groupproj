@@ -24,6 +24,9 @@
         <Projects Include="stringmap.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="mediatypes.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -95,14 +98,23 @@
     <Target Name="stringmap:Make">
         <MSBuild Projects="stringmap.dproj" Targets="Make"/>
     </Target>
+    <Target Name="mediatypes">
+        <MSBuild Projects="mediatypes.dproj"/>
+    </Target>
+    <Target Name="mediatypes:Clean">
+        <MSBuild Projects="mediatypes.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="mediatypes:Make">
+        <MSBuild Projects="mediatypes.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httprouter;httpuploads;stringbuffer;stringmap"/>
+        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httprouter;httpuploads;stringbuffer;stringmap;mediatypes"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httprouter:Clean;httpuploads:Clean;stringbuffer:Clean;stringmap:Clean"/>
+        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httprouter:Clean;httpuploads:Clean;stringbuffer:Clean;stringmap:Clean;mediatypes:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httprouter:Make;httpuploads:Make;stringbuffer:Make;stringmap:Make"/>
+        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httprouter:Make;httpuploads:Make;stringbuffer:Make;stringmap:Make;mediatypes:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
