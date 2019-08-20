@@ -755,8 +755,8 @@ end;
 
 destructor TBrookHTTPRouter.Destroy;
 begin
-  FRoutes.Free;
   SetActive(False);
+  FRoutes.Free;
   SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   inherited Destroy;
 end;

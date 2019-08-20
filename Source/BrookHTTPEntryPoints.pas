@@ -498,8 +498,8 @@ end;
 
 destructor TBrookHTTPEntryPoints.Destroy;
 begin
-  FList.Free;
   SetActive(False);
+  FList.Free;
   SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   inherited Destroy;
 end;
