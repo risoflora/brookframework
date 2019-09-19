@@ -165,6 +165,23 @@ type
     class function Sha1(const S: string): string; static; inline;
   end;
 
+  { TODO: documment }
+  TBrookHTTPRequestMethod = (rmUnknown, rmGET, rmPOST, rmPUT, rmDELETE, rmPATCH,
+    rmOPTIONS, rmHEAD);
+
+  { TODO: documment }
+  TBrookHTTPRequestMethods = set of TBrookHTTPRequestMethod;
+
+  { TODO: documment }
+  TBrookHTTPRequestMethodHelper = record helper for TBrookHTTPRequestMethod
+  public const
+    METHODS: array[TBrookHTTPRequestMethod] of string = ('Unknown', 'GET',
+      'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD');
+  public
+    function ToString: string; inline;
+    function FromString(const AMethod: string): TBrookHTTPRequestMethod; inline;
+  end;
+
 implementation
 
 { Sagui }
@@ -327,6 +344,26 @@ class function Brook.Sha1(const S: string): string;
 begin
   Result :=
 {$IFDEF FPC}SHA1Print(SHA1String(S)){$ELSE}THashSHA1.GetHashString(S){$ENDIF};
+end;
+
+{ TBrookHTTPRequestMethodHelper }
+
+function TBrookHTTPRequestMethodHelper.ToString: string;
+begin
+  Result := METHODS[Self];
+end;
+
+function TBrookHTTPRequestMethodHelper.FromString(
+  const AMethod: string): TBrookHTTPRequestMethod;
+var
+  M: string;
+  I: TBrookHTTPRequestMethod;
+begin
+  M := AMethod.ToUpper;
+  for I := Low(METHODS) to High(METHODS) do
+    if SameStr(M, METHODS[I]) then
+      Exit(I);
+  Result := rmUnknown;
 end;
 
 end.

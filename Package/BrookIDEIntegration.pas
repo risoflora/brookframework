@@ -48,7 +48,8 @@ uses
   DesignEditors,
   ColnEdit,
 {$ENDIF}
-  libsagui;
+  libsagui,
+  BrookUtility;
 
 resourcestring
   SBrookSelectLibraryTitle = 'Select library ...';
@@ -80,9 +81,9 @@ type
 {$ENDIF}
   end;
 
-  { TBrookHTTPRouteRequestMethodsPropertyEditor }
+  { TBrookHTTPRequestMethodsPropertyEditor }
 
-  TBrookHTTPRouteRequestMethodsPropertyEditor = class(TSetProperty)
+  TBrookHTTPRequestMethodsPropertyEditor = class(TSetProperty)
   public
     procedure GetProperties(AProc:
 {$IFDEF LCL}TGetPropEditProc{$ELSE}TGetPropProc{$ENDIF}); override;
@@ -154,12 +155,12 @@ begin
   inherited Create(AParent, AElement);
 end;
 
-function BrookHTTPRouteRequestMethodsPropertyMapper(AObj: TPersistent;
+function BrookHTTPRequestMethodsPropertyMapper(AObj: TPersistent;
   APropInfo: PPropInfo): TPropertyEditorClass;
 begin
   if Assigned(AObj) and (AObj is TBrookHTTPRoute) and
     SameText(APropInfo.NameFld.ToString, 'Methods') then
-    Exit(TBrookHTTPRouteRequestMethodsPropertyEditor);
+    Exit(TBrookHTTPRequestMethodsPropertyEditor);
   Result := nil;
 end;
 
@@ -183,12 +184,12 @@ begin
   RegisterPropertyEditor(TypeInfo(string), TBrookHTTPServerSecurity,
     'PrivatePassword', TPasswordStringPropertyEditor);
  {$ENDIF}
-  RegisterPropertyEditor(TypeInfo(TBrookHTTPRouteRequestMethods), nil, '',
-    TBrookHTTPRouteRequestMethodsPropertyEditor);
+  RegisterPropertyEditor(TypeInfo(TBrookHTTPRequestMethods), nil, '',
+    TBrookHTTPRequestMethodsPropertyEditor);
   RegisterPropertyEditor(TypeInfo(string), TBrookHTTPServer, 'UploadsDir',
     TDirectoryPropertyEditor);
 {$ELSE}
-  RegisterPropertyMapper(BrookHTTPRouteRequestMethodsPropertyMapper);
+  RegisterPropertyMapper(BrookHTTPRequestMethodsPropertyMapper);
 {$ENDIF}
   RegisterComponentEditor(TBrookLibraryLoader, TBrookLibraryNameComponentEditor);
   RegisterComponentEditor(TBrookHTTPEntryPoints, TBrookHTTPEntryPointsComponentEditor);
@@ -278,18 +279,17 @@ end;
 
 {$ENDIF}
 
-{ TBrookHTTPRouteRequestMethodsPropertyEditor }
+{ TBrookHTTPRequestMethodsPropertyEditor }
 
-procedure TBrookHTTPRouteRequestMethodsPropertyEditor.GetProperties(
+procedure TBrookHTTPRequestMethodsPropertyEditor.GetProperties(
   AProc:{$IFDEF LCL}TGetPropEditProc{$ELSE}TGetPropProc{$ENDIF});
 var
-  M: TBrookHTTPRouteRequestMethod;
+  M: TBrookHTTPRequestMethod;
 {$IFNDEF LCL}
   P: IProperty;
 {$ENDIF}
 begin
-  for M := Succ(Low(TBrookHTTPRouteRequestMethod)) to
-    High(TBrookHTTPRouteRequestMethod) do
+  for M := Succ(Low(TBrookHTTPRequestMethod)) to High(TBrookHTTPRequestMethod) do
 {$IFDEF LCL}
     AProc(TSetElementProperty.Create(Self, Ord(M)));
 {$ELSE}

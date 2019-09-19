@@ -57,21 +57,6 @@ resourcestring
   SBrookDefaultRouteAlreadyExists = 'A default route already exists.';
 
 type
-  TBrookHTTPRouteRequestMethod = (rmUnknown, rmGET, rmPOST, rmPUT, rmDELETE,
-    rmPATCH, rmOPTIONS, rmHEAD);
-
-  TBrookHTTPRouteRequestMethods = set of TBrookHTTPRouteRequestMethod;
-
-  TBrookHTTPRouteRequestMethodHelper = record helper for TBrookHTTPRouteRequestMethod
-  public const
-    METHODS: array[TBrookHTTPRouteRequestMethod] of string = ('Unknown',
-      'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD');
-  public
-    function ToString: string; inline;
-    function FromString(
-      const AMethod: string): TBrookHTTPRouteRequestMethod; inline;
-  end;
-
   TBrookHTTPRoute = class;
 
   TBrookHTTPRouteMatchEvent = procedure(ARoute: TBrookHTTPRoute) of object;
@@ -105,7 +90,7 @@ type
     Fvars: Psg_strmap;
     FPattern: string;
     FDefault: Boolean;
-    FMethods: TBrookHTTPRouteRequestMethods;
+    FMethods: TBrookHTTPRequestMethods;
     FOnRequestMethod: TBrookHTTPRouteRequestMethodEvent;
     FOnRequest: TBrookHTTPRouteRequestEvent;
     function GetPattern: string;
@@ -156,7 +141,7 @@ type
     property Default: Boolean read FDefault write SetDefault
       stored IsDefaultStored default False;
     property Pattern: string read GetPattern write SetPattern;
-    property Methods: TBrookHTTPRouteRequestMethods read FMethods write FMethods
+    property Methods: TBrookHTTPRequestMethods read FMethods write FMethods
       stored IsMethodsStored default TBrookHTTPRoute.DefaultReqMethods;
     property OnMath: TBrookHTTPRouteMatchEvent read FOnMath write FOnMath;
     property OnRequestMethod: TBrookHTTPRouteRequestMethodEvent
@@ -259,26 +244,6 @@ type
   end;
 
 implementation
-
-{ TBrookHTTPRouteRequestMethodHelper }
-
-function TBrookHTTPRouteRequestMethodHelper.ToString: string;
-begin
-  Result := METHODS[Self];
-end;
-
-function TBrookHTTPRouteRequestMethodHelper.FromString(
-  const AMethod: string): TBrookHTTPRouteRequestMethod;
-var
-  M: string;
-  I: TBrookHTTPRouteRequestMethod;
-begin
-  M := AMethod.ToUpper;
-  for I := Low(METHODS) to High(METHODS) do
-    if SameStr(M, METHODS[I]) then
-      Exit(I);
-  Result := rmUnknown;
-end;
 
 { TBrookHTTPRoute }
 
