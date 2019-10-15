@@ -113,7 +113,7 @@ type
       @param(AErrorNum[in] Error number.)
       @returns(Static string describing the error.) }
     class function StrError(AErrorNum: Integer): string; overload; static;
-    { Checks if a string is a HTTP post method. }
+    { Checks if a string is an HTTP post method. }
     class function IsPost(const AMethod: string): Boolean; static;
     { Extracts the entry-point of a path or resource. For example, given a path
       @code(/api1/customer), the part considered as entry-point is

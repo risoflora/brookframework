@@ -134,11 +134,11 @@ type
       @param(AStream[in] Stream to be sent.)
       @param(AStatus[in] HTTP status code.) }
     procedure SendStream(AStream: TStream; AStatus: Word); overload; virtual;
-    { Sends a HTTP status 204 to the client indicating the server has fulfilled
+    { Sends an HTTP status 204 to the client indicating the server has fulfilled
       the request, but does not need to return a content.
       @param(AContentType[in] Content type.) }
     procedure SendEmpty(const AContentType: string); overload; virtual;
-    { Sends a HTTP status 204 to the client indicating the server has fulfilled
+    { Sends an HTTP status 204 to the client indicating the server has fulfilled
       the request, but does not need to return a content. }
     procedure SendEmpty; overload; virtual;
     { Sends a string content to the client and redirects it to a new location.
