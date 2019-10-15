@@ -50,7 +50,7 @@ resourcestring
   SBrookInactiveRouter = 'Inactive router.';
   SBrookNoRoutesDefined = 'No routes defined.';
   SBrookEmptyRoutePattern = '%s: pattern cannot be empty.';
-  SBrookRouteAlreadyExists = '%s: pattern ''%s'' already exists in ''%s''.';
+  SBrookRouteAlreadyExists = '%s: pattern ''%s'' already exists.';
   SBrookRequestMethodNotAllowed = 'Request method not allowed: %s';
   SBrookRequestNoMethodDefined = 'No method(s) defined';
   SBrookRouteNotFound = 'Route not found: %s';
@@ -428,8 +428,7 @@ begin
   NP := Brook.FixPath(AValue);
   RT := FRoutes.Find(NP);
   if Assigned(RT) and (RT <> Self) then
-    raise EBrookHTTPRoute.CreateFmt(SBrookRouteAlreadyExists,
-      [GetNamePath, NP, RT.GetNamePath]);
+    raise EBrookHTTPRoute.CreateFmt(SBrookRouteAlreadyExists, [GetNamePath, NP]);
   FPattern := NP;
   if Assigned(FRoutes.FHandle) then
   begin
