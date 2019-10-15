@@ -34,10 +34,13 @@ interface
 uses
   RTLConsts,
   SysUtils,
+  StrUtils,
   Classes,
+  TypInfo,
   Platform,
   Marshalling,
   libsagui,
+  BrookUtility,
   BrookHandledClasses;
 
 type
@@ -189,6 +192,11 @@ type
       @param(AData[in,out] User-specified value.) }
     procedure Sort(AComparator: TBrookStringMapComparator;
       AData: Pointer); virtual;
+    { TODO: WARNING: This method is experimental! }
+    procedure Fetch(AObject: TObject; const AAllowed,
+      AIgnored: array of string); overload; virtual;
+    { TODO: WARNING: This method is experimental! }
+    procedure Fetch(AObject: TObject); overload; virtual;
     { Gets the map as big string using equal sign to separate each pair and
       ending lines using line break. }
     function ToString: string; override;
@@ -484,6 +492,29 @@ begin
   M.Data := AData;
   SgLib.CheckLastError(sg_strmap_sort(FHandle,
 {$IFNDEF VER3_0}@{$ENDIF}DoSort, @M));
+end;
+
+procedure TBrookStringMap.Fetch(AObject: TObject; const AAllowed,
+  AIgnored: array of string);
+var
+  VPair: TBrookStringPair;
+  VProp: PPropInfo;
+begin
+  if not Assigned(AObject) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AObject']);
+  for VPair in Self do
+  begin
+    VProp := GetPropInfo(AObject, VPair.Name, tkPrimitives);
+    if Assigned(VProp) and Assigned(VProp^.SetProc) and (not
+      (((Length(AAllowed) > 0) and (not AnsiMatchText(VPair.Name, AAllowed))) or
+      ((Length(AIgnored) > 0) and AnsiMatchText(VPair.Name, AIgnored)))) then
+      SetPropValue(AObject, VProp, VPair.Value);
+  end;
+end;
+
+procedure TBrookStringMap.Fetch(AObject: TObject);
+begin
+  Fetch(AObject, [], []);
 end;
 
 function TBrookStringMap.ToString: string;

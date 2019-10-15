@@ -35,6 +35,7 @@ uses
   RTLConsts,
   SysUtils,
   DateUtils,
+  TypInfo,
 {$IFDEF FPC}
   SHA1,
   HttpProtocol,
@@ -47,6 +48,15 @@ uses
   FPC300Fixes,
 {$ENDIF}
   libsagui;
+
+const
+  { TODO: WARNING: This constant is experimental! }
+  tkPrimitives = tkProperties -
+{$IFDEF FPC}
+    [tkArray..tkObject] - [tkInterfaceRaw] - [tkProcVar] - [tkHelper..tkPointer]
+{$ELSE}
+    [tkClass] - [tkArray..tkInterface] - [tkClassRef..tkMRecord]
+{$ENDIF};
 
 type
   { Event signature used by stuff that handle errors.
