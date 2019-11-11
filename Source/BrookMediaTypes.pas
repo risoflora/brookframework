@@ -55,7 +55,7 @@ const
   BROOK_MIME_PROVIDER =
 {$IF DEFINED(MSWINDOWS)}
     'Windows'
-{$ELSEIF DEFINED(UNIX)}
+{$ELSEIF DEFINED(UNIX) OR DEFINED(POSIX)}
     'Unix'
 {$ELSE}
     'Path'
@@ -876,7 +876,7 @@ end;
 
 initialization
   GBrookMIMEFileName := Concat(
-{$IFDEF UNIX}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
+{$IF DEFINED(UNIX) OR DEFINED(POSIX)}'/etc/'{$ELSE}ExtractFilePath(ParamStr(0)){$ENDIF},
     BROOK_MIME_FILE);
   RegisterClassAlias(TBrookMediaTypesPath, TBrookMediaTypesPath.GetRegisterAlias);
   RegisterClassAlias(TBrookMediaTypesApache, TBrookMediaTypesApache.GetRegisterAlias);
