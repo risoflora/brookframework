@@ -130,11 +130,7 @@ begin
 end;
 
 begin
-  if not TBrookLibraryLoader.Load then
-  begin
-    WriteLn(ErrOutput, 'Library not loaded.');
-    Halt(1);
-  end;
+  TBrookLibraryLoader.Load;
   with THTTPServer.Create(nil) do
   try
     FMIME.Open;

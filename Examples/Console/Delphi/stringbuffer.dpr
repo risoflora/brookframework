@@ -41,11 +41,7 @@ var
   sb: TBrookString;
   f: TBytesStream;
 begin
-  if not TBrookLibraryLoader.Load then
-  begin
-    WriteLn(ErrOutput, 'Library not loaded.');
-    Halt(1);
-  end;
+  TBrookLibraryLoader.Load;
   sb := TBrookString.Create(nil);
   try
     sb.Write('abc');

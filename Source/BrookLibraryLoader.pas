@@ -75,15 +75,12 @@ type
     { Destroys an instance of @link(TBrookLibraryLoader). }
     destructor Destroy; override;
     { Loads the library dynamically.
-      @param(ALibraryName Library name.)
-      @returns(@True if the library is succesfully loaded.) }
-    class function Load(const ALibraryName: TFileName): Boolean; overload; static;
-    { Loads the library dynamically.
-      @returns(@True if the library is succesfully loaded.) }
-    class function Load: Boolean; overload; static;
-    { Unloads the library dynamically.
-      @returns(@True if the library is succesfully unloaded.) }
-    class function Unload: Boolean; overload; static;
+      @param(ALibraryName Library name.) }
+    class procedure Load(const ALibraryName: TFileName); overload; static;
+    { Loads the library dynamically. }
+    class procedure Load; overload; static;
+    { Unloads the library dynamically. }
+    class procedure Unload; static;
     { Loads the library dynamically. }
     procedure Open; virtual;
     { Unloads the library dynamically. }
@@ -164,19 +161,19 @@ begin
   Result := @FHandle;
 end;
 
-class function TBrookLibraryLoader.Load(const ALibraryName: TFileName): Boolean;
+class procedure TBrookLibraryLoader.Load(const ALibraryName: TFileName);
 begin
-  Result := SgLib.Load(ALibraryName) <> NilHandle;
+  SgLib.Load(ALibraryName);
 end;
 
-class function TBrookLibraryLoader.Load: Boolean;
+class procedure TBrookLibraryLoader.Load;
 begin
-  Result := SgLib.Load(LIB_NAME) <> NilHandle;
+  SgLib.Load(LIB_NAME);
 end;
 
-class function TBrookLibraryLoader.Unload: Boolean;
+class procedure TBrookLibraryLoader.Unload;
 begin
-  Result := SgLib.Unload = NilHandle;
+  SgLib.Unload;
 end;
 
 procedure TBrookLibraryLoader.SetActive(AValue: Boolean);

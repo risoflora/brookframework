@@ -69,11 +69,11 @@ procedure Test_LibraryLoaderLoad;
 begin
   SgLib.Unload;
   Assert(SgLib.Handle = NilHandle);
-  Assert(TBrookLibraryLoader.Load(SG_LIB_NAME));
+  TBrookLibraryLoader.Load(SG_LIB_NAME);
   Assert(SgLib.Handle <> NilHandle);
   SgLib.Unload;
   Assert(SgLib.Handle = NilHandle);
-  Assert(TBrookLibraryLoader.Load);
+  TBrookLibraryLoader.Load;
   Assert(SgLib.Handle <> NilHandle);
 end;
 

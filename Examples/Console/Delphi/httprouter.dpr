@@ -162,11 +162,7 @@ begin
 end;
 
 begin
-  if not TBrookLibraryLoader.Load then
-  begin
-    WriteLn(ErrOutput, 'Library not loaded.');
-    Halt(1);
-  end;
+  TBrookLibraryLoader.Load;
   with TServer.Create(nil) do
   try
     Open;

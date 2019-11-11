@@ -59,11 +59,7 @@ var
   h: Pointer;
   map: TBrookStringMap;
 begin
-  if not TBrookLibraryLoader.Load then
-  begin
-    WriteLn(ErrOutput, 'Library not loaded.');
-    Halt(1);
-  end;
+  TBrookLibraryLoader.Load;
   map := TBrookStringMap.Create(@h);
   try
     chat(map, 'Clecio', 'Hello!');
