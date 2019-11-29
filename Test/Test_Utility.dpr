@@ -1,8 +1,8 @@
-(*   _                     _
- *  | |__  _ __ ___   ___ | | __
- *  | '_ \| '__/ _ \ / _ \| |/ /
- *  | |_) | | | (_) | (_) |   <
- *  |_.__/|_|  \___/ \___/|_|\_\
+(*  _                     _
+ * | |__  _ __ ___   ___ | | __
+ * | '_ \| '__/ _ \ / _ \| |/ /
+ * | |_) | | | (_) | (_) |   <
+ * |_.__/|_|  \___/ \___/|_|\_\
  *
  * Microframework which helps to develop web Pascal applications.
  *
@@ -20,7 +20,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with Brook framework; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
 program Test_Utility;
@@ -30,6 +30,7 @@ program Test_Utility;
 uses
   RTLConsts,
   SysUtils,
+  DateUtils,
 {$IFNDEF FPC}
   IOUtils,
 {$ENDIF}
@@ -172,6 +173,33 @@ begin
     Format(SParamIsNil, ['ASocket']));
 end;
 
+procedure Test_BrookDAYS;
+begin
+  Assert(Brook.DAYS[1] = 'Sun');
+  Assert(Brook.DAYS[2] = 'Mon');
+  Assert(Brook.DAYS[3] = 'Tue');
+  Assert(Brook.DAYS[4] = 'Wed');
+  Assert(Brook.DAYS[5] = 'Thu');
+  Assert(Brook.DAYS[6] = 'Fri');
+  Assert(Brook.DAYS[7] = 'Sat');
+end;
+
+procedure Test_BrookMONTHS;
+begin
+  Assert(Brook.MONTHS[1] = 'Jan');
+  Assert(Brook.MONTHS[2] = 'Feb');
+  Assert(Brook.MONTHS[3] = 'Mar');
+  Assert(Brook.MONTHS[4] = 'Apr');
+  Assert(Brook.MONTHS[5] = 'May');
+  Assert(Brook.MONTHS[6] = 'Jun');
+  Assert(Brook.MONTHS[7] = 'Jul');
+  Assert(Brook.MONTHS[8] = 'Aug');
+  Assert(Brook.MONTHS[9] = 'Sep');
+  Assert(Brook.MONTHS[10] = 'Oct');
+  Assert(Brook.MONTHS[11] = 'Nov');
+  Assert(Brook.MONTHS[12] = 'Dec');
+end;
+
 procedure Test_BrookFixPath;
 begin
   Assert(Brook.FixPath('') = '/');
@@ -197,6 +225,59 @@ begin
   Assert(Brook.FixEntryPoint('/abc/def/') = '/abc');
 end;
 
+procedure Test_BrookDateTimeToUTC;
+begin
+  Assert(Brook.DateTimeToUTC(Now) > 0);
+end;
+
+procedure Test_BrookDateTimeToGMT;
+begin
+  Assert(Brook.DateTimeToGMT(EncodeDateTime(2019, 11, 29, 14, 27, 52, 0)) =
+    Concat(Brook.DAYS[6], ', 29 Nov 2019 14:27:52 GMT'));
+end;
+
+procedure Test_BrookSHA1;
+begin
+  Assert(Brook.SHA1('abc123') = '6367c48dd193d56ea7b0baad25b19455e529f5ee');
+end;
+
+procedure Test_BrookHTTPRequestMethodHelperToString;
+var
+  M: TBrookHTTPRequestMethod;
+begin
+  M := rmUnknown;
+  Assert(M.ToString = 'Unknown');
+  M := rmGET;
+  Assert(M.ToString = 'GET');
+  M := rmPOST;
+  Assert(M.ToString = 'POST');
+  M := rmPUT;
+  Assert(M.ToString = 'PUT');
+  M := rmDELETE;
+  Assert(M.ToString = 'DELETE');
+  M := rmPATCH;
+  Assert(M.ToString = 'PATCH');
+  M := rmOPTIONS;
+  Assert(M.ToString = 'OPTIONS');
+  M := rmHEAD;
+  Assert(M.ToString = 'HEAD');
+end;
+
+procedure Test_BrookHTTPRequestMethodHelperFromString;
+var
+  M: TBrookHTTPRequestMethod;
+begin
+  M := Default(TBrookHTTPRequestMethod);
+  Assert(M.FromString('Unknown') = rmUnknown);
+  Assert(M.FromString('GET') = rmGET);
+  Assert(M.FromString('POST') = rmPOST);
+  Assert(M.FromString('PUT') = rmPUT);
+  Assert(M.FromString('DELETE') = rmDELETE);
+  Assert(M.FromString('PATCH') = rmPATCH);
+  Assert(M.FromString('OPTIONS') = rmOPTIONS);
+  Assert(M.FromString('HEAD') = rmHEAD);
+end;
+
 begin
 {$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
   ReportMemoryLeaksOnShutdown := True;
@@ -213,6 +294,13 @@ begin
   Test_SaguiTmpDir;
   Test_SaguiEOR;
   Test_SaguiIP;
+  Test_BrookDAYS;
+  Test_BrookMONTHS;
   Test_BrookFixPath;
   Test_BrookFixEntryPoint;
+  Test_BrookDateTimeToUTC;
+  Test_BrookDateTimeToGMT;
+  Test_BrookSHA1;
+  Test_BrookHTTPRequestMethodHelperToString;
+  Test_BrookHTTPRequestMethodHelperFromString;
 end.

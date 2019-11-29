@@ -1,8 +1,8 @@
-(*   _                     _
- *  | |__  _ __ ___   ___ | | __
- *  | '_ \| '__/ _ \ / _ \| |/ /
- *  | |_) | | | (_) | (_) |   <
- *  |_.__/|_|  \___/ \___/|_|\_\
+(*  _                     _
+ * | |__  _ __ ___   ___ | | __
+ * | '_ \| '__/ _ \ / _ \| |/ /
+ * | |_) | | | (_) | (_) |   <
+ * |_.__/|_|  \___/ \___/|_|\_\
  *
  * Microframework which helps to develop web Pascal applications.
  *
@@ -20,7 +20,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with Brook framework; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
 {$IFDEF FPC}

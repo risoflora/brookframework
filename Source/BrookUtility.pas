@@ -1,8 +1,8 @@
-(*   _                     _
- *  | |__  _ __ ___   ___ | | __
- *  | '_ \| '__/ _ \ / _ \| |/ /
- *  | |_) | | | (_) | (_) |   <
- *  |_.__/|_|  \___/ \___/|_|\_\
+(*  _                     _
+ * | |__  _ __ ___   ___ | | __
+ * | '_ \| '__/ _ \ / _ \| |/ /
+ * | |_) | | | (_) | (_) |   <
+ * |_.__/|_|  \___/ \___/|_|\_\
  *
  * Microframework which helps to develop web Pascal applications.
  *
@@ -20,7 +20,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with Brook framework; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
 { Utility functions of the framework. }
@@ -50,7 +50,7 @@ uses
   libsagui;
 
 const
-  { TODO: WARNING: This constant is experimental! }
+  { Primitive kinds. }
   tkPrimitives = tkProperties -
 {$IFDEF FPC}
     [tkArray..tkObject] - [tkInterfaceRaw] - [tkProcVar] - [tkHelper..tkPointer]
@@ -123,7 +123,9 @@ type
       @param(AErrorNum[in] Error number.)
       @returns(Static string describing the error.) }
     class function StrError(AErrorNum: Integer): string; overload; static;
-    { Checks if a string is an HTTP post method. }
+    { Checks if a string is an HTTP post method.
+      @param(AMethod[in] HTTP verb.)
+      @returns(True if given method is POST, PUT, DELETE or OPTIONS.) }
     class function IsPost(const AMethod: string): Boolean; static;
     { Extracts the entry-point of a path or resource. For example, given a path
       @code(/api1/customer), the part considered as entry-point is
@@ -152,43 +154,56 @@ type
 {$IFNDEF FPC}
   {$WRITEABLECONST ON}
 {$ENDIF}
-    { TODO: WARNING: This constant is experimental! }
-    MONTHS: array[1..12] of string = ('Jan', 'Feb', 'Mar', 'Apr', 'May',
-      'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-    { TODO: WARNING: This constant is experimental! }
+    { Holds the name of days as 'Aaa' format. }
     DAYS: array[1..7] of string = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu',
       'Fri', 'Sat');
+    { Holds the name of months as 'Aaa' format. }
+    MONTHS: array[1..12] of string = ('Jan', 'Feb', 'Mar', 'Apr', 'May',
+      'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
 {$IFNDEF FPC}
   {$WRITEABLECONST OFF}
 {$ENDIF}
     { Fixes a path by including the leading path delimiter and excluding the
-      trailing one. }
+      trailing one.
+      @param(APath[in] Path as static string.)
+      @returns(Fixed path, e.g.: path -> /path and /path/ -> /path) }
     class function FixPath(const APath: string): string; static; inline;
     { Extracts and fixes an entry-point by including the leading path delimiter
-      and excluding the trailing one. }
+      and excluding the trailing one.
+      @param(APath[in] Path as static string.)
+      @returns(Fixed entry-point, e.g.: /foo/bar -> /foo ) }
     class function FixEntryPoint(const APath: string): string; static; inline;
-    { TODO: WARNING: This method is experimental! }
+    { Converts a given local time to UTC (Coordinated Universal Time).
+      @param(ADateTime[in] Local date/time.)
+      @returns(Local time converted to UTC.) }
     class function DateTimeToUTC(ADateTime: TDateTime): TDateTime; static; inline;
-    { TODO: WARNING: This method is experimental! }
+    { Converts a given local time to GMT (Greenwich Mean Time).
+      @param(ADateTime[in] Local date/time.)
+      @returns(Local time converted to GMT string.) }
     class function DateTimeToGMT(ADateTime: TDateTime): string; static; inline;
-    { TODO: WARNING: This method is experimental! }
-    class function Sha1(const S: string): string; static; inline;
+    { Generates a given string to SHA-1 (Secure Hash Algorithm 1).
+      @param(S[in] String to generate the SHA-1.)
+      @returns(Generated SHA-1 as static string.) }
+    class function SHA1(const S: string): string; static; inline;
   end;
 
-  { TODO: documment }
+  { HTTP verbs enumeration. }
   TBrookHTTPRequestMethod = (rmUnknown, rmGET, rmPOST, rmPUT, rmDELETE, rmPATCH,
     rmOPTIONS, rmHEAD);
 
-  { TODO: documment }
+  { Set of HTTP verbs. }
   TBrookHTTPRequestMethods = set of TBrookHTTPRequestMethod;
 
-  { TODO: documment }
+  { Type helper for HTTP verb conversion. }
   TBrookHTTPRequestMethodHelper = record helper for TBrookHTTPRequestMethod
   public const
+    { Holds the name of HTTP verbs. }
     METHODS: array[TBrookHTTPRequestMethod] of string = ('Unknown', 'GET',
       'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD');
   public
+    { Converts a @link(TBrookHTTPRequestMethod) to string. }
     function ToString: string; inline;
+    { Returns a @link(TBrookHTTPRequestMethod) from a string. }
     function FromString(const AMethod: string): TBrookHTTPRequestMethod; inline;
   end;
 
@@ -350,7 +365,7 @@ begin
     DAYS[DayOfWeek(ADateTime)], MONTHS[M]]), ADateTime);
 end;
 
-class function Brook.Sha1(const S: string): string;
+class function Brook.SHA1(const S: string): string;
 begin
   Result :=
 {$IFDEF FPC}SHA1Print(SHA1String(S)){$ELSE}THashSHA1.GetHashString(S){$ENDIF};
