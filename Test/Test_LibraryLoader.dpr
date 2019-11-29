@@ -60,8 +60,8 @@ begin
     Assert(LL.Owner = C);
     Assert(LL.LibraryName = SG_LIB_NAME);
   finally
-    LL.Free;
-    C.Free;
+    LL.Destroy;
+    C.Destroy;
   end;
 end;
 
@@ -95,7 +95,7 @@ begin
     LL.Open;
     Assert(LL.Active);
   finally
-    LL.Free;
+    LL.Destroy;
   end;
 end;
 
@@ -110,7 +110,7 @@ begin
     LL.Close;
     Assert(not LL.Active);
   finally
-    LL.Free;
+    LL.Destroy;
   end;
 end;
 
@@ -124,7 +124,7 @@ begin
     LL.Active := not LL.Active;
     Assert(LL.Active);
   finally
-    LL.Free;
+    LL.Destroy;
   end;
 end;
 
@@ -140,7 +140,7 @@ begin
     LL.LibraryName := 'test';
     Assert(LL.LibraryName = 'test');
   finally
-    LL.Free;
+    LL.Destroy;
   end;
 end;
 
@@ -155,7 +155,7 @@ begin
     Assert(LL.Version = Format('%d.%d.%d', [SG_VERSION_MAJOR, SG_VERSION_MINOR,
       SG_VERSION_PATCH]));
   finally
-    LL.Free;
+    LL.Destroy;
   end;
 end;
 
@@ -176,8 +176,8 @@ begin
     LL.Open;
     Assert(not EH.Passed);
   finally
-    LL.Free;
-    EH.Free;
+    LL.Destroy;
+    EH.Destroy;
   end;
 end;
 
@@ -199,8 +199,8 @@ begin
     LL.Close;
     Assert(not EH.Passed);
   finally
-    LL.Free;
-    EH.Free;
+    LL.Destroy;
+    EH.Destroy;
   end;
 end;
 

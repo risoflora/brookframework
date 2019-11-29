@@ -1,8 +1,8 @@
-(*   _                     _
- *  | |__  _ __ ___   ___ | | __
- *  | '_ \| '__/ _ \ / _ \| |/ /
- *  | |_) | | | (_) | (_) |   <
- *  |_.__/|_|  \___/ \___/|_|\_\
+(*  _                     _
+ * | |__  _ __ ___   ___ | | __
+ * | '_ \| '__/ _ \ / _ \| |/ /
+ * | |_) | | | (_) | (_) |   <
+ * |_.__/|_|  \___/ \___/|_|\_\
  *
  * Microframework which helps to develop web Pascal applications.
  *
@@ -20,7 +20,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with Brook framework; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
 program Test_String;
@@ -49,6 +49,25 @@ begin
   Assert(sg_str_clear(Handle) <> 0);
 end;
 
+procedure Test_StringCreate;
+var
+  VStr: TBrookString;
+begin
+  VStr := TBrookString.Create(nil);
+  try
+    Assert(Assigned(VStr.Handle));
+  finally
+    VStr.Destroy;
+  end;
+
+  VStr := TBrookString.Create(Pointer(123));
+  try
+    Assert(VStr.Handle = Pointer(123));
+  finally
+    VStr.Destroy;
+  end;
+end;
+
 procedure Test_StringHandle(AStr: TBrookString);
 var
   VStr: TBrookString;
@@ -58,14 +77,14 @@ begin
   try
     Assert(VStr.Handle = AStr.Handle);
   finally
-    VStr.Free;
+    VStr.Destroy;
   end;
   VStr := TBrookString.Create(nil);
   try
     Assert(Assigned(VStr.Handle));
     Assert(VStr.Handle <> AStr.Handle);
   finally
-    VStr.Free;
+    VStr.Destroy;
   end;
 end;
 
@@ -136,6 +155,25 @@ begin
   Assert(AStr.Length = ALen);
 end;
 
+procedure Test_StringToString(AStr: TBrookString; const AVal: string);
+begin
+  AStr.Clear;
+  Assert(AStr.Text.IsEmpty);
+
+  AStr.Text := AVal;
+  Assert(AStr.ToString = AVal);
+end;
+
+procedure Test_StringClear(AStr: TBrookString; const AVal: TBytes;
+  ALen: NativeUInt);
+begin
+  AStr.Clear;
+  Assert(AStr.Length = 0);
+  AStr.WriteBytes(AVal, ALen);
+  Assert(AStr.Length > 0);
+  Assert(AStr.Length = ALen);
+end;
+
 procedure Test_StrincContent(AStr: TBrookString; const AVal: TBytes;
   ALen: NativeUInt);
 begin
@@ -155,16 +193,6 @@ begin
   Assert(AStr.Length = ALen);
 end;
 
-procedure Test_StringClear(AStr: TBrookString; const AVal: TBytes;
-  ALen: NativeUInt);
-begin
-  AStr.Clear;
-  Assert(AStr.Length = 0);
-  AStr.WriteBytes(AVal, ALen);
-  Assert(AStr.Length > 0);
-  Assert(AStr.Length = ALen);
-end;
-
 procedure Test_StringText(AStr: TBrookString; const AVal: string);
 begin
   AStr.Clear;
@@ -172,15 +200,6 @@ begin
 
   AStr.Text := AVal;
   Assert(AStr.Text = AVal);
-end;
-
-procedure Test_StringToString(AStr: TBrookString; const AVal: string);
-begin
-  AStr.Clear;
-  Assert(AStr.Text.IsEmpty);
-
-  AStr.Text := AVal;
-  Assert(AStr.ToString = AVal);
 end;
 
 procedure Test_StringExtra(AStr: TBrookString);
@@ -194,7 +213,7 @@ begin
   try
     VStr.Write('123');
   finally
-    VStr.Free;;
+    VStr.Destroy;
   end;
   Assert(AStr.Text = 'abc123');
 end;
@@ -213,15 +232,17 @@ begin
   VValB := TEncoding.UTF8.GetBytes(VAL);
   VStr := TBrookString.Create(nil);
   try
+    Test_StringCreate;
+    //Test_StringDestroy - not required
     Test_StringHandle(VStr);
     Test_StringOwnsHandle;
     Test_StringWriteBytes(VStr, VValB, LEN);
     Test_StringWrite(VStr, VAL, LEN);
+    Test_StringToString(VStr, VAL);
+    Test_StringClear(VStr, VValB, LEN);
     Test_StrincContent(VStr, VValB, LEN);
     Test_StringLength(VStr, VValB, LEN);
-    Test_StringClear(VStr, VValB, LEN);
     Test_StringText(VStr, VAL);
-    Test_StringToString(VStr, VAL);
     Test_StringExtra(VStr);
   finally
     VStr.Destroy;

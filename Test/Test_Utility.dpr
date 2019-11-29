@@ -241,7 +241,7 @@ begin
   Assert(Brook.SHA1('abc123') = '6367c48dd193d56ea7b0baad25b19455e529f5ee');
 end;
 
-procedure Test_BrookHTTPRequestMethodHelperToString;
+procedure Test_HTTPRequestMethodHelperToString;
 var
   M: TBrookHTTPRequestMethod;
 begin
@@ -263,7 +263,7 @@ begin
   Assert(M.ToString = 'HEAD');
 end;
 
-procedure Test_BrookHTTPRequestMethodHelperFromString;
+procedure Test_HTTPRequestMethodHelperFromString;
 var
   M: TBrookHTTPRequestMethod;
 begin
@@ -301,6 +301,6 @@ begin
   Test_BrookDateTimeToUTC;
   Test_BrookDateTimeToGMT;
   Test_BrookSHA1;
-  Test_BrookHTTPRequestMethodHelperToString;
-  Test_BrookHTTPRequestMethodHelperFromString;
+  Test_HTTPRequestMethodHelperToString;
+  Test_HTTPRequestMethodHelperFromString;
 end.
