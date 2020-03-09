@@ -181,6 +181,7 @@ type
     procedure SetUploadsDir(const AValue: string);
     procedure InternalCreateServerHandle; inline;
     procedure InternalFreeServerHandle; inline;
+    procedure InternalShutdownServer; inline;
     procedure InternalCheckServerOption(Aret: cint); inline;
   protected
     class procedure LibNotifier(AClosure: Pointer); static; cdecl;
@@ -380,6 +381,11 @@ begin
   { sg_httpsrv_shutdown() is already called by sg_httpsrv_free() internally. }
   sg_httpsrv_free(FHandle);
   FHandle := nil;
+end;
+
+procedure TBrookHTTPServer.InternalShutdownServer;
+begin
+  sg_httpsrv_shutdown(FHandle);
 end;
 
 procedure TBrookHTTPServer.InternalCheckServerOption(Aret: cint);
@@ -932,6 +938,7 @@ begin
   if not Assigned(FHandle) then
     Exit;
   SgLib.Check;
+  InternalShutdownServer;
   InternalFreeServerHandle;
   FActive := Assigned(FHandle);
   if Assigned(FOnStop) then
