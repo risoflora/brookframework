@@ -378,7 +378,6 @@ end;
 
 procedure TBrookHTTPServer.InternalFreeServerHandle;
 begin
-  { sg_httpsrv_shutdown() is already called by sg_httpsrv_free() internally. }
   sg_httpsrv_free(FHandle);
   FHandle := nil;
 end;
