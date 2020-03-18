@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -63,13 +63,13 @@ type
       @param(AOverwritten[in] Overwrite upload file if it exists.)
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is succefully saved.) }
+      @returns(@True if the uploaded file is successfully saved.) }
     function Save(AOverwritten: Boolean; out AError: string): Boolean; overload;
     { Saves the uploaded file defining the destination path by upload name and
       directory.
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is succefully saved.) }
+      @returns(@True if the uploaded file is successfully saved.) }
     function Save(out AError: string): Boolean; overload;
     { Saves the uploaded file defining the destination path by upload name and
       directory.
@@ -83,14 +83,14 @@ type
       @param(AOverwritten[in] Overwrite upload file if it exists.)
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is succefully saved.) }
+      @returns(@True if the uploaded file is successfully saved.) }
     function SaveAs(const APath: TFileName; AOverwritten: Boolean;
       out AError: string): Boolean; overload;
     { Saves the uploaded file allowing to define the destination path.
       @param(APath[in] Absolute destination path.)
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is succefully saved.) }
+      @returns(@True if the uploaded file is successfully saved.) }
     function SaveAs(const APath: TFileName; out AError: string): Boolean; overload;
     { Saves the uploaded file allowing to define the destination path.
       @param(APath[in] Absolute destination path.)
@@ -131,7 +131,7 @@ type
       @returns(Current upload.) }
     function GetCurrent: TBrookHTTPUpload;
     { Moves to the next upload.
-      @returns(@True when move next reachs the EOF.) }
+      @returns(@True when move next reaches the EOF.) }
     function MoveNext: Boolean;
     { Same to @link(GetCurrent). }
     property Current: TBrookHTTPUpload read GetCurrent;

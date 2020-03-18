@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -89,7 +89,7 @@ type
       @returns(Current pair.) }
     function GetCurrent: TBrookStringPair;
     { Moves to the next pair.
-      @returns(@True when move next reachs the EOF.) }
+      @returns(@True when move next reaches the EOF.) }
     function MoveNext: Boolean;
     { Same to @link(GetCurrent). }
     property Current: TBrookStringPair read GetCurrent;

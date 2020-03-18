@@ -93,7 +93,7 @@ type
     { Content of the certificate (ca.pem) to be used by the HTTPS server for
       client authentication. }
     property Trust: string read FTrust write FTrust;
-    { Content of the Diffie Hellman parameters (dh.pem) to be used by the HTTPS
+    { Content of the Diffie-Hellman parameters (dh.pem) to be used by the HTTPS
       server for key exchange. }
     property DHParams: string read FDHParams write FDHParams;
   end;

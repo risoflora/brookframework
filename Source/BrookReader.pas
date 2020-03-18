@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -199,7 +199,7 @@ type
     { Creates an instance of @link(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AFileName[in] File to be read line by line.)
-      @param(AMode[in] Open mode and (possibly) a share mode or'ed together.)
+      @param(AMode[in] Open mode and (possibly) a share mode OR-ed together.)
       @param(ARights[in] Permission bits with which to create the file on Linux.)
       @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
@@ -208,7 +208,7 @@ type
     { Creates an instance of @link(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AFileName[in] File to be read line by line.)
-      @param(AMode[in] Open mode and (possibly) a share mode or'ed together.)
+      @param(AMode[in] Open mode and (possibly) a share mode OR-ed together.)
       @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
       AMode: Word; ABufferSize: Integer); reintroduce; overload; virtual;

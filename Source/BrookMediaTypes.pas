@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -148,7 +148,7 @@ type
     function TryType(const AExt: string; out AType: string): Boolean; virtual;
     { Finds a media type identifier by file extension. If the cache is not
       prepared yet, this method prepares it automatically. If a media type
-      identifier is not found, the @link(ADefType) is returned instead.
+      identifier is not found, the @code(ADefType) is returned instead.
       @param(AExt[in] File extension.)
       @param(ADefType[in] Default media type identifier.)
       @returns(Media type identifier.) }
@@ -182,7 +182,7 @@ type
     { Creates an instance of @link(TBrookMediaTypesParser). }
     constructor Create(AReader: TBrookTextReader;
       ATypes: TBrookMediaTypes); virtual;
-    { Parsers a media types source passed by @link(Reader). }
+    { Parses a media types source passed by @link(Reader). }
     procedure Parse; virtual;
     { Line reader containing a media types source. }
     property Reader: TBrookTextReader read FReader;
@@ -191,10 +191,10 @@ type
   end;
 
   { Media types parser for
-    @html(<a href="https://github.com/nginx/nginx/blob/master/conf/mime.types">nginx mime.types</a>). }
+    @html(<a href="https://github.com/nginx/nginx/blob/master/conf/mime.types">Nginx mime.types</a>). }
   TBrookMediaTypesParserNginx = class(TBrookMediaTypesParser)
   public
-    { Parsers a nginx media types source. }
+    { Parses a Nginx media types source. }
     procedure Parse; override;
   end;
 

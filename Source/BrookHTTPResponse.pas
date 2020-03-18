@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,7 +52,7 @@ resourcestring
   SBrookZLibError = 'Generic ZLib error.';
 
 type
-  { Handles exceptions related to response classe. }
+  { Handles exceptions related to response class. }
   EBrookHTTPResponse = class(Exception);
 
   { Class which dispatches headers, contents, binaries, files and other data to
@@ -167,7 +167,7 @@ type
       object. }
     procedure Clear; virtual;
     { Determines if the content must be compressed while sending.
-      The compression is done by zlib library using the DEFLATE compression
+      The compression is done by ZLib library using the DEFLATE compression
       algorithm. It uses the Gzip format when the content is a file. }
     property Compressed: Boolean read FCompressed write FCompressed;
     { Hash table containing the headers to be sent to the client. }
