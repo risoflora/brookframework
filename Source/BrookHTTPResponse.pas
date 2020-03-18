@@ -172,7 +172,7 @@ type
     property Compressed: Boolean read FCompressed write FCompressed;
     { Hash table containing the headers to be sent to the client. }
     property Headers: TBrookStringMap read FHeaders;
-    { TODO: WARNING: This property is experimental! }
+    { Cookies to be sent to the client. }
     property Cookies: TBrookHTTPCookies read FCookies write SetCookies;
   end;
 
@@ -205,7 +205,6 @@ var
 begin
   for C in FCookies do
     FHeaders.Add('Set-Cookie', C.ToString);
-    { TODO: should we use SetCookie() instead? }
 end;
 
 procedure TBrookHTTPResponse.CheckAlreadySent(Aret: cint);

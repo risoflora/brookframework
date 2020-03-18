@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@ uses
   FPC300Fixes,
 {$ENDIF}
   BrookLibraryLoader,
+  BrookUtility,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPRouter,
@@ -118,7 +119,7 @@ end;
 procedure TRouteDownload.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send('Downloaded file: %s',
+  AResponse.SendFmt('Downloaded file: %s',
     [ARoute.Variables['file']], 'text/plain', 200);
 end;
 
@@ -133,7 +134,7 @@ end;
 procedure TRoutePage.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
-  AResponse.Send('Page number: %d', [ARoute.Segments[0].ToInteger],
+  AResponse.SendFmt('Page number: %d', [ARoute.Segments[0].ToInteger],
     'text/plain', 200);
 end;
 
@@ -164,11 +165,7 @@ begin
 end;
 
 begin
-  if not TBrookLibraryLoader.Load then
-  begin
-    WriteLn(ErrOutput, 'Library not loaded.');
-    Halt(1);
-  end;
+  TBrookLibraryLoader.Load;
   with TServer.Create(nil) do
   try
     Open;

@@ -120,6 +120,7 @@ String_Example
 Test_HTTPAuthentication
 Test_HTTPRequest
 Test_HTTPResponse
+Test_HTTPServer
 Test_HTTPUploads
 Test_LibraryLoader
 Test_MediaTypes

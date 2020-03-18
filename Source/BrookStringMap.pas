@@ -192,10 +192,14 @@ type
       @param(AData[in,out] User-specified value.) }
     procedure Sort(AComparator: TBrookStringMapComparator;
       AData: Pointer); virtual;
-    { TODO: WARNING: This method is experimental! }
+    { Fetches a string map as an object.
+      @param(AObject[in] Object with properties that correspond to the fetched
+      string map.)
+      @param(AAllowed[in] Array of properties to be allowed when fetching.)
+      @param(AIgnored[in] Array of properties to be ignored when fetching.) }
     procedure Fetch(AObject: TObject; const AAllowed,
       AIgnored: array of string); overload; virtual;
-    { TODO: WARNING: This method is experimental! }
+    { Fetches a string map as an object. }
     procedure Fetch(AObject: TObject); overload; virtual;
     { Gets the map as big string using equal sign to separate each pair and
       ending lines using line break. }

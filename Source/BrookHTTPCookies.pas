@@ -192,7 +192,7 @@ type
     constructor Create(AOwner: TPersistent); virtual;
     { Gets the default class for cookie creation. }
     class function GetCookieClass: TBrookHTTPCookieClass; virtual;
-    { Copies the itens of the source cookies.
+    { Copies the items of the source cookies.
       @param(ASource[in] Cookies source to be copied.) }
     procedure Assign(ASource: TPersistent); override;
     { Creates an enumerator to iterate the cookies though @code(for..in). }
