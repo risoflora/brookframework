@@ -1,4 +1,5 @@
-#! /bin/sh
+#!/bin/sh
+
 #   _                     _
 #  | |__  _ __ ___   ___ | | __
 #  | '_ \| '__/ _ \ / _ \| |/ /
@@ -7,7 +8,7 @@
 #
 # Microframework which helps to develop web Pascal applications.
 #
-# Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+# Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
 #
 # Brook framework is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -26,15 +27,15 @@
 
 set -e
 
-DIR="./Test_*"
-COUNT=0
+dir="./Test_*"
+count=0
 
-for f in $DIR; do
-    if [ -f "$f" ] && [ -x "$f" ] && [ ! "${f%.*}" ]; then
-        echo -n "$f "
-        sh -c "$f"
-        echo "OK"
-        COUNT=$((COUNT+1))
-    fi
+for f in $dir; do
+  if [ -f "$f" ] && [ -x "$f" ] && [ ! "${f%.*}" ]; then
+    echo -n "$f "
+    sh -c "$f"
+    echo "OK"
+    count=$((count + 1))
+  fi
 done
-echo "Total: $COUNT"
+echo "Total: $count"

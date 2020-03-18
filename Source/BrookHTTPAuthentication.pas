@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -103,7 +103,7 @@ type
       @param(AContentType[in] Content type.) }
     procedure Deny(const AFmt: string; const AArgs: array of const;
       const AContentType: string); overload; virtual;
-    { Cancels the authentication loop while the user is trying to acess
+    { Cancels the authentication loop while the user is trying to access
       the server. }
     procedure Cancel; virtual;
     { Credentials holder. }
