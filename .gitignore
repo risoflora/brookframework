@@ -95,7 +95,8 @@ BrookTardigrade.pas
 *.app/
 
 # Generated documentation
-Doc/
+PasDoc/HTML
+PasDoc/Cache
 
 # Generated examples:
 hellohttpsrv
