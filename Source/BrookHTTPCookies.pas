@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,6 +51,7 @@ const
 {$IFNDEF FPC}
   {$WRITEABLECONST ON}
 {$ENDIF}
+  { Prefix to identify a signed cookie. }
   BROOK_COOKIE_SIG_PREFIX: string = 's:';
 {$IFNDEF FPC}
   {$WRITEABLECONST OFF}
@@ -67,7 +68,16 @@ type
   EBrookHTTPCookie = class(Exception);
 
   { SameSite cookie attribute types. }
-  TBrookHTTPCookieSameSite = (ssNone, ssStrict, ssLax);
+  TBrookHTTPCookieSameSite = (
+    { The browser will send cookies with both cross-site requests and same-site
+      requests. }
+    ssNone,
+    { The browser will only send cookies for same-site requests. }
+    ssStrict,
+    { Same-site cookies are withheld on cross-site subrequests, but will be
+      sent when a user navigates to the URL from an external site. }
+    ssLax
+  );
 
   { Server side HTTP cookie item. }
   TBrookHTTPCookie = class(TCollectionItem)
@@ -86,32 +96,76 @@ type
     procedure SetName(const AValue: string);
     procedure SetValue(const AValue: string);
   public
+    { Creates an instance of @link(TBrookHTTPCookie).
+      @param(ACollection[in] Cookies list.) }
     constructor Create(ACollection: TCollection); override;
+    { Copies the properties of the source cookie.
+      @param(ASource[in] Cookie source to be copied.) }
     procedure Assign(ASource: TPersistent); override;
+    { Signs a cookie value using
+      @html(<a href="https://en.wikipedia.org/wiki/HMAC">HMAC-SHA1</a>).
+      @param(ASecret[in] Secret key to sign the cookie value.)
+      @param(AUnsignedValue[in] Unsigned cookie value to be signed.)
+      @returns(Signed cookie value.) }
     class function Sign(const ASecret,
       AUnsignedValue: string): string; overload; static; inline;
+    { Tries to unsign a cookie value.
+      @param(ASecret[in] Secret key to unsign the cookie value.)
+      @param(ASignedValue[out] Signed cookie value.)
+      @param(AUnsignedValue[out] Unsigned cookie value.)
+      @returns(@True if cookie value is unsigned successfully.) }
     class function TryUnsign(const ASecret, ASignedValue: string;
       out AUnsignedValue: string): Boolean; overload; static; inline;
+    { Unsigns a cookie value.
+      @param(ASecret[in] Secret key to unsign the cookie value.)
+      @param(ASignedValue[in] Signed cookie value.)
+      @returns(Unsigned cookie value.) }
     class function Unsign(const ASecret,
       ASignedValue: string): string; overload; static; inline;
+    { Checks if a cookie value is signed.
+      @param(ASignedValue[out] Signed cookie value.)
+      @returns(@True if cookie value is signed.) }
     class function IsSigned(
       const ASignedValue: string): Boolean; overload; static; inline;
+    { Checks if a cookie is signed.
+      @returns(@True if cookie is signed.) }
     function IsSigned: Boolean; overload; virtual;
+    { Signs a cookie value using
+      @html(<a href="https://en.wikipedia.org/wiki/HMAC">HMAC-SHA1</a>).
+      @param(ASecret[in] Secret key to sign the cookie value.) }
     procedure Sign(const ASecret: string); overload; virtual;
+    { Tries to unsign a cookie.
+      @param(ASecret[in] Secret key to unsign the cookie value.)
+      @returns(@True if cookie is unsigned successfully.) }
     function TryUnsign(const ASecret: string): Boolean; overload; virtual;
+    { Unsigns a cookie.
+      @param(ASecret[in] Secret key to unsign the cookie value.) }
     procedure Unsign(const ASecret: string); overload; virtual;
+    { Gets the cookie as string. }
     function ToString: string; override;
+    { Clears the cookie properties. }
     procedure Clear; virtual;
+    { Expires the cookie. }
     procedure Expire; virtual;
+    { Persists a cookie to live as long as it can. }
     procedure Persist; virtual;
+    { Cookie name. }
     property Name: string read FName write SetName;
+    { Cookie value. }
     property Value: string read FValue write SetValue;
+    { Allowed domain to receive the cookie. }
     property Domain: string read FDomain write FDomain;
+    { Path that must exist in the URL to receive the cookie. }
     property Path: string read FPath write FPath;
+    { Expiration date/time. }
     property Expires: TDateTime read FExpires write FExpires;
+    { @True prevents the cookie to be accessed through JavaScript. }
     property HttpOnly: Boolean read FHttpOnly write FHttpOnly;
+    { @True indicates cookie sent only through HTTPS protocol. }
     property Secure: Boolean read FSecure write FSecure;
+    { Sets an expiration expressed in number of seconds. }
     property MaxAge: Integer read FMaxAge write SetMaxAge;
+    { @True indicates that a cookie shouldn't be sent with cross-site requests. }
     property SameSite: TBrookHTTPCookieSameSite read FSameSite write FSameSite;
   end;
 
@@ -133,16 +187,31 @@ type
     function GetItem(AIndex: Integer): TBrookHTTPCookie; virtual;
     procedure SetItem(AIndex: Integer; AValue: TBrookHTTPCookie); virtual;
   public
+    { Creates an instance of @link(TBrookHTTPCookies).
+      @param(AOwner[in] Cookies persistent.) }
     constructor Create(AOwner: TPersistent); virtual;
+    { Gets the default class for cookie creation. }
     class function GetCookieClass: TBrookHTTPCookieClass; virtual;
+    { Copies the itens of the source cookies.
+      @param(ASource[in] Cookies source to be copied.) }
     procedure Assign(ASource: TPersistent); override;
+    { Creates an enumerator to iterate the cookies though @code(for..in). }
     function GetEnumerator: TBrookHTTPCookiesEnumerator;
+    { Adds a new cookie to the cookies list. }
     function Add: TBrookHTTPCookie; virtual;
+    { Removes a cookie from the cookies list by its name.
+      @param(AName[in] Cookie name.) }
     function Remove(const AName: string): Boolean; virtual;
+    { Gets the cookie index by its name. }
     function IndexOf(const AName: string): Integer; virtual;
+    { Finds a cookie in the cookies list by its name.
+      @param(AName[in] Cookie name.) }
     function Find(const AName: string): TBrookHTTPCookie; virtual;
+    { Gets the first cookie in the cookies list. }
     function First: TBrookHTTPCookie; virtual;
+    { Gets the last cookie in the cookies list. }
     function Last: TBrookHTTPCookie; virtual;
+    { Gets/sets a cookie from/to the cookies list by its index. }
     property Items[AIndex: Integer]: TBrookHTTPCookie read GetItem
       write SetItem; default;
   end;

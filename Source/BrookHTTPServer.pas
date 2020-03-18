@@ -288,9 +288,9 @@ type
       write FOnRequestError;
     { Event triggered when the HTTP server raises errors. }
     property OnError: TBrookErrorEvent read FOnError write FOnError;
-    { Event triggered when the HTTP server successfully starts. }
+    { Event triggered when the HTTP server starts successfully. }
     property OnStart: TNotifyEvent read FOnStart write FOnStart;
-    { Event triggered when the HTTP server successfully stops. }
+    { Event triggered when the HTTP server stops successfully. }
     property OnStop: TNotifyEvent read FOnStop write FOnStop;
   end;
 

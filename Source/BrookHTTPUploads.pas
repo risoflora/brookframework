@@ -63,13 +63,13 @@ type
       @param(AOverwritten[in] Overwrite upload file if it exists.)
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is successfully saved.) }
+      @returns(@True if the uploaded file is saved successfully.) }
     function Save(AOverwritten: Boolean; out AError: string): Boolean; overload;
     { Saves the uploaded file defining the destination path by upload name and
       directory.
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is successfully saved.) }
+      @returns(@True if the uploaded file is saved successfully.) }
     function Save(out AError: string): Boolean; overload;
     { Saves the uploaded file defining the destination path by upload name and
       directory.
@@ -83,14 +83,14 @@ type
       @param(AOverwritten[in] Overwrite upload file if it exists.)
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is successfully saved.) }
+      @returns(@True if the uploaded file is saved successfully.) }
     function SaveAs(const APath: TFileName; AOverwritten: Boolean;
       out AError: string): Boolean; overload;
     { Saves the uploaded file allowing to define the destination path.
       @param(APath[in] Absolute destination path.)
       @param(AError[out] Variable reference to store string describing the error
       if save fails.)
-      @returns(@True if the uploaded file is successfully saved.) }
+      @returns(@True if the uploaded file is saved successfully.) }
     function SaveAs(const APath: TFileName; out AError: string): Boolean; overload;
     { Saves the uploaded file allowing to define the destination path.
       @param(APath[in] Absolute destination path.)
