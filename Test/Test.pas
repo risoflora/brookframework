@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,12 +48,12 @@ procedure AssertExcept(ARoutine: TTestRoutineArgs; AExceptClass: ExceptClass;
   const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
-  ACode: Cardinal; const AArgs: array of const); overload;
+  ACode: Integer; const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
   const AArgs: array of const); overload;
 
-procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Cardinal;
+procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Integer;
   const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs;
@@ -68,12 +68,12 @@ procedure AssertExcept(ARoutine: TTestRoutine;
   AExceptClass: ExceptClass); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine; const AError: string;
-  ACode: Cardinal); overload;
+  ACode: Integer); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine;
   const AError: string); overload;
 
-procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Cardinal); overload;
+procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Integer); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine); overload;
 
@@ -114,7 +114,7 @@ begin
 end;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
-  ACode: Cardinal; const AArgs: array of const);
+  ACode: Integer; const AArgs: array of const);
 var
   OK: Boolean;
 begin
@@ -145,7 +145,7 @@ begin
   Assert(OK);
 end;
 
-procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Cardinal;
+procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Integer;
   const AArgs: array of const);
 var
   OK: Boolean;
@@ -210,7 +210,7 @@ begin
 end;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine; const AError: string;
-  ACode: Cardinal);
+  ACode: Integer);
 var
   OK: Boolean;
 begin
@@ -240,7 +240,7 @@ begin
   Assert(OK);
 end;
 
-procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Cardinal);
+procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Integer);
 var
   OK: Boolean;
 begin

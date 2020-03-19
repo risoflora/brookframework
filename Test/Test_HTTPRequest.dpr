@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -135,6 +135,7 @@ procedure Test_HTTPRequestCreate;
 var
   R: TBrookHTTPRequest;
 begin
+  AssignFakeAPI;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -186,6 +187,7 @@ procedure Test_HTTPRequestIsPost;
 var
   R: TBrookHTTPRequest;
 begin
+  AssignFakeAPI;
   AssignFakeHeadersAPI;
   sg_httpreq_method := fake_httpreq_method_get;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
@@ -495,6 +497,7 @@ procedure Test_HTTPRequestContentType;
 var
   R: TBrookHTTPRequest;
 begin
+  AssignFakeAPI;
   AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -551,9 +554,10 @@ var
 begin
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
+  AssignFakeAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
-    Assert(Length(R.Paths) = 0);
+    Assert(Length(R.Paths) = 1);
   finally
     R.Free;
   end;
@@ -573,6 +577,7 @@ begin
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
   AssignFakeAPI;
+  AssignFakeHeadersAPI;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
     Assert(R.IsUploading);
@@ -593,6 +598,7 @@ var
 begin
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
+  AssignFakeAPI;
   sg_httpreq_uploads := fake_httpreq_uploads;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -614,6 +620,7 @@ var
 begin
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
+  AssignFakeAPI;
   sg_httpreq_tls_session := fake_httpreq_tls_session;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
   try
@@ -644,6 +651,7 @@ var
 begin
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
+  AssignFakeAPI;
   sg_httpreq_set_user_data := fake_httpreq_set_user_data;
   sg_httpreq_user_data := fake_httpreq_user_data;
   R := TBrookHTTPRequest.Create(FakeRequestHandle);
