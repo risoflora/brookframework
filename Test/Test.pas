@@ -33,6 +33,8 @@ uses
   SysUtils;
 
 type
+  ErrorCode = {$IFDEF FPC}LongInt{$ELSE}Cardinal{$ENDIF};
+
   TTestRoutine = procedure;
 
   TTestRoutineArgs = procedure(const AArgs: array of const);
@@ -48,12 +50,12 @@ procedure AssertExcept(ARoutine: TTestRoutineArgs; AExceptClass: ExceptClass;
   const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
-  ACode: Integer; const AArgs: array of const); overload;
+  ACode: ErrorCode; const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
   const AArgs: array of const); overload;
 
-procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Integer;
+procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: ErrorCode;
   const AArgs: array of const); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs;
@@ -68,12 +70,12 @@ procedure AssertExcept(ARoutine: TTestRoutine;
   AExceptClass: ExceptClass); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine; const AError: string;
-  ACode: Integer); overload;
+  ACode: ErrorCode); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine;
   const AError: string); overload;
 
-procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Integer); overload;
+procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: ErrorCode); overload;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine); overload;
 
@@ -114,7 +116,7 @@ begin
 end;
 
 procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AError: string;
-  ACode: Integer; const AArgs: array of const);
+  ACode: ErrorCode; const AArgs: array of const);
 var
   OK: Boolean;
 begin
@@ -145,7 +147,7 @@ begin
   Assert(OK);
 end;
 
-procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: Integer;
+procedure AssertOSExcept(ARoutine: TTestRoutineArgs; ACode: ErrorCode;
   const AArgs: array of const);
 var
   OK: Boolean;
@@ -161,7 +163,8 @@ begin
   Assert(OK);
 end;
 
-procedure AssertOSExcept(ARoutine: TTestRoutineArgs; const AArgs: array of const);
+procedure AssertOSExcept(ARoutine: TTestRoutineArgs;
+  const AArgs: array of const);
 var
   OK: Boolean;
 begin
@@ -210,7 +213,7 @@ begin
 end;
 
 procedure AssertOSExcept(ARoutine: TTestRoutine; const AError: string;
-  ACode: Integer);
+  ACode: ErrorCode);
 var
   OK: Boolean;
 begin
@@ -240,7 +243,7 @@ begin
   Assert(OK);
 end;
 
-procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: Integer);
+procedure AssertOSExcept(ARoutine: TTestRoutine; ACode: ErrorCode);
 var
   OK: Boolean;
 begin
