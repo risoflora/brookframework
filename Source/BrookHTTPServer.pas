@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -224,10 +224,10 @@ type
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
   public
-    { Creates an instance of @link(TBrookHTTPServer).
+    { Creates an instance of @code(TBrookHTTPServer).
       @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
-    { Destroys an instance of @link(TBrookHTTPServer). }
+    { Destroys an instance of @code(TBrookHTTPServer). }
     destructor Destroy; override;
     { Starts the HTTP(S) server. }
     procedure Open;

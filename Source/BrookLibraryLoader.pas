@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,10 +69,10 @@ type
     procedure CheckUnloaded; inline;
     function GetHandle: Pointer; override;
   public
-    { Creates an instance of @link(TBrookLibraryLoader).
+    { Creates an instance of @code(TBrookLibraryLoader).
       @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
-    { Destroys an instance of @link(TBrookLibraryLoader). }
+    { Destroys an instance of @code(TBrookLibraryLoader). }
     destructor Destroy; override;
     { Loads the library dynamically.
       @param(ALibraryName Library name.) }

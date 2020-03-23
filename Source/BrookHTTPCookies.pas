@@ -101,7 +101,7 @@ type
   protected
     property OriginalValue: string read FOriginalValue;
   public
-    { Creates an instance of @link(TBrookHTTPCookie).
+    { Creates an instance of @code(TBrookHTTPCookie).
       @param(ACollection[in] Cookies list.) }
     constructor Create(ACollection: TCollection); override;
     { Copies the properties of the source cookie.
@@ -174,7 +174,7 @@ type
     property SameSite: TBrookHTTPCookieSameSite read FSameSite write FSameSite;
   end;
 
-  { Class-reference for @link(TBrookHTTPCookie). }
+  { Class-reference for @code(TBrookHTTPCookie). }
   TBrookHTTPCookieClass = class of TBrookHTTPCookie;
 
   { List enumerator for @code(TBrookHTTPCookies). }
@@ -192,10 +192,10 @@ type
     function GetItem(AIndex: Integer): TBrookHTTPCookie; virtual;
     procedure SetItem(AIndex: Integer; AValue: TBrookHTTPCookie); virtual;
   public
-    { Creates an instance of @link(TBrookHTTPCookies).
+    { Creates an instance of @code(TBrookHTTPCookies).
       @param(AOwner[in] Cookies persistent.) }
     constructor Create(AOwner: TPersistent); virtual;
-    { Gets the default class for cookie creation. }
+    { Gets the default class for cookie item creation. }
     class function GetCookieClass: TBrookHTTPCookieClass; virtual;
     { Copies the items of the source cookies.
       @param(ASource[in] Cookies source to be copied.) }

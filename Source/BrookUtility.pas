@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -109,8 +109,8 @@ type
       @returns(Pointer of the reallocated memory.) }
     class function Realloc(APointer: Pointer;
       ASize: NativeUInt): Pointer; static;
-    { Frees a memory space previous allocated by @link(Sagui.Malloc),
-      @link(Sagui.Alloc) or @link(Sagui.Realloc).
+    { Frees a memory space previous allocated by @code(Sagui.Malloc),
+      @link(Sagui.Alloc) or @code(Sagui.Realloc).
       @param(APointer[in] Pointer of the memory to be freed.) }
     class procedure Free(APointer: Pointer); static;
     { Returns string describing an error number.
@@ -137,7 +137,7 @@ type
       @returns(Temporary directory as static string.) }
     class function TmpDir: string; static;
     { Indicates the end-of-read processed in
-      @link(TBrookHTTPResponse.SendStream).
+      @code(TBrookHTTPResponse.SendStream).
       @param(AError[in] @True to return a value indicating a stream
        reading error.)
       @returns(Value to end a stream reading.) }
@@ -201,9 +201,9 @@ type
     METHODS: array[TBrookHTTPRequestMethod] of string = ('Unknown', 'GET',
       'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD');
   public
-    { Converts a @link(TBrookHTTPRequestMethod) to string. }
+    { Converts a @code(TBrookHTTPRequestMethod) to string. }
     function ToString: string; inline;
-    { Returns a @link(TBrookHTTPRequestMethod) from a string. }
+    { Returns a @code(TBrookHTTPRequestMethod) from a string. }
     function FromString(const AMethod: string): TBrookHTTPRequestMethod; inline;
   end;
 

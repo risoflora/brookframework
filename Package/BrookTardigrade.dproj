@@ -112,12 +112,12 @@
         <DCCReference Include="..\Source\BrookExtra.pas"/>
         <DCCReference Include="..\Source\BrookReader.pas"/>
         <DCCReference Include="..\Source\BrookMediaTypes.pas"/>
+        <DCCReference Include="..\Source\BrookURLEntryPoints.pas"/>
         <DCCReference Include="..\Source\BrookHTTPAuthentication.pas"/>
         <DCCReference Include="..\Source\BrookHTTPCookies.pas"/>
         <DCCReference Include="..\Source\BrookHTTPUploads.pas"/>
         <DCCReference Include="..\Source\BrookHTTPRequest.pas"/>
         <DCCReference Include="..\Source\BrookHTTPResponse.pas"/>
-        <DCCReference Include="..\Source\BrookHTTPEntryPoints.pas"/>
         <DCCReference Include="..\Source\BrookHTTPRouter.pas"/>
         <DCCReference Include="..\Source\BrookHTTPServer.pas"/>
         <DCCReference Include="BrookIDEIntegration.pas"/>

@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,7 +55,7 @@ resourcestring
   SBrookSelectLibraryTitle = 'Select library ...';
   SBrookSharedLibraryFilter = 'Shared libraries (%s)|%s|All files (*.*)|*.*';
   SBrookHTTPRoutesEditor = 'HTTP routes editor ...';
-  SBrookHTTPEntryPointsEditor = 'HTTP entry-points editor ...';
+  SBrookURLEntryPointsEditor = 'URL entry-points editor ...';
 
 type
 
@@ -119,9 +119,9 @@ type
     function GetVerbCount: Integer; override;
   end;
 
-  { TBrookHTTPEntryPointsComponentEditor }
+  { TBrookURLEntryPointsComponentEditor }
 
-  TBrookHTTPEntryPointsComponentEditor = class(TComponentEditor)
+  TBrookURLEntryPointsComponentEditor = class(TComponentEditor)
   public
     procedure ExecuteVerb(AIndex: Integer); override;
     function GetVerb(AIndex: Integer): string; override;
@@ -137,7 +137,7 @@ implementation
 uses
   BrookLibraryLoader,
   BrookMediaTypes,
-  BrookHTTPEntryPoints,
+  BrookURLEntryPoints,
   BrookHTTPRouter,
   BrookHTTPServer;
 
@@ -171,7 +171,7 @@ begin
   RegisterComponents('Brook', [
     TBrookLibraryLoader,
     TBrookMIME,
-    TBrookHTTPEntryPoints,
+    TBrookURLEntryPoints,
     TBrookHTTPRouter,
     TBrookHTTPServer
   ]);
@@ -192,7 +192,7 @@ begin
   RegisterPropertyMapper(BrookHTTPRequestMethodsPropertyMapper);
 {$ENDIF}
   RegisterComponentEditor(TBrookLibraryLoader, TBrookLibraryNameComponentEditor);
-  RegisterComponentEditor(TBrookHTTPEntryPoints, TBrookHTTPEntryPointsComponentEditor);
+  RegisterComponentEditor(TBrookURLEntryPoints, TBrookURLEntryPointsComponentEditor);
   RegisterComponentEditor(TBrookHTTPRouter, TBrookHTTPRouterComponentEditor);
   RegisterComponentEditor(TBrookHTTPServer, TBrookOnRequestComponentEditor);
 end;
@@ -384,13 +384,13 @@ begin
   Result := 1;
 end;
 
-{ TBrookHTTPEntryPointsComponentEditor }
+{ TBrookURLEntryPointsComponentEditor }
 
-procedure TBrookHTTPEntryPointsComponentEditor.ExecuteVerb(AIndex: Integer);
+procedure TBrookURLEntryPointsComponentEditor.ExecuteVerb(AIndex: Integer);
 var
-  VEntryPoints: TBrookHTTPEntryPoints;
+  VEntryPoints: TBrookURLEntryPoints;
 begin
-  VEntryPoints := GetComponent as TBrookHTTPEntryPoints;
+  VEntryPoints := GetComponent as TBrookURLEntryPoints;
 {$IFDEF LCL}
   EditCollection(
 {$ELSE}
@@ -399,12 +399,12 @@ begin
     VEntryPoints, VEntryPoints.List, 'List');
 end;
 
-function TBrookHTTPEntryPointsComponentEditor.GetVerb(AIndex: Integer): string;
+function TBrookURLEntryPointsComponentEditor.GetVerb(AIndex: Integer): string;
 begin
-  Result := SBrookHTTPEntryPointsEditor;
+  Result := SBrookURLEntryPointsEditor;
 end;
 
-function TBrookHTTPEntryPointsComponentEditor.GetVerbCount: Integer;
+function TBrookURLEntryPointsComponentEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;

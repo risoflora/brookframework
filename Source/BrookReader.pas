@@ -89,26 +89,26 @@ type
     property BufferPosition: Integer read FBufferPosition write FBufferPosition;
     property Buffer: TBytes read FBuffer write FBuffer;
   public
-    { Creates an instance of @link(TBrookStreamReader)
+    { Creates an instance of @code(TBrookStreamReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AStream[in] Stream to be read line by line.)
       @param(ABufferSize[in] Buffer size for the line reading.)
-      @param(AOwnsStream[in] If @True the stream is freed on @link(Destroy).) }
+      @param(AOwnsStream[in] If @True the stream is freed on @code(Destroy).) }
     constructor Create(AEncoding: TEncoding; AStream: TStream;
       ABufferSize: Cardinal; AOwnsStream: Boolean); reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStreamReader)
+    { Creates an instance of @code(TBrookStreamReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AStream[in] Stream to be read line by line.) }
     constructor Create(AEncoding: TEncoding; AStream: TStream);
       reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStreamReader)
+    { Creates an instance of @code(TBrookStreamReader)
       @param(AStream[in] Stream to be read line by line.) }
     constructor Create(AStream: TStream); reintroduce; overload; virtual;
-    { Destroys an instance of @link(TBrookStreamReader). }
+    { Destroys an instance of @code(TBrookStreamReader). }
     destructor Destroy; override;
     { Resets the cursor to the beginning of the stream. }
     procedure Reset; override;
-    { Frees the stream if property @link(OwnsStream) is @True. }
+    { Frees the stream if property @code(OwnsStream) is @True. }
     procedure Close; override;
     { Checks if the reader has reached the End-Of-File.
       @returns(@True if the stream has reached the End-Of-File.) }
@@ -127,7 +127,7 @@ type
     function Read: string; overload; override;
     { Source stream containing the lines to be read. }
     property Stream: TStream read GetStream;
-    { If @True the stream is freed on @link(Destroy). }
+    { If @True the stream is freed on @code(Destroy). }
     property OwnsStream: Boolean read GetOwnsStream write SetOwnsStream;
   end;
 
@@ -141,7 +141,7 @@ type
     property ProxyReader: TBrookTextReader read GetProxyReader
       write SetProxyReader;
   public
-    { Destroys an instance of @link(TBrookBaseReader). }
+    { Destroys an instance of @code(TBrookBaseReader). }
     destructor Destroy; override;
     { Resets the reader to its initial state. }
     procedure Reset; override;
@@ -172,18 +172,18 @@ type
     procedure SetProxyReader(AValue: TBrookTextReader); override;
     function GetProxyReader: TBrookTextReader; override;
   public
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AString[in] String to be read line by line.)
       @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AString: string;
       ABufferSize: Integer); reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AString[in] String to be read line by line.) }
     constructor Create(AEncoding: TEncoding; const AString: string);
       reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AString[in] String to be read line by line.) }
     constructor Create(const AString: string); reintroduce; overload; virtual;
   end;
@@ -196,7 +196,7 @@ type
     procedure SetProxyReader(AValue: TBrookTextReader); override;
     function GetProxyReader: TBrookTextReader; override;
   public
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AFileName[in] File to be read line by line.)
       @param(AMode[in] Open mode and (possibly) a share mode OR-ed together.)
@@ -205,25 +205,25 @@ type
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
       AMode: Word; ARights: Cardinal;
       ABufferSize: Integer); reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AFileName[in] File to be read line by line.)
       @param(AMode[in] Open mode and (possibly) a share mode OR-ed together.)
       @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
       AMode: Word; ABufferSize: Integer); reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AFileName[in] File to be read line by line.)
       @param(ABufferSize[in] Buffer size for the line reading.) }
     constructor Create(AEncoding: TEncoding; const AFileName: TFileName;
       ABufferSize: Integer); reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AEncoding[in] Character encoding determined during reading.)
       @param(AFileName[in] File to be read line by line.) }
     constructor Create(AEncoding: TEncoding;
       const AFileName: TFileName); reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookStringReader)
+    { Creates an instance of @code(TBrookStringReader)
       @param(AFileName[in] File to be read line by line.) }
     constructor Create(
       const AFileName: TFileName); reintroduce; overload; virtual;

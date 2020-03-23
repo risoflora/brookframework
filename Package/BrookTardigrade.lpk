@@ -12,8 +12,8 @@
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
-    <Description Value="Brook -- Microframework which helps to develop web Pascal applications."/>
-    <License Value="Copyright (c) 2012-2019 Silvio Clecio &lt;silvioprog@gmail.com>
+    <Description Value="Brook is microframework which helps to develop web Pascal applications."/>
+    <License Value="Copyright (c) 2012-2020 Silvio Clecio &lt;silvioprog@gmail.com>
 
 Brook framework is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -83,28 +83,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"/
         <UnitName Value="BrookMediaTypes"/>
       </Item13>
       <Item14>
-        <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
-        <UnitName Value="BrookHTTPAuthentication"/>
+        <Filename Value="../Source/BrookURLEntryPoints.pas"/>
+        <UnitName Value="BrookURLEntryPoints"/>
       </Item14>
       <Item15>
-        <Filename Value="../Source/BrookHTTPCookies.pas"/>
-        <UnitName Value="BrookHTTPCookies"/>
+        <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
+        <UnitName Value="BrookHTTPAuthentication"/>
       </Item15>
       <Item16>
-        <Filename Value="../Source/BrookHTTPUploads.pas"/>
-        <UnitName Value="BrookHTTPUploads"/>
+        <Filename Value="../Source/BrookHTTPCookies.pas"/>
+        <UnitName Value="BrookHTTPCookies"/>
       </Item16>
       <Item17>
-        <Filename Value="../Source/BrookHTTPRequest.pas"/>
-        <UnitName Value="BrookHTTPRequest"/>
+        <Filename Value="../Source/BrookHTTPUploads.pas"/>
+        <UnitName Value="BrookHTTPUploads"/>
       </Item17>
       <Item18>
-        <Filename Value="../Source/BrookHTTPResponse.pas"/>
-        <UnitName Value="BrookHTTPResponse"/>
+        <Filename Value="../Source/BrookHTTPRequest.pas"/>
+        <UnitName Value="BrookHTTPRequest"/>
       </Item18>
       <Item19>
-        <Filename Value="../Source/BrookHTTPEntryPoints.pas"/>
-        <UnitName Value="BrookHTTPEntryPoints"/>
+        <Filename Value="../Source/BrookHTTPResponse.pas"/>
+        <UnitName Value="BrookHTTPResponse"/>
       </Item19>
       <Item20>
         <Filename Value="../Source/BrookHTTPRouter.pas"/>

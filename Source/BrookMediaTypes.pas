@@ -62,9 +62,9 @@ const
 {$ENDIF};
 
 resourcestring
-  { Error message @code('Invalid media type: <media-type>'). }
+  { Error message @code('Invalid media type: <media-type>.'). }
   SBrookInvalidMediaType = 'Invalid media type: %s.';
-  { Error message @code('Invalid media extension: <ext>'). }
+  { Error message @code('Invalid media extension: <ext>.'). }
   SBrookInvalidMediaExt = 'Invalid media extension: %s.';
   { Error message @code('Empty media type'). }
   SBrookEmptyMediaType = 'Empty media type.';
@@ -76,9 +76,9 @@ resourcestring
   SBrookInactiveMIMETypes = 'Inactive MIME types.';
   { Error message @code('Empty MIME provider'). }
   SBrookEmptyMIMEProvider = 'Empty MIME provider.';
-  { Error message @code('Invalid MIME provider class: <class-name>'). }
+  { Error message @code('Invalid MIME provider class: <class-name>.'). }
   SBrookInvalidMIMEProviderClass = 'Invalid MIME provider class: %s.';
-  { Error message @code('Unknown MIME provider: <unknown-mime>'). }
+  { Error message @code('Unknown MIME provider: <unknown-mime>.'). }
   SBrookUnknownMIMEProvider = 'Unknown MIME provider: %s.';
 
 type
@@ -101,9 +101,9 @@ type
     procedure CheckPrepared; inline;
     property Cache: TBrookStringMap read FCache;
   public
-    { Creates an instance of @link(TBrookMediaTypes). }
+    { Creates an instance of @code(TBrookMediaTypes). }
     constructor Create; virtual;
-    { Destroys an instance of @link(TBrookMediaTypes). }
+    { Destroys an instance of @code(TBrookMediaTypes). }
     destructor Destroy; override;
     { Returns the alias name for class registration.
       @returns(Registration alias name.) }
@@ -155,7 +155,7 @@ type
     function Find(const AExt, ADefType: string): string; overload; virtual;
     { Finds a media type identifier by file extension. If the cache is not
       prepared yet, this method prepares it automatically. If a media type
-      identifier is not found, the @link(DefaultType) is returned instead.
+      identifier is not found, the @code(DefaultType) is returned instead.
       @param(AExt[in] File extension.)
       @returns(Media type identifier.) }
     function Find(const AExt: string): string; overload; virtual;
@@ -164,13 +164,13 @@ type
     function Count: Integer; virtual;
     { Clears all media type identifiers present in the cache. }
     procedure Clear; virtual;
-    { Default media type identifier returned by @link(Find). }
+    { Default media type identifier returned by @code(Find). }
     property DefaultType: string read FDefaultType write SetDefaultType;
     { @True if the media types cache is prepared. }
     property Prepared: Boolean read IsPrepared;
   end;
 
-  { Class-reference for @link(TBrookMediaTypes). }
+  { Class-reference for @code(TBrookMediaTypes). }
   TBrookMediaTypesClass = class of TBrookMediaTypes;
 
   { Base class containing a basic media types parser. }
@@ -179,10 +179,10 @@ type
     FReader: TBrookTextReader;
     FTypes: TBrookMediaTypes;
   public
-    { Creates an instance of @link(TBrookMediaTypesParser). }
+    { Creates an instance of @code(TBrookMediaTypesParser). }
     constructor Create(AReader: TBrookTextReader;
       ATypes: TBrookMediaTypes); virtual;
-    { Parses a media types source passed by @link(Reader). }
+    { Parses a media types source passed by @code(Reader). }
     procedure Parse; virtual;
     { Line reader containing a media types source. }
     property Reader: TBrookTextReader read FReader;
@@ -210,12 +210,12 @@ type
     function CreateParser: TBrookMediaTypesParser; virtual;
     function IsPrepared: Boolean; override;
   public
-    { Creates an instance of @link(TBrookMediaTypesPath).
+    { Creates an instance of @code(TBrookMediaTypesPath).
       @param(AFileName[in] Media types file.) }
     constructor Create(const AFileName: string); reintroduce; overload; virtual;
-    { Creates an instance of @link(TBrookMediaTypesPath). }
+    { Creates an instance of @code(TBrookMediaTypesPath). }
     constructor Create; overload; override;
-    { Destroys an instance of @link(TBrookMediaTypesPath). }
+    { Destroys an instance of @code(TBrookMediaTypesPath). }
     destructor Destroy; override;
     { Returns the description of the media types source.
       @returns(Description of the media types source.) }
@@ -235,7 +235,7 @@ type
     property FileName: string read FFileName;
   end;
 
-  { Class-reference for @link(TBrookMediaTypesPath). }
+  { Class-reference for @code(TBrookMediaTypesPath). }
   TBrookMediaTypesPathClass = class of TBrookMediaTypesPath;
 
   { Media types provider from the
@@ -308,10 +308,10 @@ type
     procedure CheckActive; inline;
     procedure CheckInactive; inline;
   public
-    { Creates an instance of @link(TBrookMIME).
+    { Creates an instance of @code(TBrookMIME).
       @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
-    { Destroys an instance of @link(TBrookMIME). }
+    { Destroys an instance of @code(TBrookMIME). }
     destructor Destroy; override;
     { Gets a media type class from the classes register. }
     function GetProviderClass: TBrookMediaTypesClass; inline;
@@ -324,7 +324,7 @@ type
   published
     { Activates the cached media types provider. }
     property Active: Boolean read FActive write SetActive stored IsActiveStored;
-    { Default media type identifier returned by @link(TBrookMediaTypes.Find). }
+    { Default media type identifier returned by @code(TBrookMediaTypes.Find). }
     property DefaultType: string read FDefaultType write SetDefaultType
       stored IsDefaultTypeStored;
     { File name of the media types source. }

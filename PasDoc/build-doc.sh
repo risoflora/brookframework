@@ -51,12 +51,12 @@ pasdoc \
   --define FPC \
   --define UNIX \
   --define LINUX \
+  --define MSWINDOWS \
   --include ../Source \
   ../Source/BrookExtra.pas \
   ../Source/BrookHandledClasses.pas \
   ../Source/BrookHTTPAuthentication.pas \
   ../Source/BrookHTTPCookies.pas \
-  ../Source/BrookHTTPEntryPoints.pas \
   ../Source/BrookHTTPRequest.pas \
   ../Source/BrookHTTPResponse.pas \
   ../Source/BrookHTTPRouter.pas \
@@ -67,6 +67,7 @@ pasdoc \
   ../Source/BrookReader.pas \
   ../Source/BrookStringMap.pas \
   ../Source/BrookString.pas \
+  ../Source/BrookURLEntryPoints.pas \
   ../Source/BrookUtility.pas \
   --cache-dir $cache_dir \
   --output $out_dir

@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
-unit BrookHTTPEntryPoints;
+{ Contains classes for handling URL entry-points. }
+
+unit BrookURLEntryPoints;
 
 {$I BrookDefines.inc}
 
@@ -47,23 +49,33 @@ uses
   BrookHTTPRouter;
 
 resourcestring
+  { Error message @code('Entry-point list not prepared.'). }
   SBrookEntryPointListUnprepared = 'Entry-point list not prepared.';
+  { Error message @code('Inactive entry-points.'). }
   SBrookInactiveEntryPoints = 'Inactive entry-points.';
+  { Error message @code('No entry-points defined.'). }
   SBrookNoEntryPointsDefined = 'No entry-points defined.';
+  { Error message @code('<new-class>: entry-point <entry-point> already
+    exists in <existing-class>.'). }
   SBrookEntryPointAlreadyExists =
     '%s: entry-point ''%s'' already exists in ''%s''.';
+  { Error message @code('<new-class>: entry-point cannot be empty.'). }
   SBrookEmptyEntryPointName = '%s: entry-point cannot be empty.';
-  SBrookEntryPointNotFound = 'Entry-point not found: %s';
+  { Error message @code('Entry-point not found: <entry-point>.'). }
+  SBrookEntryPointNotFound = 'Entry-point not found: %s.';
+  { Error message @code('Router not assigned for entry-point <entry-point>.'). }
   SBrookRouterNotAssigned = 'Router not assigned for entry-point ''%s''.';
 
 type
-  TBrookHTTPEntryPointList = class;
+  TBrookURLEntryPointList = class;
 
-  EBrookHTTPEntryPoint = class(Exception);
+  { Handles exceptions related to entry-point classes. }
+  EBrookURLEntryPoint = class(Exception);
 
-  TBrookHTTPEntryPoint = class(TBrookHandledCollectionItem)
+  { Class to represent a URL entry-point item. }
+  TBrookURLEntryPoint = class(TBrookHandledCollectionItem)
   private
-    FList: TBrookHTTPEntryPointList;
+    FList: TBrookURLEntryPointList;
     FHandle: Psg_entrypoint;
     FName: string;
     FUserData: Pointer;
@@ -75,80 +87,123 @@ type
     function GetRouter: TBrookHTTPRouter; virtual;
     procedure SetRouter(AValue: TBrookHTTPRouter); virtual;
   public
+    { Creates an instance of @code(TBrookURLEntryPoint).
+      @param(ACollection[in] Entry-point list.) }
     constructor Create(ACollection: TCollection); override;
+    { Copies the properties of the source entry-point.
+      @param(ASource[in] Entry-point source to be copied.) }
     procedure Assign(ASource: TPersistent); override;
+    { Checks if the entry-point name is valid. }
     procedure Validate; inline;
+    { User-defined data to be stored temporally in the entry-point object. }
     property UserData: Pointer read GetUserData write FUserData;
   published
+    { Entry-point item name. }
     property Name: string read GetName write SetName;
+    { Referenced router to the entry-point. }
     property Router: TBrookHTTPRouter read GetRouter write SetRouter;
   end;
 
-  TBrookHTTPEntryPointClass = class of TBrookHTTPEntryPoint;
+  { Class-reference for @code(TBrookURLEntryPoint). }
+  TBrookURLEntryPointClass = class of TBrookURLEntryPoint;
 
-  TBrookHTTPEntryPointListEnumerator = class(TCollectionEnumerator)
+  { List enumerator for @code(TBrookURLEntryPointList). }
+  TBrookURLEntryPointListEnumerator = class(TCollectionEnumerator)
   public
-    function GetCurrent: TBrookHTTPEntryPoint;
-    property Current: TBrookHTTPEntryPoint read GetCurrent;
+    { Get current entry-point item. }
+    function GetCurrent: TBrookURLEntryPoint;
+    { Current entry-point item. }
+    property Current: TBrookURLEntryPoint read GetCurrent;
   end;
 
-  EBrookHTTPEntryPointList = class(Exception);
+  { Handles exceptions related to URL entry-point list. }
+  EBrookURLEntryPointList = class(Exception);
 
-  TBrookHTTPEntryPointList = class(TBrookHandledOwnedCollection)
+  { Class to represent an list of URL entry-points. }
+  TBrookURLEntryPointList = class(TBrookHandledOwnedCollection)
   private
     FHandle: Psg_entrypoints;
   protected
     class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     class function GetEntryPointLabel: string; virtual;
     class function GetEntryPointName(
-      AEntryPoint: TBrookHTTPEntryPoint): string; virtual;
+      AEntryPoint: TBrookURLEntryPoint): string; virtual;
     function GetHandle: Pointer; override;
-    function GetItem(AIndex: Integer): TBrookHTTPEntryPoint; virtual;
-    procedure SetItem(AIndex: Integer; AValue: TBrookHTTPEntryPoint); virtual;
-    procedure InternalAdd(AEntryPoint: TBrookHTTPEntryPoint); virtual;
+    function GetItem(AIndex: Integer): TBrookURLEntryPoint; virtual;
+    procedure SetItem(AIndex: Integer; AValue: TBrookURLEntryPoint); virtual;
+    procedure InternalAdd(AEntryPoint: TBrookURLEntryPoint); virtual;
     procedure CheckPrepared; inline;
   public
+    { Creates an instance of @code(TBrookURLEntryPointList).
+      @param(AOwner[in] Entry-points persistent.)}
     constructor Create(AOwner: TPersistent); virtual;
+    { Frees an instance of @code(TBrookURLEntryPointList). }
     destructor Destroy; override;
-    class function GetEntryPointClass: TBrookHTTPEntryPointClass; virtual;
+    { Gets the default class for entry-point item creation. }
+    class function GetEntryPointClass: TBrookURLEntryPointClass; virtual;
+    { Copies the items of the source entry-points.
+      @param(ASource[in] Entry-points source to be copied.) }
     procedure Assign(ASource: TPersistent); override;
-    function GetEnumerator: TBrookHTTPEntryPointListEnumerator;
+    { Creates an enumerator to iterate the entry-points though @code(for..in). }
+    function GetEnumerator: TBrookURLEntryPointListEnumerator;
+    { Prepares entry-points handle. }
     procedure Prepare; virtual;
+    { Unprepares entry-points handle. }
     procedure Unprepare; virtual;
+    { Checks if entry-points handle is prepared. }
     function IsPrepared: Boolean; virtual;
+    { Creates a new entry-point name. }
     function NewName: string; virtual;
-    function Add: TBrookHTTPEntryPoint; virtual;
+    { Adds a new item to the entry-point list.
+      @returns(Entry-point item.) }
+    function Add: TBrookURLEntryPoint; virtual;
+    { Removes a item from the entry-point list by its name.
+      @param(AName[in] Entry-point name.)
+      @returns(@True if an entry-point is removed.) }
     function Remove(const AName: string): Boolean; virtual;
+    { Gets the entry-point index by its name. }
     function IndexOf(const AName: string): Integer; virtual;
-    function FindInList(const AName: string): TBrookHTTPEntryPoint; virtual;
+    { Finds an entry-point in the entry-point list by its name.
+      @param(AName[in] Entry-point name.)
+      @returns(Entry-point item.) }
+    function FindInList(const AName: string): TBrookURLEntryPoint; virtual;
+    { Finds an user-data in the entry-point list by entry-point path.
+      @param(APath[in] Entry-point path.)
+      @param(AUserData[out] User-defined data.)
+      @returns(@True if user-data is found.) }
     function Find(const APath: string; out AUserData): Boolean; virtual;
-    { TODO: Iterate::sg_entrypoints_iter() }
+    { Clears the entry-point list. }
     procedure Clear; virtual;
-    property Items[AIndex: Integer]: TBrookHTTPEntryPoint read GetItem
+    { Gets/sets an entry-point from/to the entry-point list by its index. }
+    property Items[AIndex: Integer]: TBrookURLEntryPoint read GetItem
       write SetItem; default;
+    { @True if entry-points handle is prepared. }
     property Prepared: Boolean read IsPrepared;
   end;
 
-  TBrookHTTPEntryPointsNotFoundEvent = procedure(ASender: TObject;
+  { Event signature used by @code(TBrookURLEntryPoints) to notify a not found
+    entry-point items. }
+  TBrookURLEntryPointsNotFoundEvent = procedure(ASender: TObject;
     const AEntryPoint, APath: string; ARequest: TBrookHTTPRequest;
     AResponse: TBrookHTTPResponse) of object;
 
-  TBrookHTTPEntryPoints = class(TBrookHandledComponent)
+  { URL entry-points component. }
+  TBrookURLEntryPoints = class(TBrookHandledComponent)
   private
     FActive: Boolean;
-    FList: TBrookHTTPEntryPointList;
+    FList: TBrookURLEntryPointList;
     FStreamedActive: Boolean;
-    FOnNotFound: TBrookHTTPEntryPointsNotFoundEvent;
+    FOnNotFound: TBrookURLEntryPointsNotFoundEvent;
     FOnActivate: TNotifyEvent;
     FOnDeactivate: TNotifyEvent;
     function IsActiveStored: Boolean;
     procedure SetActive(AValue: Boolean);
-    function GetItem(AIndex: Integer): TBrookHTTPEntryPoint;
-    procedure SetItem(AIndex: Integer; AValue: TBrookHTTPEntryPoint);
-    procedure SetList(AValue: TBrookHTTPEntryPointList);
+    function GetItem(AIndex: Integer): TBrookURLEntryPoint;
+    procedure SetItem(AIndex: Integer; AValue: TBrookURLEntryPoint);
+    procedure SetList(AValue: TBrookURLEntryPointList);
   protected
     class procedure LibNotifier(AClosure: Pointer); static; cdecl;
-    function CreateList: TBrookHTTPEntryPointList; virtual;
+    function CreateList: TBrookURLEntryPointList; virtual;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
     procedure DoRoute(ASender: TObject; const AEntryPoint, APath: string;
@@ -161,68 +216,96 @@ type
     procedure CheckItems; inline;
     procedure CheckActive; inline;
   public
+    { Creates an instance of @code(TBrookURLEntryPoints).
+      @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
+    { Destroys an instance of @code(TBrookURLEntryPoints). }
     destructor Destroy; override;
+    { Copies the properties of the source entry-point component.
+      @param(ASource[in] Entry-point component source to be copied.) }
     procedure Assign(ASource: TPersistent); override;
-    function GetEnumerator: TBrookHTTPEntryPointListEnumerator;
-    function Add: TBrookHTTPEntryPoint; inline;
+    { Creates an enumerator to iterate the entry-points though @code(for..in). }
+    function GetEnumerator: TBrookURLEntryPointListEnumerator;
+    { Adds a new item to the entry-point list.
+      @returns(Entry-point item.) }
+    function Add: TBrookURLEntryPoint; inline;
+    { Removes a item from the entry-point list by its name.
+      @param(AName[in] Entry-point name.) }
     procedure Remove(const AName: string); inline;
+    { Clears the entry-point list. }
     procedure Clear; inline;
+    { Enabled the entry-point component. }
     procedure Open;
+    { Disables the entry-point component. }
     procedure Close;
+    { Enters into entry-points routing them.
+      @param(ASender[in] Sender object.)
+      @param(APath[in] Entry-point path.)
+      @param(ARequest[in] Request object to pass to the entry-point found.)
+      @param(AResponse: Response object to pass to the entry-point found.) }
     procedure Enter(ASender: TObject; const APath: string;
       ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); overload; virtual;
+    { Enters into entry-points routing them.
+      @param(ASender[in] Sender object.)
+      @param(ARequest[in] Request object to pass to the entry-point found.)
+      @param(AResponse: Response object to pass to the entry-point found.) }
     procedure Enter(ASender: TObject; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); overload; virtual;
-    property Items[AIndex: Integer]: TBrookHTTPEntryPoint read GetItem
+    { Gets/sets an entry-point from/to the entry-point list by its index. }
+    property Items[AIndex: Integer]: TBrookURLEntryPoint read GetItem
       write SetItem; default;
   published
+    { Enabled/disables the entry-point component. }
     property Active: Boolean read FActive write SetActive stored IsActiveStored;
-    property List: TBrookHTTPEntryPointList read FList write SetList;
-    property OnNotFound: TBrookHTTPEntryPointsNotFoundEvent read FOnNotFound
+    { Available entry-point list. }
+    property List: TBrookURLEntryPointList read FList write SetList;
+    { Event triggered when an entry-point is not found. }
+    property OnNotFound: TBrookURLEntryPointsNotFoundEvent read FOnNotFound
       write FOnNotFound;
+    { Event triggered when the component is enabled. }
     property OnActivate: TNotifyEvent read FOnActivate write FOnActivate;
+    { Event triggered when the component is disabled. }
     property OnDeactivate: TNotifyEvent read FOnDeactivate write FOnDeactivate;
   end;
 
 implementation
 
-{ TBrookHTTPEntryPoint }
+{ TBrookURLEntryPoint }
 
-constructor TBrookHTTPEntryPoint.Create(ACollection: TCollection);
+constructor TBrookURLEntryPoint.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
-  if Assigned(ACollection) and (ACollection is TBrookHTTPEntryPointList) then
+  if Assigned(ACollection) and (ACollection is TBrookURLEntryPointList) then
   begin
-    FList := ACollection as TBrookHTTPEntryPointList;
+    FList := ACollection as TBrookURLEntryPointList;
     FName := FList.NewName;
   end
   else
     SetName('/');
 end;
 
-function TBrookHTTPEntryPoint.GetHandle: Pointer;
+function TBrookURLEntryPoint.GetHandle: Pointer;
 begin
   Result := FHandle;
 end;
 
-procedure TBrookHTTPEntryPoint.Assign(ASource: TPersistent);
+procedure TBrookURLEntryPoint.Assign(ASource: TPersistent);
 begin
-  if ASource is TBrookHTTPEntryPoint then
-    FName := (ASource as TBrookHTTPEntryPoint).FName
+  if ASource is TBrookURLEntryPoint then
+    FName := (ASource as TBrookURLEntryPoint).FName
   else
     inherited Assign(ASource);
 end;
 
-procedure TBrookHTTPEntryPoint.Validate;
+procedure TBrookURLEntryPoint.Validate;
 begin
   if FName.IsEmpty then
-    raise EBrookHTTPEntryPoint.CreateFmt(SBrookEmptyEntryPointName,
+    raise EBrookURLEntryPoint.CreateFmt(SBrookEmptyEntryPointName,
       [GetNamePath]);
 end;
 
-function TBrookHTTPEntryPoint.GetName: string;
+function TBrookURLEntryPoint.GetName: string;
 var
   P: Pcchar;
 begin
@@ -237,12 +320,12 @@ begin
   end;
 end;
 
-function TBrookHTTPEntryPoint.GetRouter: TBrookHTTPRouter;
+function TBrookURLEntryPoint.GetRouter: TBrookHTTPRouter;
 begin
   Result := GetUserData;
 end;
 
-function TBrookHTTPEntryPoint.GetUserData: Pointer;
+function TBrookURLEntryPoint.GetUserData: Pointer;
 begin
   if not Assigned(FHandle) then
     Exit(FUserData);
@@ -250,9 +333,9 @@ begin
   Result := sg_entrypoint_user_data(FHandle);
 end;
 
-procedure TBrookHTTPEntryPoint.SetName(const AValue: string);
+procedure TBrookURLEntryPoint.SetName(const AValue: string);
 var
-  EP: TBrookHTTPEntryPoint;
+  EP: TBrookURLEntryPoint;
   NN: string;
 begin
   if (AValue = FName) or (not Assigned(FList)) then
@@ -260,7 +343,7 @@ begin
   NN := Brook.FixEntryPoint(AValue);
   EP := FList.FindInList(NN);
   if Assigned(EP) and (EP <> Self) then
-    raise EBrookHTTPEntryPoint.CreateFmt(SBrookEntryPointAlreadyExists,
+    raise EBrookURLEntryPoint.CreateFmt(SBrookEntryPointAlreadyExists,
       [GetNamePath, NN, EP.GetNamePath]);
   FName := NN;
   if Assigned(FList.FHandle) then
@@ -270,7 +353,7 @@ begin
   end;
 end;
 
-procedure TBrookHTTPEntryPoint.SetRouter(AValue: TBrookHTTPRouter);
+procedure TBrookURLEntryPoint.SetRouter(AValue: TBrookHTTPRouter);
 var
   M: TMarshaller;
   EP: Psg_entrypoint;
@@ -283,80 +366,80 @@ begin
     SgLib.CheckLastError(sg_entrypoint_set_user_data(EP, FUserData));
 end;
 
-{ TBrookHTTPEntryPointListEnumerator }
+{ TBrookURLEntryPointListEnumerator }
 
-function TBrookHTTPEntryPointListEnumerator.GetCurrent: TBrookHTTPEntryPoint;
+function TBrookURLEntryPointListEnumerator.GetCurrent: TBrookURLEntryPoint;
 begin
-  Result := TBrookHTTPEntryPoint(inherited GetCurrent);
+  Result := TBrookURLEntryPoint(inherited GetCurrent);
 end;
 
-{ TBrookHTTPEntryPointList }
+{ TBrookURLEntryPointList }
 
-constructor TBrookHTTPEntryPointList.Create(AOwner: TPersistent);
+constructor TBrookURLEntryPointList.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetEntryPointClass);
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
 end;
 
-destructor TBrookHTTPEntryPointList.Destroy;
+destructor TBrookURLEntryPointList.Destroy;
 begin
   Unprepare;
   SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   inherited Destroy;
 end;
 
-class procedure TBrookHTTPEntryPointList.LibNotifier(AClosure: Pointer);
+class procedure TBrookURLEntryPointList.LibNotifier(AClosure: Pointer);
 begin
-  TBrookHTTPEntryPointList(AClosure).Unprepare;
+  TBrookURLEntryPointList(AClosure).Unprepare;
 end;
 
-class function TBrookHTTPEntryPointList.GetEntryPointClass: TBrookHTTPEntryPointClass;
+class function TBrookURLEntryPointList.GetEntryPointClass: TBrookURLEntryPointClass;
 begin
-  Result := TBrookHTTPEntryPoint;
+  Result := TBrookURLEntryPoint;
 end;
 
-class function TBrookHTTPEntryPointList.GetEntryPointLabel: string;
+class function TBrookURLEntryPointList.GetEntryPointLabel: string;
 begin
   Result := '/api';
 end;
 
-class function TBrookHTTPEntryPointList.GetEntryPointName(
-  AEntryPoint: TBrookHTTPEntryPoint): string;
+class function TBrookURLEntryPointList.GetEntryPointName(
+  AEntryPoint: TBrookURLEntryPoint): string;
 begin
   Result := AEntryPoint.FName;
 end;
 
-procedure TBrookHTTPEntryPointList.CheckPrepared;
+procedure TBrookURLEntryPointList.CheckPrepared;
 begin
   if not Assigned(FHandle) then
     raise EInvalidPointer.Create(SBrookEntryPointListUnprepared);
 end;
 
-function TBrookHTTPEntryPointList.GetHandle: Pointer;
+function TBrookURLEntryPointList.GetHandle: Pointer;
 begin
   Result := FHandle;
 end;
 
-procedure TBrookHTTPEntryPointList.Assign(ASource: TPersistent);
+procedure TBrookURLEntryPointList.Assign(ASource: TPersistent);
 var
-  EP: TBrookHTTPEntryPoint;
+  EP: TBrookURLEntryPoint;
 begin
-  if ASource is TBrookHTTPEntryPointList then
+  if ASource is TBrookURLEntryPointList then
   begin
     Clear;
-    for EP in (ASource as TBrookHTTPEntryPointList) do
+    for EP in (ASource as TBrookURLEntryPointList) do
       Add.Assign(EP);
   end
   else
     inherited Assign(ASource);
 end;
 
-function TBrookHTTPEntryPointList.GetEnumerator: TBrookHTTPEntryPointListEnumerator;
+function TBrookURLEntryPointList.GetEnumerator: TBrookURLEntryPointListEnumerator;
 begin
-  Result := TBrookHTTPEntryPointListEnumerator.Create(Self);
+  Result := TBrookURLEntryPointListEnumerator.Create(Self);
 end;
 
-procedure TBrookHTTPEntryPointList.InternalAdd(AEntryPoint: TBrookHTTPEntryPoint);
+procedure TBrookURLEntryPointList.InternalAdd(AEntryPoint: TBrookURLEntryPoint);
 var
   M: TMarshaller;
   R: cint;
@@ -366,12 +449,12 @@ begin
   if R = 0 then
     Exit;
   if R = EALREADY then
-    raise EBrookHTTPEntryPointList.CreateFmt(SBrookEntryPointAlreadyExists,
+    raise EBrookURLEntryPointList.CreateFmt(SBrookEntryPointAlreadyExists,
       [AEntryPoint.GetNamePath, AEntryPoint.Name]);
   SgLib.CheckLastError(R);
 end;
 
-function TBrookHTTPEntryPointList.NewName: string;
+function TBrookURLEntryPointList.NewName: string;
 var
   I: Integer;
 begin
@@ -382,9 +465,9 @@ begin
   until IndexOf(Result) < 0;
 end;
 
-procedure TBrookHTTPEntryPointList.Prepare;
+procedure TBrookURLEntryPointList.Prepare;
 var
-  EP: TBrookHTTPEntryPoint;
+  EP: TBrookURLEntryPoint;
 begin
   if Assigned(FHandle) or (Count = 0) then
     Exit;
@@ -398,7 +481,7 @@ begin
   end;
 end;
 
-procedure TBrookHTTPEntryPointList.Unprepare;
+procedure TBrookURLEntryPointList.Unprepare;
 begin
   if not Assigned(FHandle) then
     Exit;
@@ -407,28 +490,28 @@ begin
   FHandle := nil;
 end;
 
-function TBrookHTTPEntryPointList.IsPrepared: Boolean;
+function TBrookURLEntryPointList.IsPrepared: Boolean;
 begin
   Result := Assigned(FHandle);
 end;
 
-function TBrookHTTPEntryPointList.GetItem(AIndex: Integer): TBrookHTTPEntryPoint;
+function TBrookURLEntryPointList.GetItem(AIndex: Integer): TBrookURLEntryPoint;
 begin
-  Result := TBrookHTTPEntryPoint(inherited GetItem(AIndex));
+  Result := TBrookURLEntryPoint(inherited GetItem(AIndex));
 end;
 
-procedure TBrookHTTPEntryPointList.SetItem(AIndex: Integer;
-  AValue: TBrookHTTPEntryPoint);
+procedure TBrookURLEntryPointList.SetItem(AIndex: Integer;
+  AValue: TBrookURLEntryPoint);
 begin
   inherited SetItem(AIndex, AValue);
 end;
 
-function TBrookHTTPEntryPointList.Add: TBrookHTTPEntryPoint;
+function TBrookURLEntryPointList.Add: TBrookURLEntryPoint;
 begin
-  Result := TBrookHTTPEntryPoint(inherited Add);
+  Result := TBrookURLEntryPoint(inherited Add);
 end;
 
-function TBrookHTTPEntryPointList.Remove(const AName: string): Boolean;
+function TBrookURLEntryPointList.Remove(const AName: string): Boolean;
 var
   M: TMarshaller;
   I: Integer;
@@ -443,7 +526,7 @@ begin
   end;
 end;
 
-function TBrookHTTPEntryPointList.IndexOf(const AName: string): Integer;
+function TBrookURLEntryPointList.IndexOf(const AName: string): Integer;
 begin
   for Result := 0 to Pred(Count) do
     if SameText(GetItem(Result).Name, AName) then
@@ -451,10 +534,10 @@ begin
   Result := -1;
 end;
 
-function TBrookHTTPEntryPointList.FindInList(
-  const AName: string): TBrookHTTPEntryPoint;
+function TBrookURLEntryPointList.FindInList(
+  const AName: string): TBrookURLEntryPoint;
 var
-  EP: TBrookHTTPEntryPoint;
+  EP: TBrookURLEntryPoint;
 begin
   for EP in Self do
     if SameText(EP.Name, AName) then
@@ -462,7 +545,7 @@ begin
   Result := nil;
 end;
 
-function TBrookHTTPEntryPointList.Find(const APath: string;
+function TBrookURLEntryPointList.Find(const APath: string;
   out AUserData): Boolean;
 var
   M: TMarshaller;
@@ -480,23 +563,23 @@ begin
       SgLib.CheckLastError(R);
 end;
 
-procedure TBrookHTTPEntryPointList.Clear;
+procedure TBrookURLEntryPointList.Clear;
 begin
   inherited Clear;
   SgLib.Check;
   SgLib.CheckLastError(sg_entrypoints_clear(FHandle));
 end;
 
-{ TBrookHTTPEntryPoints }
+{ TBrookURLEntryPoints }
 
-constructor TBrookHTTPEntryPoints.Create(AOwner: TComponent);
+constructor TBrookURLEntryPoints.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FList := CreateList;
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
 end;
 
-destructor TBrookHTTPEntryPoints.Destroy;
+destructor TBrookURLEntryPoints.Destroy;
 begin
   SetActive(False);
   FList.Free;
@@ -504,29 +587,29 @@ begin
   inherited Destroy;
 end;
 
-function TBrookHTTPEntryPoints.CreateList: TBrookHTTPEntryPointList;
+function TBrookURLEntryPoints.CreateList: TBrookURLEntryPointList;
 begin
-  Result := TBrookHTTPEntryPointList.Create(Self);
+  Result := TBrookURLEntryPointList.Create(Self);
 end;
 
-class procedure TBrookHTTPEntryPoints.LibNotifier(AClosure: Pointer);
+class procedure TBrookURLEntryPoints.LibNotifier(AClosure: Pointer);
 begin
-  TBrookHTTPEntryPoints(AClosure).Close;
+  TBrookURLEntryPoints(AClosure).Close;
 end;
 
-procedure TBrookHTTPEntryPoints.CheckItems;
+procedure TBrookURLEntryPoints.CheckItems;
 begin
   if FList.Count = 0 then
-    raise EBrookHTTPEntryPointList.Create(SBrookNoEntryPointsDefined);
+    raise EBrookURLEntryPointList.Create(SBrookNoEntryPointsDefined);
 end;
 
-procedure TBrookHTTPEntryPoints.CheckActive;
+procedure TBrookURLEntryPoints.CheckActive;
 begin
   if (not (csLoading in ComponentState)) and (not Active) then
     raise EInvalidOpException.Create(SBrookInactiveEntryPoints);
 end;
 
-procedure TBrookHTTPEntryPoints.Loaded;
+procedure TBrookURLEntryPoints.Loaded;
 begin
   inherited Loaded;
   try
@@ -545,40 +628,40 @@ begin
   end;
 end;
 
-procedure TBrookHTTPEntryPoints.Assign(ASource: TPersistent);
+procedure TBrookURLEntryPoints.Assign(ASource: TPersistent);
 begin
-  if ASource is TBrookHTTPEntryPoints then
-    FList.Assign((ASource as TBrookHTTPEntryPoints).FList)
+  if ASource is TBrookURLEntryPoints then
+    FList.Assign((ASource as TBrookURLEntryPoints).FList)
   else
     inherited Assign(ASource);
 end;
 
-function TBrookHTTPEntryPoints.GetEnumerator: TBrookHTTPEntryPointListEnumerator;
+function TBrookURLEntryPoints.GetEnumerator: TBrookURLEntryPointListEnumerator;
 begin
-  Result := TBrookHTTPEntryPointListEnumerator.Create(FList);
+  Result := TBrookURLEntryPointListEnumerator.Create(FList);
 end;
 
-function TBrookHTTPEntryPoints.Add: TBrookHTTPEntryPoint;
+function TBrookURLEntryPoints.Add: TBrookURLEntryPoint;
 begin
   Result := FList.Add;
 end;
 
-procedure TBrookHTTPEntryPoints.Remove(const AName: string);
+procedure TBrookURLEntryPoints.Remove(const AName: string);
 begin
   FList.Remove(AName);
 end;
 
-procedure TBrookHTTPEntryPoints.Clear;
+procedure TBrookURLEntryPoints.Clear;
 begin
   FList.Clear;
 end;
 
-function TBrookHTTPEntryPoints.GetHandle: Pointer;
+function TBrookURLEntryPoints.GetHandle: Pointer;
 begin
   Result := FList.FHandle;
 end;
 
-procedure TBrookHTTPEntryPoints.DoOpen;
+procedure TBrookURLEntryPoints.DoOpen;
 begin
   FList.Prepare;
   FActive := FList.IsPrepared;
@@ -586,7 +669,7 @@ begin
     FOnActivate(Self);
 end;
 
-procedure TBrookHTTPEntryPoints.DoClose;
+procedure TBrookURLEntryPoints.DoClose;
 begin
   FList.Unprepare;
   FActive := False;
@@ -594,7 +677,7 @@ begin
     FOnDeactivate(Self);
 end;
 
-procedure TBrookHTTPEntryPoints.SetList(AValue: TBrookHTTPEntryPointList);
+procedure TBrookURLEntryPoints.SetList(AValue: TBrookURLEntryPointList);
 begin
   if AValue = FList then
     Exit;
@@ -604,17 +687,17 @@ begin
     FList.Clear;
 end;
 
-function TBrookHTTPEntryPoints.IsActiveStored: Boolean;
+function TBrookURLEntryPoints.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;
 
-function TBrookHTTPEntryPoints.GetItem(AIndex: Integer): TBrookHTTPEntryPoint;
+function TBrookURLEntryPoints.GetItem(AIndex: Integer): TBrookURLEntryPoint;
 begin
   Result := FList.GetItem(AIndex);
 end;
 
-procedure TBrookHTTPEntryPoints.SetActive(AValue: Boolean);
+procedure TBrookURLEntryPoints.SetActive(AValue: Boolean);
 begin
   if AValue = FActive then
     Exit;
@@ -636,23 +719,23 @@ begin
       DoClose;
 end;
 
-procedure TBrookHTTPEntryPoints.SetItem(AIndex: Integer;
-  AValue: TBrookHTTPEntryPoint);
+procedure TBrookURLEntryPoints.SetItem(AIndex: Integer;
+  AValue: TBrookURLEntryPoint);
 begin
   FList.SetItem(AIndex, AValue);
 end;
 
-procedure TBrookHTTPEntryPoints.Open;
+procedure TBrookURLEntryPoints.Open;
 begin
   SetActive(True);
 end;
 
-procedure TBrookHTTPEntryPoints.Close;
+procedure TBrookURLEntryPoints.Close;
 begin
   SetActive(False);
 end;
 
-procedure TBrookHTTPEntryPoints.DoRoute(ASender: TObject; const AEntryPoint,
+procedure TBrookURLEntryPoints.DoRoute(ASender: TObject; const AEntryPoint,
   APath: string; ARouter: TBrookHTTPRouter; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse);
 begin
@@ -663,7 +746,7 @@ begin
       BROOK_CT_TEXT_PLAIN, 500);
 end;
 
-procedure TBrookHTTPEntryPoints.DoNotFound(ASender: TObject;
+procedure TBrookURLEntryPoints.DoNotFound(ASender: TObject;
   const AEntryPoint, APath: string; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse);
 begin
@@ -674,7 +757,7 @@ begin
       BROOK_CT_TEXT_PLAIN, 404);
 end;
 
-procedure TBrookHTTPEntryPoints.Enter(ASender: TObject; const APath: string;
+procedure TBrookURLEntryPoints.Enter(ASender: TObject; const APath: string;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 var
   RT: TBrookHTTPRouter;
@@ -690,7 +773,7 @@ begin
     DoNotFound(ASender, EP, P, ARequest, AResponse);
 end;
 
-procedure TBrookHTTPEntryPoints.Enter(ASender: TObject;
+procedure TBrookURLEntryPoints.Enter(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   if not Assigned(ARequest) then

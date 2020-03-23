@@ -77,10 +77,10 @@ type
     function GetUserData: Pointer; virtual;
     procedure SetUserData(AValue: Pointer); virtual;
   public
-    { Creates an instance of @link(TBrookHTTPRequest).
+    { Creates an instance of @code(TBrookHTTPRequest).
       @param(AHandle[in] Request handle.) }
     constructor Create(AHandle: Pointer); virtual;
-    { Frees an instance of @link(TBrookHTTPRequest). }
+    { Frees an instance of @code(TBrookHTTPRequest). }
     destructor Destroy; override;
     { Checks if the HTTP method is @code(POST), @code(PUT), @code(DELETE) or
       @code(OPTIONS). }

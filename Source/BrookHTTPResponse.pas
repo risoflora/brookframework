@@ -77,10 +77,10 @@ type
     procedure CheckAlreadySent(Aret: cint); inline;
     procedure CheckZLib(Aret: cint); inline;
   public
-    { Creates an instance of @link(TBrookHTTPResponse).
+    { Creates an instance of @code(TBrookHTTPResponse).
       @param(AHandle[in] Request handle.) }
     constructor Create(AHandle: Pointer); virtual;
-    { Frees an instance of @link(TBrookHTTPResponse). }
+    { Frees an instance of @code(TBrookHTTPResponse). }
     destructor Destroy; override;
     { Sets server cookie to the response handle.
       @param(AName[in] Cookie name.)

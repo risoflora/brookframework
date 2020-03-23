@@ -53,7 +53,7 @@ type
   protected
     function GetHandle: Pointer; override;
   published
-    { Creates an instance of @link(TBrookHTTPCredentials).
+    { Creates an instance of @code(TBrookHTTPCredentials).
       @param(AHandle[in] Authentication handle.) }
     constructor Create(AHandle: Pointer); virtual;
     { Authentication protection space (realm). }
@@ -75,10 +75,10 @@ type
     function CreateCredentials(
       AHandle: Pointer): TBrookHTTPCredentials; virtual;
   public
-    { Creates an instance of @link(TBrookHTTPAuthentication).
+    { Creates an instance of @code(TBrookHTTPAuthentication).
       @param(AHandle[in] Authentication handle.) }
     constructor Create(AHandle: Pointer); virtual;
-    { Destroys an instance of @link(TBrookHTTPAuthentication). }
+    { Destroys an instance of @code(TBrookHTTPAuthentication). }
     destructor Destroy; override;
     { Deny the authentication sending the reason to the user.
       @param(AReason[in] Denial reason.)

@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,12 +69,12 @@ contains
   BrookExtra in '..\Source\BrookExtra.pas',
   BrookReader in '..\Source\BrookReader.pas',
   BrookMediaTypes in '..\Source\BrookMediaTypes.pas',
+  BrookURLEntryPoints in '..\Source\BrookURLEntryPoints.pas',
   BrookHTTPAuthentication in '..\Source\BrookHTTPAuthentication.pas',
   BrookHTTPCookies in '..\Source\BrookHTTPCookies.pas',
   BrookHTTPUploads in '..\Source\BrookHTTPUploads.pas',
   BrookHTTPRequest in '..\Source\BrookHTTPRequest.pas',
   BrookHTTPResponse in '..\Source\BrookHTTPResponse.pas',
-  BrookHTTPEntryPoints in '..\Source\BrookHTTPEntryPoints.pas',
   BrookHTTPRouter in '..\Source\BrookHTTPRouter.pas',
   BrookHTTPServer in '..\Source\BrookHTTPServer.pas',
   BrookIDEIntegration in 'BrookIDEIntegration.pas';

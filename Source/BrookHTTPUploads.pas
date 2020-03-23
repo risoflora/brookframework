@@ -55,7 +55,7 @@ type
     FSize: UInt64;
     function GetHandle: Pointer;
   public
-    { Creates an instance of @link(TBrookHTTPUpload).
+    { Creates an instance of @code(TBrookHTTPUpload).
       @param(AHandle[in] Upload handle.) }
     constructor Create(AHandle: Pointer);
     { Saves the uploaded file defining the destination path by upload name and
@@ -117,14 +117,14 @@ type
     property Size: UInt64 read FSize;
   end;
 
-  { Enumerator used to iterate the map @link(TBrookHTTPUpload). }
+  { Enumerator used to iterate the map @code(TBrookHTTPUpload). }
   TBrookHTTPUploadsEnumerator = class
   private
     FUploads: TBrookHTTPUploads;
     FCurr: TBrookHTTPUpload;
     FBOF: Boolean;
   public
-    { Creates an instance of @link(TBrookHTTPUploadsEnumerator).
+    { Creates an instance of @code(TBrookHTTPUploadsEnumerator).
       @param(AUploads[in] Uploads list.) }
     constructor Create(AUploads: TBrookHTTPUploads);
     { Gets the current upload.
@@ -133,7 +133,7 @@ type
     { Moves to the next upload.
       @returns(@True when move next reaches the EOF.) }
     function MoveNext: Boolean;
-    { Same to @link(GetCurrent). }
+    { Same to @code(GetCurrent). }
     property Current: TBrookHTTPUpload read GetCurrent;
   end;
 
@@ -149,10 +149,10 @@ type
     function IsEOF: Boolean; virtual;
     property Current: Pointer read GetCurrent;
   public
-    { Creates an instance of @link(TBrookHTTPUploads).
+    { Creates an instance of @code(TBrookHTTPUploads).
       @param(AHandle[in] Uploads handle.) }
     constructor Create(AHandle: Pointer); virtual;
-    { Gets an instance of @link(TBrookHTTPUploadsEnumerator). }
+    { Gets an instance of @code(TBrookHTTPUploadsEnumerator). }
     function GetEnumerator: TBrookHTTPUploadsEnumerator;
     { Retrieves the first upload in the list.
       @param(AUpload[out] First upload returned.)

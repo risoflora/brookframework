@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,10 +55,10 @@ type
     class procedure CheckEncoding(AEncoding: TEncoding); static; inline;
     function GetHandle: Pointer; override;
   public
-    { Creates an instance of @link(TBrookString).
+    { Creates an instance of @code(TBrookString).
       @param(AHandle[in] String handle.) }
     constructor Create(AHandle: Pointer); virtual;
-    { Frees an instance of @link(TBrookString). }
+    { Frees an instance of @code(TBrookString). }
     destructor Destroy; override;
     { Determines if the handle is freed on the class destruction. }
     property OwnsHandle: Boolean read FOwnsHandle write FOwnsHandle;

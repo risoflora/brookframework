@@ -59,13 +59,13 @@ type
   TBrookStringMapChangeEvent = procedure(ASender: TObject;
     AOperation: TBrookStringMapOperation) of object;
 
-  { Pair item of @link(TBrookStringMap). }
+  { Pair item of @code(TBrookStringMap). }
   TBrookStringPair = record
   private
     FName: string;
     FValue: string;
   public
-    { Initializes a variable of @link(TBrookStringPair).
+    { Initializes a variable of @code(TBrookStringPair).
       @param(AName[in] Name of the pair.)
       @param(AValue[in] Value of the pair.) }
     constructor Create(const AName, AValue: string);
@@ -75,14 +75,14 @@ type
     property Value: string read FValue;
   end;
 
-  { Enumerator used to iterate the map @link(TBrookStringMap). }
+  { Enumerator used to iterate the map @code(TBrookStringMap). }
   TBrookStringMapEnumerator = class
   private
     FMap: TBrookStringMap;
     FCurr: TBrookStringPair;
     FBOF: Boolean;
   public
-    { Creates an instance of @link(TBrookStringMapEnumerator).
+    { Creates an instance of @code(TBrookStringMapEnumerator).
       @param(AMap[in] Pairs map.) }
     constructor Create(AMap: TBrookStringMap);
     { Gets the current pair.
@@ -91,17 +91,17 @@ type
     { Moves to the next pair.
       @returns(@True when move next reaches the EOF.) }
     function MoveNext: Boolean;
-    { Same to @link(GetCurrent). }
+    { Same to @code(GetCurrent). }
     property Current: TBrookStringPair read GetCurrent;
   end;
 
-  { Function signature used by @link(TBrookStringMap.Iterate).
+  { Function signature used by @code(TBrookStringMap.Iterate).
     @param(AData[in,out] User-defined data.)
     @param(APair[out] Current iterated pair.) }
   TBrookStringMapIterator = function(AData: Pointer;
     APair: TBrookStringPair): Integer;
 
-  { Function signature used by @link(TBrookStringMap.Sort).
+  { Function signature used by @code(TBrookStringMap.Sort).
     @param(AData[in,out] User-defined data.)
     @param(APairA[out] Current left pair (A).)
     @param(APairB[out] Current right pair (B).) }
@@ -129,10 +129,10 @@ type
     function IsEOF: Boolean; virtual;
     procedure DoChange(AOperation: TBrookStringMapOperation); virtual;
   public
-    { Creates an instance of @link(TBrookStringMap).
+    { Creates an instance of @code(TBrookStringMap).
       @param(AHandle[in] Pointer to store the string map handle.) }
     constructor Create(AHandle: Pointer); virtual;
-    { Frees an instance of @link(TBrookStringMap). }
+    { Frees an instance of @code(TBrookStringMap). }
     destructor Destroy; override;
     { Copies the properties of the source string map.
       @param(ASource[in] String map source to be copied.) }
@@ -140,7 +140,7 @@ type
     { Checks if the map is empty.
       @returns(@True when map is empty, @False otherwise.) }
     function IsEmpty: Boolean; virtual;
-    { Gets an instance of @link(TBrookStringMapEnumerator). }
+    { Gets an instance of @code(TBrookStringMapEnumerator). }
     function GetEnumerator: TBrookStringMapEnumerator;
     { Adds a pair of strings to the map.
       @param(AName[in] Name of the pair.)
