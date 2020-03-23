@@ -99,14 +99,6 @@ PasDoc/HTML
 PasDoc/Cache
 
 # Generated examples:
-hellohttpsrv
-httpauth
-httpcookies
-httprouter
-httpuploads
-mediatypes
-stringbuffer
-stringmap
 HTTPAuth_Example
 HTTPCookie_Example
 HTTPRouter_Example
@@ -115,9 +107,18 @@ HTTPUpload_Example
 MediaTypes_Example
 StringMap_Example
 String_Example
+hellohttpsrv
+httpauth
+httpcookies
+httprouter
+httpuploads
+mediatypes
+stringbuffer
+stringmap
 
 # Generated tests
 Test_HTTPAuthentication
+Test_HTTPCookies
 Test_HTTPRequest
 Test_HTTPResponse
 Test_HTTPServer

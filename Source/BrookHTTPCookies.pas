@@ -53,6 +53,8 @@ const
 {$ENDIF}
   { Prefix to identify a signed cookie. }
   BROOK_COOKIE_SIG_PREFIX: string = 's:';
+  { Default cookie name. }
+  BROOK_COOKIE_NAME_PREFIX: string = 'BrookCookie';
 {$IFNDEF FPC}
   {$WRITEABLECONST OFF}
 {$ENDIF}
@@ -95,6 +97,9 @@ type
     procedure SetMaxAge(AValue: Integer);
     procedure SetName(const AValue: string);
     procedure SetValue(const AValue: string);
+    procedure SetPath(const AValue: string);
+  protected
+    property OriginalValue: string read FOriginalValue;
   public
     { Creates an instance of @link(TBrookHTTPCookie).
       @param(ACollection[in] Cookies list.) }
@@ -156,7 +161,7 @@ type
     { Allowed domain to receive the cookie. }
     property Domain: string read FDomain write FDomain;
     { Path that must exist in the URL to receive the cookie. }
-    property Path: string read FPath write FPath;
+    property Path: string read FPath write SetPath;
     { Expiration date/time. }
     property Expires: TDateTime read FExpires write FExpires;
     { @True prevents the cookie to be accessed through JavaScript. }
@@ -223,7 +228,7 @@ implementation
 constructor TBrookHTTPCookie.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
-  FName := 'BrookCookie';
+  FName := BROOK_COOKIE_NAME_PREFIX;
   if Assigned(ACollection) then
     FName := Concat(FName, Succ(ID).ToString);
   FExpires := -1;
@@ -308,15 +313,15 @@ begin
   if ASource is TBrookHTTPCookie then
   begin
     VSrc := ASource as TBrookHTTPCookie;
-    Name := VSrc.FName;
-    Value := VSrc.FValue;
-    Domain := VSrc.FDomain;
-    Path := VSrc.FPath;
-    Expires := VSrc.FExpires;
-    HttpOnly := VSrc.FHttpOnly;
-    Secure := VSrc.FSecure;
-    MaxAge := VSrc.FMaxAge;
-    SameSite := VSrc.FSameSite;
+    FName := VSrc.FName;
+    FValue := VSrc.FValue;
+    FDomain := VSrc.FDomain;
+    FPath := VSrc.FPath;
+    FExpires := VSrc.FExpires;
+    FHttpOnly := VSrc.FHttpOnly;
+    FSecure := VSrc.FSecure;
+    FMaxAge := VSrc.FMaxAge;
+    FSameSite := VSrc.FSameSite;
   end
   else
     inherited Assign(ASource);
@@ -402,9 +407,14 @@ begin
   FOriginalValue := FValue;
 end;
 
+procedure TBrookHTTPCookie.SetPath(const AValue: string);
+begin
+  if AValue <> FPath then
+    FPath := Brook.FixPath(AValue);
+end;
+
 procedure TBrookHTTPCookie.Clear;
 begin
-  FName := '';
   FValue := '';
   FMaxAge := -1;
   FDomain := '';
