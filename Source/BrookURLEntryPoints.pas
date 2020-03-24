@@ -46,7 +46,7 @@ uses
   BrookExtra,
   BrookHTTPRequest,
   BrookHTTPResponse,
-  BrookHTTPRouter;
+  BrookURLRouter;
 
 resourcestring
   { Error message @code('Entry-point list not prepared.'). }
@@ -84,8 +84,8 @@ type
     function GetUserData: Pointer;
   protected
     function GetHandle: Pointer; override;
-    function GetRouter: TBrookHTTPRouter; virtual;
-    procedure SetRouter(AValue: TBrookHTTPRouter); virtual;
+    function GetRouter: TBrookURLRouter; virtual;
+    procedure SetRouter(AValue: TBrookURLRouter); virtual;
   public
     { Creates an instance of @code(TBrookURLEntryPoint).
       @param(ACollection[in] Entry-point list.) }
@@ -101,7 +101,7 @@ type
     { Entry-point item name. }
     property Name: string read GetName write SetName;
     { Referenced router to the entry-point. }
-    property Router: TBrookHTTPRouter read GetRouter write SetRouter;
+    property Router: TBrookURLRouter read GetRouter write SetRouter;
   end;
 
   { Class-reference for @code(TBrookURLEntryPoint). }
@@ -207,7 +207,7 @@ type
     procedure Loaded; override;
     function GetHandle: Pointer; override;
     procedure DoRoute(ASender: TObject; const AEntryPoint, APath: string;
-      ARouter: TBrookHTTPRouter; ARequest: TBrookHTTPRequest;
+      ARouter: TBrookURLRouter; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); virtual;
     procedure DoNotFound(ASender: TObject; const AEntryPoint, APath: string;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); virtual;
@@ -320,7 +320,7 @@ begin
   end;
 end;
 
-function TBrookURLEntryPoint.GetRouter: TBrookHTTPRouter;
+function TBrookURLEntryPoint.GetRouter: TBrookURLRouter;
 begin
   Result := GetUserData;
 end;
@@ -353,7 +353,7 @@ begin
   end;
 end;
 
-procedure TBrookURLEntryPoint.SetRouter(AValue: TBrookHTTPRouter);
+procedure TBrookURLEntryPoint.SetRouter(AValue: TBrookURLRouter);
 var
   M: TMarshaller;
   EP: Psg_entrypoint;
@@ -736,7 +736,7 @@ begin
 end;
 
 procedure TBrookURLEntryPoints.DoRoute(ASender: TObject; const AEntryPoint,
-  APath: string; ARouter: TBrookHTTPRouter; ARequest: TBrookHTTPRequest;
+  APath: string; ARouter: TBrookURLRouter; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse);
 begin
   if Assigned(ARouter) then
@@ -760,7 +760,7 @@ end;
 procedure TBrookURLEntryPoints.Enter(ASender: TObject; const APath: string;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 var
-  RT: TBrookHTTPRouter;
+  RT: TBrookURLRouter;
   EP, P: string;
 begin
   CheckItems;

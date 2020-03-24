@@ -87,28 +87,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"/
         <UnitName Value="BrookURLEntryPoints"/>
       </Item14>
       <Item15>
-        <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
-        <UnitName Value="BrookHTTPAuthentication"/>
+        <Filename Value="../Source/BrookURLRouter.pas"/>
+        <UnitName Value="BrookURLRouter"/>
       </Item15>
       <Item16>
-        <Filename Value="../Source/BrookHTTPCookies.pas"/>
-        <UnitName Value="BrookHTTPCookies"/>
+        <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
+        <UnitName Value="BrookHTTPAuthentication"/>
       </Item16>
       <Item17>
-        <Filename Value="../Source/BrookHTTPUploads.pas"/>
-        <UnitName Value="BrookHTTPUploads"/>
+        <Filename Value="../Source/BrookHTTPCookies.pas"/>
+        <UnitName Value="BrookHTTPCookies"/>
       </Item17>
       <Item18>
-        <Filename Value="../Source/BrookHTTPRequest.pas"/>
-        <UnitName Value="BrookHTTPRequest"/>
+        <Filename Value="../Source/BrookHTTPUploads.pas"/>
+        <UnitName Value="BrookHTTPUploads"/>
       </Item18>
       <Item19>
-        <Filename Value="../Source/BrookHTTPResponse.pas"/>
-        <UnitName Value="BrookHTTPResponse"/>
+        <Filename Value="../Source/BrookHTTPRequest.pas"/>
+        <UnitName Value="BrookHTTPRequest"/>
       </Item19>
       <Item20>
-        <Filename Value="../Source/BrookHTTPRouter.pas"/>
-        <UnitName Value="BrookHTTPRouter"/>
+        <Filename Value="../Source/BrookHTTPResponse.pas"/>
+        <UnitName Value="BrookHTTPResponse"/>
       </Item20>
       <Item21>
         <Filename Value="../Source/BrookHTTPServer.pas"/>

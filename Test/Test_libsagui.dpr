@@ -57,7 +57,7 @@ begin
   SgLib.AddNotifier(nil, Pointer(1));
 end;
 
-procedure Test_SgLibAddNotifier;
+procedure Test_AddNotifier;
 var
   I1, I2, I3: Integer;
 begin
@@ -95,7 +95,7 @@ begin
   SgLib.RemoveNotifier(nil);
 end;
 
-procedure Test_SgLibRemoveNotifier;
+procedure Test_RemoveNotifier;
 var
   I1, I2, I3: Integer;
 begin
@@ -118,7 +118,7 @@ begin
   Assert(I3 = 789);
 end;
 
-procedure Test_SgLibClearNotifiers;
+procedure Test_ClearNotifiers;
 var
   I1, I2, I3: Integer;
 begin
@@ -146,7 +146,7 @@ begin
   SgLib.ClearNotifiers;
 end;
 
-procedure Test_SgLibGetLastName;
+procedure Test_GetLastName;
 begin
   SgLib.Unload;
   Assert(SgLib.GetLastName = '');
@@ -178,7 +178,7 @@ begin
     (SG_VERSION_MINOR shl 8) or Pred(SG_VERSION_PATCH));
 end;
 
-procedure Test_SgLibCheckVersion;
+procedure Test_CheckVersion;
 begin
   SgLib.Unload;
   SgLib.Load(SG_LIB_NAME);
@@ -214,7 +214,7 @@ begin
   SgLib.CheckLastError(456);
 end;
 
-procedure Test_SgLibCheckLastError;
+procedure Test_CheckLastError;
 
   function strerror(ALastError: Integer): string;
   var
@@ -252,7 +252,7 @@ begin
   Assert(SgLib.Load('abc') = NilHandle);
 end;
 
-procedure Test_SgLibLoad;
+procedure Test_Load;
 begin
   SgLib.Unload;
   AssertExcept(DoSgLibLoad1, EArgumentException, SSgLibEmptyName);
@@ -261,13 +261,13 @@ begin
   Assert(SgLib.Load(SG_LIB_NAME) <> NilHandle);
 end;
 
-procedure Test_SgLibUnload;
+procedure Test_Unload;
 begin
   Assert(SgLib.Load(SG_LIB_NAME) <> NilHandle);
   Assert(SgLib.Unload = NilHandle);
 end;
 
-procedure Test_SgLibIsLoaded;
+procedure Test_IsLoaded;
 begin
   SgLib.Unload;
   Assert(not SgLib.IsLoaded);
@@ -281,13 +281,13 @@ begin
   SgLib.Check;
 end;
 
-procedure Test_SgLibCheck;
+procedure Test_Check;
 begin
   AssertExcept(DoSgLibCheck, ESgLibNotLoaded,
     Format(SSgLibNotLoaded, [SG_LIB_NAME]));
 end;
 
-procedure Test_SgLibHandle;
+procedure Test_Handle;
 begin
   SgLib.Unload;
   Assert(SgLib.Handle = NilHandle);
@@ -295,7 +295,7 @@ begin
   Assert(SgLib.Handle <> NilHandle);
 end;
 
-procedure Test_SgLibBinding;
+procedure Test_Binding;
 begin
   SgLib.Unload;
 
@@ -600,16 +600,16 @@ begin
 {$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
-  Test_SgLibAddNotifier;
-  Test_SgLibRemoveNotifier;
-  Test_SgLibClearNotifiers;
-  Test_SgLibGetLastName;
-  Test_SgLibCheckVersion;
-  Test_SgLibCheckLastError;
-  Test_SgLibLoad;
-  Test_SgLibUnload;
-  Test_SgLibIsLoaded;
-  Test_SgLibCheck;
-  Test_SgLibHandle;
-  Test_SgLibBinding;
+  Test_AddNotifier;
+  Test_RemoveNotifier;
+  Test_ClearNotifiers;
+  Test_GetLastName;
+  Test_CheckVersion;
+  Test_CheckLastError;
+  Test_Load;
+  Test_Unload;
+  Test_IsLoaded;
+  Test_Check;
+  Test_Handle;
+  Test_Binding;
 end.

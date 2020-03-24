@@ -54,8 +54,8 @@ uses
 resourcestring
   SBrookSelectLibraryTitle = 'Select library ...';
   SBrookSharedLibraryFilter = 'Shared libraries (%s)|%s|All files (*.*)|*.*';
-  SBrookHTTPRoutesEditor = 'HTTP routes editor ...';
   SBrookURLEntryPointsEditor = 'URL entry-points editor ...';
+  SBrookURLRoutesEditor = 'URL routes editor ...';
 
 type
 
@@ -110,9 +110,9 @@ type
       var AContinue: Boolean); override;
   end;
 
-  { TBrookHTTPRouterComponentEditor }
+  { TBrookURLRouterComponentEditor }
 
-  TBrookHTTPRouterComponentEditor = class(TComponentEditor)
+  TBrookURLRouterComponentEditor = class(TComponentEditor)
   public
     procedure ExecuteVerb(AIndex: Integer); override;
     function GetVerb(AIndex: Integer): string; override;
@@ -138,7 +138,7 @@ uses
   BrookLibraryLoader,
   BrookMediaTypes,
   BrookURLEntryPoints,
-  BrookHTTPRouter,
+  BrookURLRouter,
   BrookHTTPServer;
 
 {$IFNDEF LCL}
@@ -158,7 +158,7 @@ end;
 function BrookHTTPRequestMethodsPropertyMapper(AObj: TPersistent;
   APropInfo: PPropInfo): TPropertyEditorClass;
 begin
-  if Assigned(AObj) and (AObj is TBrookHTTPRoute) and
+  if Assigned(AObj) and (AObj is TBrookURLRoute) and
     SameText(APropInfo.NameFld.ToString, 'Methods') then
     Exit(TBrookHTTPRequestMethodsPropertyEditor);
   Result := nil;
@@ -172,7 +172,7 @@ begin
     TBrookLibraryLoader,
     TBrookMIME,
     TBrookURLEntryPoints,
-    TBrookHTTPRouter,
+    TBrookURLRouter,
     TBrookHTTPServer
   ]);
   RegisterPropertyEditor(TypeInfo(TFileName), TBrookLibraryLoader,
@@ -193,7 +193,7 @@ begin
 {$ENDIF}
   RegisterComponentEditor(TBrookLibraryLoader, TBrookLibraryNameComponentEditor);
   RegisterComponentEditor(TBrookURLEntryPoints, TBrookURLEntryPointsComponentEditor);
-  RegisterComponentEditor(TBrookHTTPRouter, TBrookHTTPRouterComponentEditor);
+  RegisterComponentEditor(TBrookURLRouter, TBrookURLRouterComponentEditor);
   RegisterComponentEditor(TBrookHTTPServer, TBrookOnRequestComponentEditor);
 end;
 
@@ -359,13 +359,13 @@ begin
     inherited EditProperty(AProperty, AContinue);
 end;
 
-{ TBrookHTTPRouterComponentEditor }
+{ TBrookURLRouterComponentEditor }
 
-procedure TBrookHTTPRouterComponentEditor.ExecuteVerb(AIndex: Integer);
+procedure TBrookURLRouterComponentEditor.ExecuteVerb(AIndex: Integer);
 var
-  VRouter: TBrookHTTPRouter;
+  VRouter: TBrookURLRouter;
 begin
-  VRouter := GetComponent as TBrookHTTPRouter;
+  VRouter := GetComponent as TBrookURLRouter;
 {$IFDEF LCL}
   EditCollection(
 {$ELSE}
@@ -374,12 +374,12 @@ begin
     VRouter, VRouter.Routes, 'Routes');
 end;
 
-function TBrookHTTPRouterComponentEditor.GetVerb(AIndex: Integer): string;
+function TBrookURLRouterComponentEditor.GetVerb(AIndex: Integer): string;
 begin
-  Result := SBrookHTTPRoutesEditor;
+  Result := SBrookURLRoutesEditor;
 end;
 
-function TBrookHTTPRouterComponentEditor.GetVerbCount: Integer;
+function TBrookURLRouterComponentEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;

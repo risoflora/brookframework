@@ -30,6 +30,11 @@ program Test_HTTPCookies;
 uses
   SysUtils,
   DateUtils,
+  Classes,
+{$IFNDEF FPC}
+  Hash,
+  NetEncoding,
+{$ENDIF}
 {$IFDEF VER3_0_0}
   FPC300Fixes,
 {$ENDIF}
@@ -41,7 +46,7 @@ uses
 const
   TEST_SIGNED_VALUE = 's:bar.RrTsWGEXFU2s1J1mTl1j/ciO+1E';
 
-procedure Test_BrookHTTPCookieCreate;
+procedure Test_HTTPCookieCreate;
 var
   VCookie: TBrookHTTPCookie;
   VCookies: TBrookHTTPCookies;
@@ -67,7 +72,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieAssign;
+procedure Test_HTTPCookieAssign;
 var
   VSrcCookie, VDestCookie: TBrookHTTPCookie;
   VExpires: TDateTime;
@@ -110,7 +115,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieSign;
+procedure Test_HTTPCookieSign;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -126,7 +131,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieTryUnsign;
+procedure Test_HTTPCookieTryUnsign;
 var
   VCookie: TBrookHTTPCookie;
   VValue: string;
@@ -156,7 +161,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieUnsign;
+procedure Test_HTTPCookieUnsign;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -180,7 +185,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieIsSigned;
+procedure Test_HTTPCookieIsSigned;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -195,7 +200,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieToString;
+procedure Test_HTTPCookieToString;
 const
   COOKIE_FMT =
     'foo=bar; Max-Age=10; Domain=domain; Path=/path; Expires=%s; HttpOnly; ' +
@@ -223,7 +228,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieClear;
+procedure Test_HTTPCookieClear;
 const
   COOKIE_FMT =
     'foo=bar; Max-Age=10; Domain=domain; Path=/path; Expires=%s; HttpOnly; ' +
@@ -253,7 +258,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieExpire;
+procedure Test_HTTPCookieExpire;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -269,7 +274,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiePersist;
+procedure Test_HTTPCookiePersist;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -295,7 +300,7 @@ begin
   TBrookHTTPCookie(AArgs[0].VObject).Name := '123abc';
 end;
 
-procedure Test_BrookHTTPCookieName;
+procedure Test_HTTPCookieName;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -314,7 +319,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieValue;
+procedure Test_HTTPCookieValue;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -328,7 +333,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieDomain;
+procedure Test_HTTPCookieDomain;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -342,7 +347,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiePath;
+procedure Test_HTTPCookiePath;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -360,7 +365,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieExpires;
+procedure Test_HTTPCookieExpires;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -376,7 +381,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieHttpOnly;
+procedure Test_HTTPCookieHttpOnly;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -390,7 +395,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieSecure;
+procedure Test_HTTPCookieSecure;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -404,7 +409,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieMaxAge;
+procedure Test_HTTPCookieMaxAge;
 var
   VCookie: TBrookHTTPCookie;
   VNow: TDateTime;
@@ -427,7 +432,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookieSameSite;
+procedure Test_HTTPCookieSameSite;
 var
   VCookie: TBrookHTTPCookie;
 begin
@@ -441,7 +446,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesCreate;
+procedure Test_HTTPCookiesCreate;
 var
   VCookies: TBrookHTTPCookies;
 begin
@@ -453,12 +458,12 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesGetCookieClass;
+procedure Test_HTTPCookiesGetCookieClass;
 begin
   Assert(TBrookHTTPCookies.GetCookieClass = TBrookHTTPCookie);
 end;
 
-procedure Test_BrookHTTPCookiesAssign;
+procedure Test_HTTPCookiesAssign;
 var
   VSrcCookies, VDestCookies: TBrookHTTPCookies;
   VCookie: TBrookHTTPCookie;
@@ -488,7 +493,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesAdd;
+procedure Test_HTTPCookiesAdd;
 var
   VCookies: TBrookHTTPCookies;
   VCookie: TBrookHTTPCookie;
@@ -507,7 +512,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesRemove;
+procedure Test_HTTPCookiesRemove;
 var
   VCookies: TBrookHTTPCookies;
 begin
@@ -532,7 +537,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesIndexOf;
+procedure Test_HTTPCookiesIndexOf;
 var
   VCookies: TBrookHTTPCookies;
 begin
@@ -549,7 +554,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesFind;
+procedure Test_HTTPCookiesFind;
 var
   VCookies: TBrookHTTPCookies;
 begin
@@ -566,14 +571,15 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesFirst;
+procedure Test_HTTPCookiesFirst;
 var
   VCookies: TBrookHTTPCookies;
   VCookie: TBrookHTTPCookie;
 begin
   VCookies := TBrookHTTPCookies.Create(nil);
   try
-    Assert(not Assigned(VCookies.First));
+    VCookie := VCookies.First;
+    Assert(not Assigned(VCookie));
     VCookies.Add;
     VCookies.Add;
     VCookie := VCookies.First;
@@ -584,14 +590,15 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesLast;
+procedure Test_HTTPCookiesLast;
 var
   VCookies: TBrookHTTPCookies;
   VCookie: TBrookHTTPCookie;
 begin
   VCookies := TBrookHTTPCookies.Create(nil);
   try
-    Assert(not Assigned(VCookies.Last));
+    VCookie := VCookies.Last;
+    Assert(not Assigned(VCookie));
     VCookies.Add;
     VCookies.Add;
     VCookie := VCookies.Last;
@@ -602,7 +609,7 @@ begin
   end;
 end;
 
-procedure Test_BrookHTTPCookiesItems;
+procedure Test_HTTPCookiesItems;
 var
   VCookies: TBrookHTTPCookies;
   VCookie: TBrookHTTPCookie;
@@ -630,35 +637,35 @@ begin
 {$ENDIF}
   TBrookLibraryLoader.Load;
   try
-    Test_BrookHTTPCookieCreate;
-    Test_BrookHTTPCookieAssign;
-    Test_BrookHTTPCookieSign;
-    Test_BrookHTTPCookieTryUnsign;
-    Test_BrookHTTPCookieUnsign;
-    Test_BrookHTTPCookieIsSigned;
-    Test_BrookHTTPCookieToString;
-    Test_BrookHTTPCookieClear;
-    Test_BrookHTTPCookieExpire;
-    Test_BrookHTTPCookiePersist;
-    Test_BrookHTTPCookieName;
-    Test_BrookHTTPCookieValue;
-    Test_BrookHTTPCookieDomain;
-    Test_BrookHTTPCookiePath;
-    Test_BrookHTTPCookieExpires;
-    Test_BrookHTTPCookieHttpOnly;
-    Test_BrookHTTPCookieSecure;
-    Test_BrookHTTPCookieMaxAge;
-    Test_BrookHTTPCookieSameSite;
-    Test_BrookHTTPCookiesCreate;
-    Test_BrookHTTPCookiesGetCookieClass;
-    Test_BrookHTTPCookiesAssign;
-    Test_BrookHTTPCookiesAdd;
-    Test_BrookHTTPCookiesRemove;
-    Test_BrookHTTPCookiesIndexOf;
-    Test_BrookHTTPCookiesFind;
-    Test_BrookHTTPCookiesFirst;
-    Test_BrookHTTPCookiesLast;
-    Test_BrookHTTPCookiesItems;
+    Test_HTTPCookieCreate;
+    Test_HTTPCookieAssign;
+    Test_HTTPCookieSign;
+    Test_HTTPCookieTryUnsign;
+    Test_HTTPCookieUnsign;
+    Test_HTTPCookieIsSigned;
+    Test_HTTPCookieToString;
+    Test_HTTPCookieClear;
+    Test_HTTPCookieExpire;
+    Test_HTTPCookiePersist;
+    Test_HTTPCookieName;
+    Test_HTTPCookieValue;
+    Test_HTTPCookieDomain;
+    Test_HTTPCookiePath;
+    Test_HTTPCookieExpires;
+    Test_HTTPCookieHttpOnly;
+    Test_HTTPCookieSecure;
+    Test_HTTPCookieMaxAge;
+    Test_HTTPCookieSameSite;
+    Test_HTTPCookiesCreate;
+    Test_HTTPCookiesGetCookieClass;
+    Test_HTTPCookiesAssign;
+    Test_HTTPCookiesAdd;
+    Test_HTTPCookiesRemove;
+    Test_HTTPCookiesIndexOf;
+    Test_HTTPCookiesFind;
+    Test_HTTPCookiesFirst;
+    Test_HTTPCookiesLast;
+    Test_HTTPCookiesItems;
   finally
     TBrookLibraryLoader.Unload;
   end;

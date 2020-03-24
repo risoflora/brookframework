@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
-unit BrookHTTPRouter;
+{ Contains classes for fast URL routing. }
+
+unit BrookURLRouter;
 
 {$I BrookDefines.inc}
 
@@ -57,42 +59,42 @@ resourcestring
   SBrookDefaultRouteAlreadyExists = 'A default route already exists.';
 
 type
-  TBrookHTTPRoute = class;
+  TBrookURLRoute = class;
 
-  TBrookHTTPRouteMatchEvent = procedure(ARoute: TBrookHTTPRoute) of object;
+  TBrookURLRouteMatchEvent = procedure(ARoute: TBrookURLRoute) of object;
 
-  TBrookHTTPRouteRequestEvent = procedure(ASender: TObject;
-    ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
+  TBrookURLRouteRequestEvent = procedure(ASender: TObject;
+    ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
     AResponse: TBrookHTTPResponse) of object;
 
-  TBrookHTTPRouteRequestMethodEvent = procedure(ASender: TObject;
-    ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
+  TBrookURLRouteRequestMethodEvent = procedure(ASender: TObject;
+    ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
     AResponse: TBrookHTTPResponse; var AAllowed: Boolean) of object;
 
-  EBrookHTTPRoute = class(Exception);
+  EBrookURLRoute = class(Exception);
 
-  TBrookHTTPRouteClosure = record
+  TBrookURLRouteClosure = record
     Request: TBrookHTTPRequest;
     Response: TBrookHTTPResponse;
     Sender: TObject;
   end;
 
-  TBrookHTTPRoutes = class;
+  TBrookURLRoutes = class;
 
-  TBrookHTTPRoute = class(TBrookHandledCollectionItem)
+  TBrookURLRoute = class(TBrookHandledCollectionItem)
   public const
     DefaultReqMethods = [rmGET, rmPOST];
   private
-    FOnMath: TBrookHTTPRouteMatchEvent;
-    FRoutes: TBrookHTTPRoutes;
+    FOnMath: TBrookURLRouteMatchEvent;
+    FRoutes: TBrookURLRoutes;
     FVariables: TBrookStringMap;
     FHandle: Psg_route;
     Fvars: Psg_strmap;
     FPattern: string;
     FDefault: Boolean;
     FMethods: TBrookHTTPRequestMethods;
-    FOnRequestMethod: TBrookHTTPRouteRequestMethodEvent;
-    FOnRequest: TBrookHTTPRouteRequestEvent;
+    FOnRequestMethod: TBrookURLRouteRequestMethodEvent;
+    FOnRequest: TBrookURLRouteRequestEvent;
     function GetPattern: string;
     function GetPath: string;
     function GetRawPattern: string;
@@ -112,20 +114,20 @@ type
     class function DoVarsIterCallback(Acls: Pcvoid;
       const Aname: Pcchar; const Aval: Pcchar): cint; cdecl; static;
     function GetHandle: Pointer; override;
-    procedure DoMatch(ARoute: TBrookHTTPRoute); virtual;
-    procedure DoRequestMethod(ASender: TObject; ARoute: TBrookHTTPRoute;
+    procedure DoMatch(ARoute: TBrookURLRoute); virtual;
+    procedure DoRequestMethod(ASender: TObject; ARoute: TBrookURLRoute;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
       var AAllowed: Boolean); virtual;
-    procedure DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+    procedure DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); virtual;
-    procedure HandleMatch(ARoute: TBrookHTTPRoute); virtual;
-    procedure HandleRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+    procedure HandleMatch(ARoute: TBrookURLRoute); virtual;
+    procedure HandleRequest(ASender: TObject; ARoute: TBrookURLRoute;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); virtual;
     function IsMethodAllowed(const AMethod: string): Boolean; virtual;
     procedure SendMethodNotAllowed(const AMethod: string;
       AResponse: TBrookHTTPResponse); virtual;
     procedure CheckMethods; inline;
-    property Routes: TBrookHTTPRoutes read FRoutes;
+    property Routes: TBrookURLRoutes read FRoutes;
   public
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
@@ -142,75 +144,75 @@ type
       stored IsDefaultStored default False;
     property Pattern: string read GetPattern write SetPattern;
     property Methods: TBrookHTTPRequestMethods read FMethods write FMethods
-      stored IsMethodsStored default TBrookHTTPRoute.DefaultReqMethods;
-    property OnMath: TBrookHTTPRouteMatchEvent read FOnMath write FOnMath;
-    property OnRequestMethod: TBrookHTTPRouteRequestMethodEvent
+      stored IsMethodsStored default TBrookURLRoute.DefaultReqMethods;
+    property OnMath: TBrookURLRouteMatchEvent read FOnMath write FOnMath;
+    property OnRequestMethod: TBrookURLRouteRequestMethodEvent
       read FOnRequestMethod write FOnRequestMethod;
-    property OnRequest: TBrookHTTPRouteRequestEvent read FOnRequest
+    property OnRequest: TBrookURLRouteRequestEvent read FOnRequest
       write FOnRequest;
   end;
 
-  TBrookHTTPRouteClass = class of TBrookHTTPRoute;
+  TBrookURLRouteClass = class of TBrookURLRoute;
 
-  TBrookHTTPRoutesEnumerator = class(TCollectionEnumerator)
+  TBrookURLRoutesEnumerator = class(TCollectionEnumerator)
   public
-    function GetCurrent: TBrookHTTPRoute;
-    property Current: TBrookHTTPRoute read GetCurrent;
+    function GetCurrent: TBrookURLRoute;
+    property Current: TBrookURLRoute read GetCurrent;
   end;
 
-  EBrookHTTPRoutes = class(Exception);
+  EBrookURLRoutes = class(Exception);
 
-  TBrookHTTPRoutes = class(TBrookHandledOwnedCollection)
+  TBrookURLRoutes = class(TBrookHandledOwnedCollection)
   private
     FHandle: Psg_route;
   protected
     function GetHandle: Pointer; override;
     class procedure LibNotifier(AClosure: Pointer); static; cdecl;
-    class function GetRoutePattern(ARoute: TBrookHTTPRoute): string; virtual;
+    class function GetRoutePattern(ARoute: TBrookURLRoute): string; virtual;
     class function GetRouteLabel: string; virtual;
-    function GetItem(AIndex: Integer): TBrookHTTPRoute; virtual;
-    procedure SetItem(AIndex: Integer; AValue: TBrookHTTPRoute); virtual;
-    procedure InternalAdd(ARoute: TBrookHTTPRoute); virtual;
+    function GetItem(AIndex: Integer): TBrookURLRoute; virtual;
+    procedure SetItem(AIndex: Integer; AValue: TBrookURLRoute); virtual;
+    procedure InternalAdd(ARoute: TBrookURLRoute); virtual;
     procedure Prepare; virtual;
     procedure Unprepare; virtual;
   public
     constructor Create(AOwner: TPersistent); virtual;
     destructor Destroy; override;
-    class function GetRouterClass: TBrookHTTPRouteClass; virtual;
-    function GetEnumerator: TBrookHTTPRoutesEnumerator;
+    class function GetRouterClass: TBrookURLRouteClass; virtual;
+    function GetEnumerator: TBrookURLRoutesEnumerator;
     procedure Assign(ASource: TPersistent); override;
     function NewPattern: string; virtual;
-    function Add: TBrookHTTPRoute; virtual;
-    function First: TBrookHTTPRoute; virtual;
-    function Last: TBrookHTTPRoute; virtual;
+    function Add: TBrookURLRoute; virtual;
+    function First: TBrookURLRoute; virtual;
+    function Last: TBrookURLRoute; virtual;
     function IndexOf(const APattern: string): Integer; virtual;
-    function Find(const APattern: string): TBrookHTTPRoute; virtual;
-    function FindDefault: TBrookHTTPRoute; virtual;
+    function Find(const APattern: string): TBrookURLRoute; virtual;
+    function FindDefault: TBrookURLRoute; virtual;
     function Remove(const APattern: string): Boolean; virtual;
     procedure Clear; virtual;
-    property Items[AIndex: Integer]: TBrookHTTPRoute read GetItem
+    property Items[AIndex: Integer]: TBrookURLRoute read GetItem
       write SetItem; default;
   end;
 
-  TBrookHTTPRouterRouteEvent = procedure(ASender: TObject; const ARoute: string;
+  TBrookURLRouterRouteEvent = procedure(ASender: TObject; const ARoute: string;
     ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse) of object;
 
-  TBrookHTTPRouter = class(TBrookHandledComponent)
+  TBrookURLRouter = class(TBrookHandledComponent)
   private
-    FRoutes: TBrookHTTPRoutes;
+    FRoutes: TBrookURLRoutes;
     FHandle: Psg_router;
     FActive: Boolean;
     FStreamedActive: Boolean;
-    FOnNotFound: TBrookHTTPRouterRouteEvent;
-    FOnRoute: TBrookHTTPRouterRouteEvent;
+    FOnNotFound: TBrookURLRouterRouteEvent;
+    FOnRoute: TBrookURLRouterRouteEvent;
     FOnActivate: TNotifyEvent;
     FOnDeactivate: TNotifyEvent;
     function IsActiveStored: Boolean;
     procedure SetActive(AValue: Boolean);
-    procedure SetRoutes(AValue: TBrookHTTPRoutes);
+    procedure SetRoutes(AValue: TBrookURLRoutes);
   protected
     class procedure LibNotifier(AClosure: Pointer); static; cdecl;
-    function CreateRoutes: TBrookHTTPRoutes; virtual;
+    function CreateRoutes: TBrookURLRoutes; virtual;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
     procedure DoRoute(ASender: TObject;  const ARoute: string;
@@ -235,9 +237,9 @@ type
       AResponse: TBrookHTTPResponse); overload; virtual;
   published
     property Active: Boolean read FActive write SetActive stored IsActiveStored;
-    property Routes: TBrookHTTPRoutes read FRoutes write SetRoutes;
-    property OnRoute: TBrookHTTPRouterRouteEvent read FOnRoute write FOnRoute;
-    property OnNotFound: TBrookHTTPRouterRouteEvent read FOnNotFound
+    property Routes: TBrookURLRoutes read FRoutes write SetRoutes;
+    property OnRoute: TBrookURLRouterRouteEvent read FOnRoute write FOnRoute;
+    property OnNotFound: TBrookURLRouterRouteEvent read FOnNotFound
       write FOnNotFound;
     property OnActivate: TNotifyEvent read FOnActivate write FOnActivate;
     property OnDeactivate: TNotifyEvent read FOnDeactivate write FOnDeactivate;
@@ -245,15 +247,15 @@ type
 
 implementation
 
-{ TBrookHTTPRoute }
+{ TBrookURLRoute }
 
-constructor TBrookHTTPRoute.Create(ACollection: TCollection);
+constructor TBrookURLRoute.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
   FVariables := TBrookStringMap.Create(@Fvars);
-  if Assigned(ACollection) and (ACollection is TBrookHTTPRoutes) then
+  if Assigned(ACollection) and (ACollection is TBrookURLRoutes) then
   begin
-    FRoutes := ACollection as TBrookHTTPRoutes;
+    FRoutes := ACollection as TBrookURLRoutes;
     FPattern := FRoutes.NewPattern;
   end
   else
@@ -261,16 +263,16 @@ begin
   FMethods := DefaultReqMethods;
 end;
 
-destructor TBrookHTTPRoute.Destroy;
+destructor TBrookURLRoute.Destroy;
 begin
   FVariables.ClearOnDestroy := False;
   FVariables.Free;
   inherited Destroy;
 end;
 
-class procedure TBrookHTTPRoute.DoRouteCallback(Acls: Pcvoid; Aroute: Psg_route);
+class procedure TBrookURLRoute.DoRouteCallback(Acls: Pcvoid; Aroute: Psg_route);
 var
-  VRoute: TBrookHTTPRoute;
+  VRoute: TBrookURLRoute;
 begin
   VRoute := Acls;
   VRoute.FHandle := Aroute;
@@ -281,7 +283,7 @@ end;
  {$PUSH}{$WARN 5024 OFF}
 {$ENDIF}
 
-class function TBrookHTTPRoute.DoSegmentsIterCallback(Acls: Pcvoid;
+class function TBrookURLRoute.DoSegmentsIterCallback(Acls: Pcvoid;
   Aindex: cuint; const Asegment: Pcchar): cint;
 var
   VSegments: ^TArray<string>;
@@ -301,31 +303,31 @@ end;
  {$POP}
 {$ENDIF}
 
-class function TBrookHTTPRoute.DoVarsIterCallback(Acls: Pcvoid;
+class function TBrookURLRoute.DoVarsIterCallback(Acls: Pcvoid;
   const Aname: Pcchar; const Aval: Pcchar): cint;
 begin
   TBrookStringMap(Acls).Add(TMarshal.ToString(Aname), TMarshal.ToString(Aval));
   Result := 0;
 end;
 
-procedure TBrookHTTPRoute.CheckMethods;
+procedure TBrookURLRoute.CheckMethods;
 begin
   if FMethods = [rmUnknown] then
-    raise EBrookHTTPRoute.Create(SBrookRequestNoMethodDefined);
+    raise EBrookURLRoute.Create(SBrookRequestNoMethodDefined);
 end;
 
-function TBrookHTTPRoute.GetHandle: Pointer;
+function TBrookURLRoute.GetHandle: Pointer;
 begin
   Result := FHandle;
 end;
 
-procedure TBrookHTTPRoute.Assign(ASource: TPersistent);
+procedure TBrookURLRoute.Assign(ASource: TPersistent);
 var
-  VSource: TBrookHTTPRoute;
+  VSource: TBrookURLRoute;
 begin
-  if ASource is TBrookHTTPRoute then
+  if ASource is TBrookURLRoute then
   begin
-    VSource := ASource as TBrookHTTPRoute;
+    VSource := ASource as TBrookURLRoute;
     FPattern := VSource.FPattern;
     FMethods := VSource.FMethods;
   end
@@ -333,7 +335,7 @@ begin
     inherited Assign(ASource);
 end;
 
-function TBrookHTTPRoute.GetSegments: TArray<string>;
+function TBrookURLRoute.GetSegments: TArray<string>;
 begin
   Result := nil;
   if not Assigned(FHandle) then
@@ -343,7 +345,7 @@ begin
 {$IFNDEF VER3_0}@{$ENDIF}DoSegmentsIterCallback, @Result));
 end;
 
-function TBrookHTTPRoute.GetVariables: TBrookStringMap;
+function TBrookURLRoute.GetVariables: TBrookStringMap;
 begin
   Result := FVariables;
   FVariables.Clear;
@@ -353,7 +355,7 @@ begin
 {$IFNDEF VER3_0}@{$ENDIF}DoVarsIterCallback, FVariables));
 end;
 
-function TBrookHTTPRoute.GetRegexHandle: Pointer;
+function TBrookURLRoute.GetRegexHandle: Pointer;
 begin
   if not Assigned(FHandle) then
     Exit(nil);
@@ -361,7 +363,7 @@ begin
   Result := sg_route_handle(FHandle);
 end;
 
-function TBrookHTTPRoute.GetRawPattern: string;
+function TBrookURLRoute.GetRawPattern: string;
 begin
   if not Assigned(FHandle) then
   begin
@@ -373,7 +375,7 @@ begin
   Result := TMarshal.ToString(sg_route_rawpattern(FHandle));
 end;
 
-function TBrookHTTPRoute.GetPattern: string;
+function TBrookURLRoute.GetPattern: string;
 var
   P: Pcchar;
 begin
@@ -388,7 +390,7 @@ begin
   end;
 end;
 
-function TBrookHTTPRoute.GetPath: string;
+function TBrookURLRoute.GetPath: string;
 begin
   if not Assigned(FHandle) then
     Exit('');
@@ -396,7 +398,7 @@ begin
   Result := TMarshal.ToString(sg_route_path(FHandle));
 end;
 
-function TBrookHTTPRoute.GetUserData: Pointer;
+function TBrookURLRoute.GetUserData: Pointer;
 begin
   if not Assigned(FHandle) then
     Exit(nil);
@@ -404,12 +406,12 @@ begin
   Result := sg_route_user_data(FHandle);
 end;
 
-function TBrookHTTPRoute.IsDefaultStored: Boolean;
+function TBrookURLRoute.IsDefaultStored: Boolean;
 begin
   Result := FDefault;
 end;
 
-procedure TBrookHTTPRoute.SetDefault(AValue: Boolean);
+procedure TBrookURLRoute.SetDefault(AValue: Boolean);
 begin
   if FDefault = AValue then
     Exit;
@@ -418,9 +420,9 @@ begin
   FDefault := AValue;
 end;
 
-procedure TBrookHTTPRoute.SetPattern(const AValue: string);
+procedure TBrookURLRoute.SetPattern(const AValue: string);
 var
-  RT: TBrookHTTPRoute;
+  RT: TBrookURLRoute;
   NP: string;
 begin
   if (AValue = FPattern) or (not Assigned(FRoutes)) then
@@ -428,7 +430,7 @@ begin
   NP := Brook.FixPath(AValue);
   RT := FRoutes.Find(NP);
   if Assigned(RT) and (RT <> Self) then
-    raise EBrookHTTPRoute.CreateFmt(SBrookRouteAlreadyExists, [GetNamePath, NP]);
+    raise EBrookURLRoute.CreateFmt(SBrookRouteAlreadyExists, [GetNamePath, NP]);
   FPattern := NP;
   if Assigned(FRoutes.FHandle) then
   begin
@@ -437,27 +439,27 @@ begin
   end;
 end;
 
-procedure TBrookHTTPRoute.Validate;
+procedure TBrookURLRoute.Validate;
 begin
   if FPattern.IsEmpty then
-    raise EBrookHTTPRoute.CreateFmt(SBrookEmptyRoutePattern, [GetNamePath]);
+    raise EBrookURLRoute.CreateFmt(SBrookEmptyRoutePattern, [GetNamePath]);
 end;
 
-procedure TBrookHTTPRoute.DoMatch(ARoute: TBrookHTTPRoute);
+procedure TBrookURLRoute.DoMatch(ARoute: TBrookURLRoute);
 begin
   if Assigned(FOnMath) then
     FOnMath(ARoute);
 end;
 
-procedure TBrookHTTPRoute.DoRequestMethod(ASender: TObject;
-  ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
+procedure TBrookURLRoute.DoRequestMethod(ASender: TObject;
+  ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse; var AAllowed: Boolean);
 begin
   if Assigned(FOnRequestMethod) then
     FOnRequestMethod(ASender, ARoute, ARequest, AResponse, AAllowed);
 end;
 
-procedure TBrookHTTPRoute.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+procedure TBrookURLRoute.DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   if Assigned(FOnRequest) then
@@ -466,17 +468,17 @@ begin
     AResponse.SendEmpty;
 end;
 
-procedure TBrookHTTPRoute.HandleMatch(ARoute: TBrookHTTPRoute);
+procedure TBrookURLRoute.HandleMatch(ARoute: TBrookURLRoute);
 var
-  CLS: TBrookHTTPRouteClosure;
+  CLS: TBrookURLRouteClosure;
 begin
   DoMatch(ARoute);
-  CLS := TBrookHTTPRouteClosure(ARoute.UserData^);
-  HandleRequest(CLS.Sender, TBrookHTTPRoute(ARoute), CLS.Request, CLS.Response);
+  CLS := TBrookURLRouteClosure(ARoute.UserData^);
+  HandleRequest(CLS.Sender, TBrookURLRoute(ARoute), CLS.Request, CLS.Response);
 end;
 
-procedure TBrookHTTPRoute.HandleRequest(ASender: TObject;
-  ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
+procedure TBrookURLRoute.HandleRequest(ASender: TObject;
+  ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse);
 var
   A: Boolean;
@@ -490,68 +492,68 @@ begin
     SendMethodNotAllowed(ARequest.Method, AResponse);
 end;
 
-function TBrookHTTPRoute.IsMethodsStored: Boolean;
+function TBrookURLRoute.IsMethodsStored: Boolean;
 begin
   Result := FMethods <> DefaultReqMethods;
 end;
 
-function TBrookHTTPRoute.IsMethodAllowed(const AMethod: string): Boolean;
+function TBrookURLRoute.IsMethodAllowed(const AMethod: string): Boolean;
 begin
   Result := (FMethods = []) or (rmUnknown.FromString(AMethod) in FMethods);
 end;
 
-procedure TBrookHTTPRoute.SendMethodNotAllowed(const AMethod: string;
+procedure TBrookURLRoute.SendMethodNotAllowed(const AMethod: string;
   AResponse: TBrookHTTPResponse);
 begin
   AResponse.SendFmt(SBrookRequestMethodNotAllowed, [AMethod],
     BROOK_CT_TEXT_PLAIN, 405);
 end;
 
-{ TBrookHTTPRoutesEnumerator }
+{ TBrookURLRoutesEnumerator }
 
-function TBrookHTTPRoutesEnumerator.GetCurrent: TBrookHTTPRoute;
+function TBrookURLRoutesEnumerator.GetCurrent: TBrookURLRoute;
 begin
-  Result := TBrookHTTPRoute(inherited GetCurrent);
+  Result := TBrookURLRoute(inherited GetCurrent);
 end;
 
-{ TBrookHTTPRoutes }
+{ TBrookURLRoutes }
 
-constructor TBrookHTTPRoutes.Create(AOwner: TPersistent);
+constructor TBrookURLRoutes.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetRouterClass);
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
 end;
 
-destructor TBrookHTTPRoutes.Destroy;
+destructor TBrookURLRoutes.Destroy;
 begin
   Unprepare;
   SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   inherited Destroy;
 end;
 
-class procedure TBrookHTTPRoutes.LibNotifier(AClosure: Pointer);
+class procedure TBrookURLRoutes.LibNotifier(AClosure: Pointer);
 begin
-  TBrookHTTPRoutes(AClosure).Unprepare;
+  TBrookURLRoutes(AClosure).Unprepare;
 end;
 
-class function TBrookHTTPRoutes.GetRouterClass: TBrookHTTPRouteClass;
+class function TBrookURLRoutes.GetRouterClass: TBrookURLRouteClass;
 begin
-  Result := TBrookHTTPRoute;
+  Result := TBrookURLRoute;
 end;
 
-class function TBrookHTTPRoutes.GetRoutePattern(ARoute: TBrookHTTPRoute): string;
+class function TBrookURLRoutes.GetRoutePattern(ARoute: TBrookURLRoute): string;
 begin
   Result := ARoute.FPattern;
 end;
 
-class function TBrookHTTPRoutes.GetRouteLabel: string;
+class function TBrookURLRoutes.GetRouteLabel: string;
 begin
   Result := '/route';
 end;
 
-function TBrookHTTPRoutes.FindDefault: TBrookHTTPRoute;
+function TBrookURLRoutes.FindDefault: TBrookURLRoute;
 var
-  R: TBrookHTTPRoute;
+  R: TBrookURLRoute;
 begin
   for R in Self do
     if R.FDefault then
@@ -559,31 +561,31 @@ begin
   Result := nil;
 end;
 
-function TBrookHTTPRoutes.GetHandle: Pointer;
+function TBrookURLRoutes.GetHandle: Pointer;
 begin
   Result := FHandle;
 end;
 
-function TBrookHTTPRoutes.GetEnumerator: TBrookHTTPRoutesEnumerator;
+function TBrookURLRoutes.GetEnumerator: TBrookURLRoutesEnumerator;
 begin
-  Result := TBrookHTTPRoutesEnumerator.Create(Self);
+  Result := TBrookURLRoutesEnumerator.Create(Self);
 end;
 
-procedure TBrookHTTPRoutes.Assign(ASource: TPersistent);
+procedure TBrookURLRoutes.Assign(ASource: TPersistent);
 var
-  R: TBrookHTTPRoute;
+  R: TBrookURLRoute;
 begin
-  if ASource is TBrookHTTPRoutes then
+  if ASource is TBrookURLRoutes then
   begin
     Clear;
-    for R in (ASource as TBrookHTTPRoutes) do
+    for R in (ASource as TBrookURLRoutes) do
       Add.Assign(R);
   end
   else
     inherited Assign(ASource);
 end;
 
-procedure TBrookHTTPRoutes.InternalAdd(ARoute: TBrookHTTPRoute);
+procedure TBrookURLRoutes.InternalAdd(ARoute: TBrookURLRoute);
 var
   M: TMarshaller;
   P: array[0..SG_ERR_SIZE-1] of cchar;
@@ -597,16 +599,16 @@ begin
   if R = 0 then
     Exit;
   if R = EALREADY then
-    raise EBrookHTTPRoutes.CreateFmt(SBrookRouteAlreadyExists,
+    raise EBrookURLRoutes.CreateFmt(SBrookRouteAlreadyExists,
       [ARoute.GetNamePath, ARoute.Pattern]);
   if R = EINVAL then
     S := Sagui.StrError(R)
   else
     S := TMarshal.ToString(@P[0]).TrimRight;
-  raise EBrookHTTPRoutes.Create(S);
+  raise EBrookURLRoutes.Create(S);
 end;
 
-function TBrookHTTPRoutes.NewPattern: string;
+function TBrookURLRoutes.NewPattern: string;
 var
   I: Integer;
 begin
@@ -617,9 +619,9 @@ begin
   until IndexOf(Result) < 0;
 end;
 
-procedure TBrookHTTPRoutes.Prepare;
+procedure TBrookURLRoutes.Prepare;
 var
-  RT: TBrookHTTPRoute;
+  RT: TBrookURLRoute;
 begin
   if Assigned(FHandle) or (Count = 0) then
     Exit;
@@ -632,7 +634,7 @@ begin
   end;
 end;
 
-procedure TBrookHTTPRoutes.Unprepare;
+procedure TBrookURLRoutes.Unprepare;
 begin
   if not Assigned(FHandle) then
     Exit;
@@ -640,26 +642,26 @@ begin
   SgLib.CheckLastError(sg_routes_cleanup(@FHandle));
 end;
 
-function TBrookHTTPRoutes.Add: TBrookHTTPRoute;
+function TBrookURLRoutes.Add: TBrookURLRoute;
 begin
-  Result := TBrookHTTPRoute(inherited Add);
+  Result := TBrookURLRoute(inherited Add);
 end;
 
-function TBrookHTTPRoutes.First: TBrookHTTPRoute;
+function TBrookURLRoutes.First: TBrookURLRoute;
 begin
   if Count = 0 then
     Exit(nil);
   Result := GetItem(0);
 end;
 
-function TBrookHTTPRoutes.Last: TBrookHTTPRoute;
+function TBrookURLRoutes.Last: TBrookURLRoute;
 begin
   if Count = 0 then
     Exit(nil);
   Result := GetItem(Pred(Count));
 end;
 
-function TBrookHTTPRoutes.IndexOf(const APattern: string): Integer;
+function TBrookURLRoutes.IndexOf(const APattern: string): Integer;
 begin
   for Result := 0 to Pred(Count) do
     if SameText(GetItem(Result).Pattern, APattern) then
@@ -667,9 +669,9 @@ begin
   Result := -1;
 end;
 
-function TBrookHTTPRoutes.Find(const APattern: string): TBrookHTTPRoute;
+function TBrookURLRoutes.Find(const APattern: string): TBrookURLRoute;
 var
-  RT: TBrookHTTPRoute;
+  RT: TBrookURLRoute;
 begin
   for RT in Self do
     if SameText(RT.Pattern, APattern) then
@@ -677,7 +679,7 @@ begin
   Result := nil;
 end;
 
-function TBrookHTTPRoutes.Remove(const APattern: string): Boolean;
+function TBrookURLRoutes.Remove(const APattern: string): Boolean;
 var
   M: TMarshaller;
   I: Integer;
@@ -692,32 +694,32 @@ begin
   end;
 end;
 
-function TBrookHTTPRoutes.GetItem(AIndex: Integer): TBrookHTTPRoute;
+function TBrookURLRoutes.GetItem(AIndex: Integer): TBrookURLRoute;
 begin
-  Result := TBrookHTTPRoute(inherited GetItem(AIndex));
+  Result := TBrookURLRoute(inherited GetItem(AIndex));
 end;
 
-procedure TBrookHTTPRoutes.SetItem(AIndex: Integer; AValue: TBrookHTTPRoute);
+procedure TBrookURLRoutes.SetItem(AIndex: Integer; AValue: TBrookURLRoute);
 begin
   inherited SetItem(AIndex, AValue);
 end;
 
-procedure TBrookHTTPRoutes.Clear;
+procedure TBrookURLRoutes.Clear;
 begin
   inherited Clear;
   Unprepare;
 end;
 
-{ TBrookHTTPRouter }
+{ TBrookURLRouter }
 
-constructor TBrookHTTPRouter.Create(AOwner: TComponent);
+constructor TBrookURLRouter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRoutes := CreateRoutes;
   SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
 end;
 
-destructor TBrookHTTPRouter.Destroy;
+destructor TBrookURLRouter.Destroy;
 begin
   SetActive(False);
   FRoutes.Free;
@@ -725,29 +727,29 @@ begin
   inherited Destroy;
 end;
 
-function TBrookHTTPRouter.CreateRoutes: TBrookHTTPRoutes;
+function TBrookURLRouter.CreateRoutes: TBrookURLRoutes;
 begin
-  Result := TBrookHTTPRoutes.Create(Self);
+  Result := TBrookURLRoutes.Create(Self);
 end;
 
-class procedure TBrookHTTPRouter.LibNotifier(AClosure: Pointer);
+class procedure TBrookURLRouter.LibNotifier(AClosure: Pointer);
 begin
-  TBrookHTTPRouter(AClosure).Close;
+  TBrookURLRouter(AClosure).Close;
 end;
 
-procedure TBrookHTTPRouter.CheckItems;
+procedure TBrookURLRouter.CheckItems;
 begin
   if FRoutes.Count = 0 then
-    raise EBrookHTTPRoutes.Create(SBrookNoRoutesDefined);
+    raise EBrookURLRoutes.Create(SBrookNoRoutesDefined);
 end;
 
-procedure TBrookHTTPRouter.CheckActive;
+procedure TBrookURLRouter.CheckActive;
 begin
   if (not (csLoading in ComponentState)) and (not Active) then
     raise EInvalidOpException.Create(SBrookInactiveRouter);
 end;
 
-procedure TBrookHTTPRouter.Loaded;
+procedure TBrookURLRouter.Loaded;
 begin
   inherited Loaded;
   try
@@ -766,12 +768,12 @@ begin
   end;
 end;
 
-function TBrookHTTPRouter.GetHandle: Pointer;
+function TBrookURLRouter.GetHandle: Pointer;
 begin
   Result := FHandle;
 end;
 
-procedure TBrookHTTPRouter.SetRoutes(AValue: TBrookHTTPRoutes);
+procedure TBrookURLRouter.SetRoutes(AValue: TBrookURLRoutes);
 begin
   if AValue = FRoutes then
     Exit;
@@ -781,12 +783,12 @@ begin
     FRoutes.Clear;
 end;
 
-function TBrookHTTPRouter.IsActiveStored: Boolean;
+function TBrookURLRouter.IsActiveStored: Boolean;
 begin
   Result := FActive;
 end;
 
-procedure TBrookHTTPRouter.SetActive(AValue: Boolean);
+procedure TBrookURLRouter.SetActive(AValue: Boolean);
 begin
   if AValue = FActive then
     Exit;
@@ -812,7 +814,7 @@ begin
       DoClose;
 end;
 
-procedure TBrookHTTPRouter.DoOpen;
+procedure TBrookURLRouter.DoOpen;
 begin
   if Assigned(FHandle) then
     Exit;
@@ -824,7 +826,7 @@ begin
     FOnActivate(Self);
 end;
 
-procedure TBrookHTTPRouter.DoClose;
+procedure TBrookURLRouter.DoClose;
 begin
   if not Assigned(FHandle) then
     Exit;
@@ -836,24 +838,24 @@ begin
     FOnDeactivate(Self);
 end;
 
-procedure TBrookHTTPRouter.Open;
+procedure TBrookURLRouter.Open;
 begin
   SetActive(True);
 end;
 
-procedure TBrookHTTPRouter.Close;
+procedure TBrookURLRouter.Close;
 begin
   SetActive(False);
 end;
 
-procedure TBrookHTTPRouter.DoRoute(ASender: TObject; const ARoute: string;
+procedure TBrookURLRouter.DoRoute(ASender: TObject; const ARoute: string;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   if Assigned(FOnRoute) then
     FOnRoute(ASender, ARoute, ARequest, AResponse);
 end;
 
-procedure TBrookHTTPRouter.DoNotFound(ASender: TObject; const ARoute: string;
+procedure TBrookURLRouter.DoNotFound(ASender: TObject; const ARoute: string;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   if Assigned(FOnNotFound) then
@@ -862,7 +864,7 @@ begin
     AResponse.SendFmt(SBrookRouteNotFound, [ARoute], BROOK_CT_TEXT_PLAIN, 404);
 end;
 
-function TBrookHTTPRouter.DispatchRoute(const APath: string;
+function TBrookURLRouter.DispatchRoute(const APath: string;
   AUserData: Pointer): Boolean;
 var
   M: TMarshaller;
@@ -878,11 +880,11 @@ begin
     SgLib.CheckLastError(R);
 end;
 
-procedure TBrookHTTPRouter.Route(ASender: TObject; const ARoute: string;
+procedure TBrookURLRouter.Route(ASender: TObject; const ARoute: string;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 var
-  CLS: TBrookHTTPRouteClosure;
-  R: TBrookHTTPRoute;
+  CLS: TBrookURLRouteClosure;
+  R: TBrookURLRoute;
 begin
   CLS.Request := ARequest;
   CLS.Response := AResponse;
@@ -904,7 +906,7 @@ begin
   DoNotFound(ASender, ARoute, ARequest, AResponse);
 end;
 
-procedure TBrookHTTPRouter.Route(ASender: TObject;
+procedure TBrookURLRouter.Route(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   if not Assigned(ARequest) then

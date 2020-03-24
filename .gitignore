@@ -128,5 +128,6 @@ Test_MediaTypes
 Test_Reader
 Test_String
 Test_StringMap
+Test_URLEntryPoints
 Test_Utility
 Test_libsagui
