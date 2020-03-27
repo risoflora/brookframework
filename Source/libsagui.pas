@@ -747,8 +747,8 @@ begin
     for I := Pred(GUnloadEvents.Count) downto 0 do
     begin
       H := GUnloadEvents[I] as TSgLibUnloadHolder;
-      GUnloadEvents.Delete(I);
       H.Event(H.Sender);
+      GUnloadEvents.Delete(I);
     end;
   finally
     GCS.Release;
