@@ -328,8 +328,8 @@ begin
   if ASource is TBrookURLRoute then
   begin
     VSource := ASource as TBrookURLRoute;
-    FPattern := VSource.FPattern;
-    FMethods := VSource.FMethods;
+    FPattern := VSource.Pattern;
+    FMethods := VSource.Methods;
   end
   else
     inherited Assign(ASource);

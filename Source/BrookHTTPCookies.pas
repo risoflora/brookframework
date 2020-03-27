@@ -313,15 +313,15 @@ begin
   if ASource is TBrookHTTPCookie then
   begin
     VSrc := ASource as TBrookHTTPCookie;
-    FName := VSrc.FName;
-    FValue := VSrc.FValue;
-    FDomain := VSrc.FDomain;
-    FPath := VSrc.FPath;
-    FExpires := VSrc.FExpires;
-    FHttpOnly := VSrc.FHttpOnly;
-    FSecure := VSrc.FSecure;
-    FMaxAge := VSrc.FMaxAge;
-    FSameSite := VSrc.FSameSite;
+    FName := VSrc.Name;
+    FValue := VSrc.Value;
+    FDomain := VSrc.Domain;
+    FPath := VSrc.Path;
+    FExpires := VSrc.Expires;
+    FHttpOnly := VSrc.HttpOnly;
+    FSecure := VSrc.Secure;
+    FMaxAge := VSrc.MaxAge;
+    FSameSite := VSrc.SameSite;
   end
   else
     inherited Assign(ASource);

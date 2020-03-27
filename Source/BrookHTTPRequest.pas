@@ -240,7 +240,7 @@ end;
 
 function TBrookHTTPRequest.IsFavicon: Boolean;
 begin
-  Result := SameText(FPath, '/favicon.ico');
+  Result := SameText(Path, '/favicon.ico');
 end;
 
 function TBrookHTTPRequest.IsSecure: Boolean;

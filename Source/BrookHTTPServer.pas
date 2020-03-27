@@ -305,11 +305,11 @@ begin
   if ASource is TBrookHTTPServerSecurity then
   begin
     VSource := ASource as TBrookHTTPServerSecurity;
-    FPrivateKey := VSource.FPrivateKey;
-    FPrivatePassword := VSource.FPrivatePassword;
-    FCertificate := VSource.FCertificate;
-    FTrust := VSource.FTrust;
-    FDHParams := VSource.FDHParams;
+    FPrivateKey := VSource.PrivateKey;
+    FPrivatePassword := VSource.PrivatePassword;
+    FCertificate := VSource.Certificate;
+    FTrust := VSource.Trust;
+    FDHParams := VSource.DHParams;
   end
   else
     inherited Assign(ASource);

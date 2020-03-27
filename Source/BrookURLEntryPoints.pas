@@ -90,9 +90,6 @@ type
     { Creates an instance of @code(TBrookURLEntryPoint).
       @param(ACollection[in] Entry-point list.) }
     constructor Create(ACollection: TCollection); override;
-    { Copies the properties of the source entry-point.
-      @param(ASource[in] Entry-point source to be copied.) }
-    procedure Assign(ASource: TPersistent); override;
     { Checks if the entry-point name is valid. }
     procedure Validate; inline;
     { User-defined data to be stored temporally in the entry-point object. }
@@ -141,9 +138,6 @@ type
     destructor Destroy; override;
     { Gets the default class for entry-point item creation. }
     class function GetEntryPointClass: TBrookURLEntryPointClass; virtual;
-    { Copies the items of the source entry-points.
-      @param(ASource[in] Entry-points source to be copied.) }
-    procedure Assign(ASource: TPersistent); override;
     { Creates an enumerator to iterate the entry-points though @code(for..in). }
     function GetEnumerator: TBrookURLEntryPointListEnumerator;
     { Prepares entry-points handle. }
@@ -221,9 +215,6 @@ type
     constructor Create(AOwner: TComponent); override;
     { Destroys an instance of @code(TBrookURLEntryPoints). }
     destructor Destroy; override;
-    { Copies the properties of the source entry-point component.
-      @param(ASource[in] Entry-point component source to be copied.) }
-    procedure Assign(ASource: TPersistent); override;
     { Creates an enumerator to iterate the entry-points though @code(for..in). }
     function GetEnumerator: TBrookURLEntryPointListEnumerator;
     { Adds a new item to the entry-point list.
@@ -282,20 +273,12 @@ begin
     FName := FList.NewName;
   end
   else
-    SetName('/');
+    FName := '/';
 end;
 
 function TBrookURLEntryPoint.GetHandle: Pointer;
 begin
   Result := FHandle;
-end;
-
-procedure TBrookURLEntryPoint.Assign(ASource: TPersistent);
-begin
-  if ASource is TBrookURLEntryPoint then
-    FName := (ASource as TBrookURLEntryPoint).FName
-  else
-    inherited Assign(ASource);
 end;
 
 procedure TBrookURLEntryPoint.Validate;
@@ -412,26 +395,12 @@ end;
 procedure TBrookURLEntryPointList.CheckPrepared;
 begin
   if not Assigned(FHandle) then
-    raise EInvalidPointer.Create(SBrookEntryPointListUnprepared);
+    raise EBrookURLEntryPointList.Create(SBrookEntryPointListUnprepared);
 end;
 
 function TBrookURLEntryPointList.GetHandle: Pointer;
 begin
   Result := FHandle;
-end;
-
-procedure TBrookURLEntryPointList.Assign(ASource: TPersistent);
-var
-  EP: TBrookURLEntryPoint;
-begin
-  if ASource is TBrookURLEntryPointList then
-  begin
-    Clear;
-    for EP in (ASource as TBrookURLEntryPointList) do
-      Add.Assign(EP);
-  end
-  else
-    inherited Assign(ASource);
 end;
 
 function TBrookURLEntryPointList.GetEnumerator: TBrookURLEntryPointListEnumerator;
@@ -549,8 +518,8 @@ function TBrookURLEntryPointList.Find(const APath: string;
   out AUserData): Boolean;
 var
   M: TMarshaller;
-  R: cint;
   EP: Psg_entrypoint;
+  R: cint;
 begin
   CheckPrepared;
   SgLib.Check;
@@ -566,6 +535,8 @@ end;
 procedure TBrookURLEntryPointList.Clear;
 begin
   inherited Clear;
+  if not Assigned(FHandle) then
+    Exit;
   SgLib.Check;
   SgLib.CheckLastError(sg_entrypoints_clear(FHandle));
 end;
@@ -626,14 +597,6 @@ begin
     else
       raise;
   end;
-end;
-
-procedure TBrookURLEntryPoints.Assign(ASource: TPersistent);
-begin
-  if ASource is TBrookURLEntryPoints then
-    FList.Assign((ASource as TBrookURLEntryPoints).FList)
-  else
-    inherited Assign(ASource);
 end;
 
 function TBrookURLEntryPoints.GetEnumerator: TBrookURLEntryPointListEnumerator;
@@ -766,7 +729,7 @@ begin
   CheckItems;
   CheckActive;
   EP := Brook.FixEntryPoint(APath);
-  P := APath.SubString(EP.Length);
+  P := Brook.FixPath(APath.SubString(EP.Length));
   if FList.Find(EP, RT) then
     DoRoute(ASender, EP, P, RT, ARequest, AResponse)
   else

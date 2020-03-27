@@ -285,7 +285,7 @@ begin
     Clear;
     for VPair in VSource do
       Add(VPair.Name, VPair.Value);
-    FClearOnDestroy := VSource.FClearOnDestroy;
+    FClearOnDestroy := VSource.ClearOnDestroy;
   end
   else
     inherited Assign(ASource);
