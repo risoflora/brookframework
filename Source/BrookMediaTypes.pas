@@ -298,8 +298,8 @@ type
     procedure SetDefaultType(const AValue: string);
     procedure SetFileName(const AValue: TFileName);
     procedure SetProvider(const AValue: string);
+    procedure InternalLibUnloadEvent(ASender: TObject);
   protected
-    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
     procedure DoOpen; virtual;
@@ -676,7 +676,7 @@ end;
 constructor TBrookMIME.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
+  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
   FDefaultType := BROOK_CT_OCTET_STREAM;
   FFileName := GBrookMIMEFileName;
   FProvider := BROOK_MIME_PROVIDER;
@@ -686,7 +686,7 @@ destructor TBrookMIME.Destroy;
 begin
   try
     SetActive(False);
-    SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
+    SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
   finally
     inherited Destroy;
   end;
@@ -729,9 +729,9 @@ begin
   end;
 end;
 
-class procedure TBrookMIME.LibNotifier(AClosure: Pointer);
+procedure TBrookMIME.InternalLibUnloadEvent(ASender: TObject);
 begin
-  TBrookMIME(AClosure).Close;
+  TBrookMIME(ASender).Close;
 end;
 
 function TBrookMIME.GetHandle: Pointer;

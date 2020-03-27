@@ -48,6 +48,8 @@ uses
   RTLConsts,
   SysUtils,
   StrUtils,
+  Classes,
+  Contnrs,
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
@@ -75,7 +77,7 @@ const
 
   SG_VERSION_MINOR = 5;
 
-  SG_VERSION_PATCH = 4;
+  SG_VERSION_PATCH = 5;
 
   SG_VERSION_HEX = (SG_VERSION_MAJOR shl 16) or (SG_VERSION_MINOR shl 8) or
     SG_VERSION_PATCH;
@@ -111,6 +113,7 @@ resourcestring
   SSgLibNotLoaded = 'Library ''%s'' not loaded.';
   SSgLibInvalid = 'Invalid library ''%s''.';
   SSgLibVersion = 'Application requires Sagui library v%d.%d.%d or higher.';
+  SSgUnloadEventAlreadyRegistered = 'Unload event already registered.';
 
 type
   cchar = Byte;
@@ -606,34 +609,33 @@ var
     user_data: Pcvoid): cint; cdecl;
 
 type
+
+  { ESgLibNotLoaded }
+
   ESgLibNotLoaded = class(EFileNotFoundException);
 
-  TSgLibNotifier = procedure(AClosure: Pointer); cdecl;
+  { ESgUnloadEvent }
 
-  PSgLibNotifierItem = ^TSgLibNotifierItem;
-  TSgLibNotifierItem = record
-    Next: PSgLibNotifierItem;
-    Notifier: TSgLibNotifier;
-    Closure: Pointer;
-  end;
+  ESgUnloadEvent = class(Exception);
+
+  { SgLib }
 
   SgLib = record
   private class var
     GCS: TCriticalSection;
-    GNotifiers: PSgLibNotifierItem;
+    GUnloadEvents: TObjectList;
     GLastName: TFileName;
     GHandle: TLibHandle;
   private
-    class procedure CallNotifiers; static; inline;
+    class procedure CallUnloadEvents; static;
   public
     class procedure Init; static;
     class procedure Done; static;
-    class procedure AddNotifier(ANotifier: TSgLibNotifier;
-      AClosure: Pointer); static;
-    class procedure RemoveNotifier(ANotifier: TSgLibNotifier); static;
-    class procedure ClearNotifiers; static; inline;
-    class function GetLastName: string; static; inline;
-    class procedure CheckVersion(AVersion: Integer); overload; static; inline;
+    class procedure AddUnloadEvent(AEvent: TNotifyEvent;
+      ASender: TObject); static;
+    class procedure RemoveUnloadEvent(AEvent: TNotifyEvent); static;
+    class function GetLastName: string; static;
+    class procedure CheckVersion(AVersion: Integer); overload; static;
     class procedure CheckVersion; overload; static; inline;
     class procedure CheckLastError(ALastError: Integer); static; inline;
     class function Load(const AName: TFileName): TLibHandle; static;
@@ -644,6 +646,12 @@ type
   end;
 
 implementation
+
+function SameNotifyEvent(AN1, AN2: TNotifyEvent): Boolean; inline;
+begin
+  Result := (TMethod(AN1).Code = TMethod(AN2).Code) and
+    (TMethod(AN1).Data = TMethod(AN2).Data);
+end;
 
 function sg_httpres_send(res: Psg_httpres; const val: Pcchar;
   const content_type: Pcchar; status: cuint): cint;
@@ -689,86 +697,96 @@ begin
   Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'inline', 200);
 end;
 
+{ TSgLibUnloadHolder }
+
+type
+  TSgLibUnloadHolder = class
+  private
+    FEvent: TNotifyEvent;
+    FSender: TObject;
+  public
+    constructor Create(AEvent: TNotifyEvent; ASender: TObject);
+    property Event: TNotifyEvent read FEvent;
+    property Sender: TObject read FSender;
+  end;
+
+constructor TSgLibUnloadHolder.Create(AEvent: TNotifyEvent;
+  ASender: TObject);
+begin
+  inherited Create;
+  FEvent := AEvent;
+  FSender := ASender;
+end;
+
 { SgLib }
 
 class procedure SgLib.Init;
 begin
   GCS := TCriticalSection.Create;
-  GNotifiers := nil;
-end;
-
-class procedure SgLib.ClearNotifiers;
-var
-  P: PSgLibNotifierItem;
-begin
-  while Assigned(GNotifiers) do
-  begin
-    P := GNotifiers;
-    GNotifiers := P^.Next;
-    Dispose(P);
-  end;
-  GNotifiers := nil;
+  GUnloadEvents := TObjectList.Create;
 end;
 
 class procedure SgLib.Done;
 begin
   GCS.Acquire;
   try
-    ClearNotifiers;
+    GUnloadEvents.Free;
   finally
     GCS.Release;
     GCS.Free;
   end;
 end;
 
-class procedure SgLib.CallNotifiers;
+class procedure SgLib.CallUnloadEvents;
 var
-  P: PSgLibNotifierItem;
+  H: TSgLibUnloadHolder;
+  I: Integer;
 begin
-  P := GNotifiers;
-  while Assigned(P) do
-  begin
-    P^.Notifier(P^.Closure);
-    P := P^.Next;
-  end;
-end;
-
-class procedure SgLib.AddNotifier(ANotifier: TSgLibNotifier; AClosure: Pointer);
-var
-  P: PSgLibNotifierItem;
-begin
-  if not Assigned(ANotifier) then
-    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
   GCS.Acquire;
   try
-    New(P);
-    P^.Next := GNotifiers;
-    P^.Notifier := ANotifier;
-    P^.Closure := AClosure;
-    GNotifiers := P;
+    for I := Pred(GUnloadEvents.Count) downto 0 do
+    begin
+      H := GUnloadEvents[I] as TSgLibUnloadHolder;
+      GUnloadEvents.Delete(I);
+      H.Event(H.Sender);
+    end;
   finally
     GCS.Release;
   end;
 end;
 
-class procedure SgLib.RemoveNotifier(ANotifier: TSgLibNotifier);
+class procedure SgLib.AddUnloadEvent(AEvent: TNotifyEvent;
+  ASender: TObject);
 var
-  D: PSgLibNotifierItem;
-  P: ^PSgLibNotifierItem;
+  I: Integer;
 begin
-  if not Assigned(ANotifier) then
-    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ANotifier']);
+  if not Assigned(AEvent) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AEvent']);
   GCS.Acquire;
   try
-    P := @GNotifiers;
-    while Assigned(P^) and (@P^^.Notifier <> @ANotifier) do
-      P := @P^.Next;
-    if Assigned(P^) then
-    begin
-      D := P^;
-      P^ := D^.Next;
-      Dispose(D);
-    end;
+    for I := 0 to Pred(GUnloadEvents.Count) do
+      if SameNotifyEvent(TSgLibUnloadHolder(GUnloadEvents[I]).Event, AEvent) then
+        raise ESgUnloadEvent.Create(SSgUnloadEventAlreadyRegistered);
+    GUnloadEvents.Add(TSgLibUnloadHolder.Create(AEvent, ASender));
+  finally
+    GCS.Release;
+  end;
+end;
+
+class procedure SgLib.RemoveUnloadEvent(AEvent: TNotifyEvent);
+var
+  I: Integer;
+begin
+  if not Assigned(AEvent) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AEvent']);
+  GCS.Acquire;
+  try
+    for I := 0 to Pred(GUnloadEvents.Count) do
+      if SameNotifyEvent(TSgLibUnloadHolder(GUnloadEvents[I]).Event, AEvent) then
+      begin
+        GUnloadEvents.Delete(I);
+        Break;
+      end;
   finally
     GCS.Release;
   end;
@@ -1001,7 +1019,7 @@ begin //FI:C101
   try
     if GHandle = NilHandle then
       Exit(NilHandle);
-    CallNotifiers;
+    CallUnloadEvents;
     if not FreeLibrary(GHandle) then
       Exit(GHandle);
     GHandle := NilHandle;

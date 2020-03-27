@@ -2,55 +2,55 @@
 <CONFIG>
   <ProjectGroup FileVersion="1">
     <Targets Count="14">
-      <Target0 FileName="Test_URLEntryPoints.lpi">
+      <Target0 FileName="Test_HTTPAuthentication.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target0>
-      <Target1 FileName="Test_HTTPAuthentication.lpi">
+      <Target1 FileName="Test_HTTPCookies.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target1>
-      <Target2 FileName="Test_HTTPCookies.lpi">
+      <Target2 FileName="Test_HTTPRequest.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target2>
-      <Target3 FileName="Test_HTTPRequest.lpi">
+      <Target3 FileName="Test_HTTPResponse.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target3>
-      <Target4 FileName="Test_HTTPResponse.lpi">
+      <Target4 FileName="Test_HTTPServer.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target4>
-      <Target5 FileName="Test_HTTPServer.lpi">
+      <Target5 FileName="Test_HTTPUploads.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target5>
-      <Target6 FileName="Test_HTTPUploads.lpi">
+      <Target6 FileName="Test_LibraryLoader.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target6>
-      <Target7 FileName="Test_LibraryLoader.lpi">
+      <Target7 FileName="Test_libsagui.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target7>
-      <Target8 FileName="Test_libsagui.lpi">
+      <Target8 FileName="Test_MediaTypes.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target8>
-      <Target9 FileName="Test_MediaTypes.lpi">
+      <Target9 FileName="Test_Reader.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target9>
-      <Target10 FileName="Test_Reader.lpi">
+      <Target10 FileName="Test_String.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target10>
-      <Target11 FileName="Test_String.lpi">
+      <Target11 FileName="Test_StringMap.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target11>
-      <Target12 FileName="Test_StringMap.lpi">
+      <Target12 FileName="Test_URLEntryPoints.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target12>

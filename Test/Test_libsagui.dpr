@@ -7,7 +7,7 @@
  *
  * Cross-platform library which helps to develop web servers or frameworks.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,117 +33,108 @@ program Test_libsagui;
 uses
   RTLConsts,
   SysUtils,
+  Classes,
   Platform,
   libsagui,
   Test;
 
-procedure DoLibNotifier1(AClosure: Pointer); cdecl;
+type
+  TFakeObject = class
+  public
+    procedure DoAddUnloadEvent1(ASender: TObject);
+    procedure DoAddUnloadEvent2(ASender: TObject);
+    procedure DoAddUnloadEvent3(ASender: TObject);
+  end;
+
+procedure TFakeObject.DoAddUnloadEvent1(ASender: TObject);
 begin
-  PInteger(AClosure)^ := 123;
+
+  TComponent(ASender).Name := 'abc';
 end;
 
-procedure DoLibNotifier2(AClosure: Pointer); cdecl;
+procedure TFakeObject.DoAddUnloadEvent2(ASender: TObject);
 begin
-  PInteger(AClosure)^ := 456;
+  TComponent(ASender).Name := 'def';
 end;
 
-procedure DoLibNotifier3(AClosure: Pointer); cdecl;
+procedure TFakeObject.DoAddUnloadEvent3(ASender: TObject);
 begin
-  PInteger(AClosure)^ := 789;
+  TComponent(ASender).Name := 'ghi';
 end;
 
-procedure DoSgLibAddNotifier;
+procedure DoAddUnloadEvent(const AArgs: array of const);
 begin
-  SgLib.AddNotifier(nil, Pointer(1));
+  SgLib.AddUnloadEvent(nil, AArgs[0].VObject);
 end;
 
-procedure Test_AddNotifier;
+procedure Test_AddUnloadEvent;
 var
-  I1, I2, I3: Integer;
+  O: TFakeObject;
+  C1, C2, C3: TComponent;
 begin
-  SgLib.ClearNotifiers;
+  O := TFakeObject.Create;
+  C1 := TComponent.Create(nil);
+  C2 := TComponent.Create(nil);
+  C3 := TComponent.Create(nil);
+  try
+    AssertExcept(DoAddUnloadEvent, EArgumentNilException,
+      Format(SParamIsNil, ['AEvent']), [O]);
 
-  AssertExcept(DoSgLibAddNotifier, EArgumentNilException,
-    Format(SParamIsNil, ['ANotifier']));
+    SgLib.AddUnloadEvent(O.DoAddUnloadEvent1, nil);
+    SgLib.RemoveUnloadEvent(O.DoAddUnloadEvent1);
 
-  SgLib.AddNotifier(@DoLibNotifier1, nil);
-  SgLib.RemoveNotifier(@DoLibNotifier1);
-
-  SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.AddNotifier(@DoLibNotifier1, @I1);
-  SgLib.AddNotifier(@DoLibNotifier2, @I2);
-  SgLib.AddNotifier(@DoLibNotifier3, @I3);
-  SgLib.Unload;
-  Assert(I1 = 123);
-  Assert(I2 = 456);
-  Assert(I3 = 789);
-  SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.Unload;
-  Assert(I1 = 123);
-  Assert(I2 = 456);
-  Assert(I3 = 789);
+    SgLib.Load(SG_LIB_NAME);
+    SgLib.AddUnloadEvent(O.DoAddUnloadEvent1, C1);
+    SgLib.AddUnloadEvent(O.DoAddUnloadEvent2, C2);
+    SgLib.AddUnloadEvent(O.DoAddUnloadEvent3, C3);
+    Assert(C1.Name = '');
+    Assert(C2.Name = '');
+    Assert(C3.Name = '');
+    SgLib.Unload;
+    Assert(C1.Name = 'abc');
+    Assert(C2.Name = 'def');
+    Assert(C3.Name = 'ghi');
+  finally
+    O.Free;
+    C3.Free;
+    C2.Free;
+    C1.Free;
+  end;
 end;
 
-procedure DoSgLibRemoveNotifier;
+procedure DoRemoveUnloadEvent;
 begin
-  SgLib.RemoveNotifier(nil);
+  SgLib.RemoveUnloadEvent(nil);
 end;
 
 procedure Test_RemoveNotifier;
 var
-  I1, I2, I3: Integer;
+  O: TFakeObject;
+  C1, C2, C3: TComponent;
 begin
-  SgLib.ClearNotifiers;
+  AssertExcept(DoRemoveUnloadEvent, EArgumentNilException,
+    Format(SParamIsNil, ['AEvent']));
 
-  AssertExcept(DoSgLibRemoveNotifier, EArgumentNilException,
-    Format(SParamIsNil, ['ANotifier']));
-
-  SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.AddNotifier(@DoLibNotifier1, @I1);
-  SgLib.AddNotifier(@DoLibNotifier2, @I2);
-  SgLib.AddNotifier(@DoLibNotifier3, @I3);
-  SgLib.RemoveNotifier(@DoLibNotifier2);
-  SgLib.Unload;
-  Assert(I1 = 123);
-  Assert(I2 = 0);
-  Assert(I3 = 789);
-end;
-
-procedure Test_ClearNotifiers;
-var
-  I1, I2, I3: Integer;
-begin
-  SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.AddNotifier(@DoLibNotifier1, @I1);
-  SgLib.AddNotifier(@DoLibNotifier2, @I2);
-  SgLib.AddNotifier(@DoLibNotifier3, @I3);
-  SgLib.Unload;
-  Assert(I1 = 123);
-  Assert(I2 = 456);
-  Assert(I3 = 789);
-  SgLib.Load(SG_LIB_NAME);
-  I1 := 0;
-  I2 := 0;
-  I3 := 0;
-  SgLib.ClearNotifiers;
-  SgLib.Unload;
-  Assert(I1 = 0);
-  Assert(I2 = 0);
-  Assert(I3 = 0);
-
-  SgLib.ClearNotifiers;
+  O := TFakeObject.Create;
+  C1 := TComponent.Create(nil);
+  C2 := TComponent.Create(nil);
+  C3 := TComponent.Create(nil);
+  try
+    SgLib.Load(SG_LIB_NAME);
+    SgLib.AddUnloadEvent(O.DoAddUnloadEvent1, C1);
+    SgLib.AddUnloadEvent(O.DoAddUnloadEvent2, C2);
+    SgLib.AddUnloadEvent(O.DoAddUnloadEvent3, C3);
+    SgLib.RemoveUnloadEvent(O.DoAddUnloadEvent2);
+    SgLib.Unload;
+    Assert(C1.Name = 'abc');
+    Assert(C2.Name = '');
+    Assert(C3.Name = 'ghi');
+  finally
+    C3.Free;
+    C2.Free;
+    C1.Free;
+    O.Free;
+  end;
 end;
 
 procedure Test_GetLastName;
@@ -600,9 +591,8 @@ begin
 {$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
-  Test_AddNotifier;
+  Test_AddUnloadEvent;
   Test_RemoveNotifier;
-  Test_ClearNotifiers;
   Test_GetLastName;
   Test_CheckVersion;
   Test_CheckLastError;

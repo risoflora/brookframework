@@ -165,9 +165,9 @@ type
   TBrookURLRoutes = class(TBrookHandledOwnedCollection)
   private
     FHandle: Psg_route;
+    procedure InternalLibUnloadEvent(ASender: TObject);
   protected
     function GetHandle: Pointer; override;
-    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     class function GetRoutePattern(ARoute: TBrookURLRoute): string; virtual;
     class function GetRouteLabel: string; virtual;
     function GetItem(AIndex: Integer): TBrookURLRoute; virtual;
@@ -210,8 +210,8 @@ type
     function IsActiveStored: Boolean;
     procedure SetActive(AValue: Boolean);
     procedure SetRoutes(AValue: TBrookURLRoutes);
+    procedure InternalLibUnloadEvent(ASender: TObject);
   protected
-    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     function CreateRoutes: TBrookURLRoutes; virtual;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
@@ -521,19 +521,14 @@ end;
 constructor TBrookURLRoutes.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetRouterClass);
-  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
+  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
 end;
 
 destructor TBrookURLRoutes.Destroy;
 begin
   Unprepare;
-  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
+  SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
   inherited Destroy;
-end;
-
-class procedure TBrookURLRoutes.LibNotifier(AClosure: Pointer);
-begin
-  TBrookURLRoutes(AClosure).Unprepare;
 end;
 
 class function TBrookURLRoutes.GetRouterClass: TBrookURLRouteClass;
@@ -549,6 +544,11 @@ end;
 class function TBrookURLRoutes.GetRouteLabel: string;
 begin
   Result := '/route';
+end;
+
+procedure TBrookURLRoutes.InternalLibUnloadEvent(ASender: TObject);
+begin
+  TBrookURLRoutes(ASender).Unprepare;
 end;
 
 function TBrookURLRoutes.FindDefault: TBrookURLRoute;
@@ -716,14 +716,14 @@ constructor TBrookURLRouter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRoutes := CreateRoutes;
-  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
+  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
 end;
 
 destructor TBrookURLRouter.Destroy;
 begin
   SetActive(False);
   FRoutes.Free;
-  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
+  SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
   inherited Destroy;
 end;
 
@@ -732,9 +732,9 @@ begin
   Result := TBrookURLRoutes.Create(Self);
 end;
 
-class procedure TBrookURLRouter.LibNotifier(AClosure: Pointer);
+procedure TBrookURLRouter.InternalLibUnloadEvent(ASender: TObject);
 begin
-  TBrookURLRouter(AClosure).Close;
+  TBrookURLRouter(ASender).Close;
 end;
 
 procedure TBrookURLRouter.CheckItems;

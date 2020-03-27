@@ -120,8 +120,8 @@ type
   TBrookURLEntryPointList = class(TBrookHandledOwnedCollection)
   private
     FHandle: Psg_entrypoints;
+    procedure InternalLibUnloadEvent(ASender: TObject);
   protected
-    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     class function GetEntryPointLabel: string; virtual;
     class function GetEntryPointName(
       AEntryPoint: TBrookURLEntryPoint): string; virtual;
@@ -195,8 +195,8 @@ type
     function GetItem(AIndex: Integer): TBrookURLEntryPoint;
     procedure SetItem(AIndex: Integer; AValue: TBrookURLEntryPoint);
     procedure SetList(AValue: TBrookURLEntryPointList);
+    procedure InternalLibUnloadEvent(ASender: TObject);
   protected
-    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     function CreateList: TBrookURLEntryPointList; virtual;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
@@ -361,19 +361,14 @@ end;
 constructor TBrookURLEntryPointList.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetEntryPointClass);
-  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
+  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
 end;
 
 destructor TBrookURLEntryPointList.Destroy;
 begin
   Unprepare;
-  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
+  SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
   inherited Destroy;
-end;
-
-class procedure TBrookURLEntryPointList.LibNotifier(AClosure: Pointer);
-begin
-  TBrookURLEntryPointList(AClosure).Unprepare;
 end;
 
 class function TBrookURLEntryPointList.GetEntryPointClass: TBrookURLEntryPointClass;
@@ -396,6 +391,11 @@ procedure TBrookURLEntryPointList.CheckPrepared;
 begin
   if not Assigned(FHandle) then
     raise EBrookURLEntryPointList.Create(SBrookEntryPointListUnprepared);
+end;
+
+procedure TBrookURLEntryPointList.InternalLibUnloadEvent(ASender: TObject);
+begin
+  TBrookURLEntryPointList(ASender).Unprepare;
 end;
 
 function TBrookURLEntryPointList.GetHandle: Pointer;
@@ -547,25 +547,20 @@ constructor TBrookURLEntryPoints.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FList := CreateList;
-  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
+  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
 end;
 
 destructor TBrookURLEntryPoints.Destroy;
 begin
   SetActive(False);
   FList.Free;
-  SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
+  SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
   inherited Destroy;
 end;
 
 function TBrookURLEntryPoints.CreateList: TBrookURLEntryPointList;
 begin
   Result := TBrookURLEntryPointList.Create(Self);
-end;
-
-class procedure TBrookURLEntryPoints.LibNotifier(AClosure: Pointer);
-begin
-  TBrookURLEntryPoints(AClosure).Close;
 end;
 
 procedure TBrookURLEntryPoints.CheckItems;
@@ -597,6 +592,11 @@ begin
     else
       raise;
   end;
+end;
+
+procedure TBrookURLEntryPoints.InternalLibUnloadEvent(ASender: TObject);
+begin
+  TBrookURLEntryPoints(ASender).Close;
 end;
 
 function TBrookURLEntryPoints.GetEnumerator: TBrookURLEntryPointListEnumerator;

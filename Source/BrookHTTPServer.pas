@@ -183,8 +183,8 @@ type
     procedure InternalFreeServerHandle; inline;
     procedure InternalShutdownServer; inline;
     procedure InternalCheckServerOption(Aret: cint); inline;
+    procedure InternalLibUnloadEvent(ASender: TObject);
   protected
-    class procedure LibNotifier(AClosure: Pointer); static; cdecl;
     class function DoAuthenticationCallback(Acls: Pcvoid; Aauth: Psg_httpauth;
       Areq: Psg_httpreq; Ares: Psg_httpres): cbool; cdecl; static;
     class procedure DoRequestCallback(Acls: Pcvoid; Areq: Psg_httpreq;
@@ -197,6 +197,15 @@ type
     function CreateRequest(AHandle: Pointer): TBrookHTTPRequest; virtual;
     function CreateResponse(AHandle: Pointer): TBrookHTTPResponse; virtual;
     function CreateError(const AMessage: string): Exception; virtual;
+    procedure HandleAuthenticateError(AAuthentication: TBrookHTTPAuthentication;
+      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
+      AException: Exception);
+    function HandleAuthenticate(AAuthentication: TBrookHTTPAuthentication;
+      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse): Boolean;
+    procedure HandleRequestError(ARequest: TBrookHTTPRequest;
+      AResponse: TBrookHTTPResponse; AException: Exception);
+    procedure HandleRequest(ARequest: TBrookHTTPRequest;
+      AResponse: TBrookHTTPResponse);
     procedure Loaded; override;
     function GetHandle: Pointer; override;
     procedure DoError(ASender: TObject; AException: Exception); virtual;
@@ -209,15 +218,6 @@ type
     procedure DoRequest(ASender: TObject; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); virtual;
     procedure DoRequestError(ASender: TObject; ARequest: TBrookHTTPRequest;
-      AResponse: TBrookHTTPResponse; AException: Exception); virtual;
-    function HandleAuthenticate(AAuthentication: TBrookHTTPAuthentication;
-      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse): Boolean; virtual;
-    procedure HandleAuthenticateError(AAuthentication: TBrookHTTPAuthentication;
-      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
-      AException: Exception); virtual;
-    procedure HandleRequest(ARequest: TBrookHTTPRequest;
-      AResponse: TBrookHTTPResponse); virtual;
-    procedure HandleRequestError(ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse; AException: Exception); virtual;
     procedure CheckInactive; inline;
     procedure SetActive(AValue: Boolean); virtual;
@@ -344,7 +344,7 @@ constructor TBrookHTTPServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FSecurity := CreateSecurity;
-  SgLib.AddNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier, Self);
+  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
   FPostBufferSize := BROOK_POST_BUFFER_SIZE;
   FPayloadLimit := BROOK_PAYLOAD_LIMIT;
   FUploadsLimit := BROOK_UPLOADS_LIMIT;
@@ -354,9 +354,9 @@ destructor TBrookHTTPServer.Destroy;
 begin
   try
     SetActive(False);
-    SgLib.RemoveNotifier({$IFNDEF VER3_0}@{$ENDIF}LibNotifier);
   finally
     FSecurity.Free;
+    SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
     inherited Destroy;
   end;
 end;
@@ -420,11 +420,6 @@ end;
 function TBrookHTTPServer.CreateError(const AMessage: string): Exception;
 begin
   Result := EBrookHTTPServer.Create(AMessage);
-end;
-
-class procedure TBrookHTTPServer.LibNotifier(AClosure: Pointer);
-begin
-  TBrookHTTPServer(AClosure).Close;
 end;
 
 class function TBrookHTTPServer.DoAuthenticationCallback(Acls: Pcvoid;
@@ -493,6 +488,62 @@ procedure TBrookHTTPServer.CheckInactive;
 begin
   if (not (csLoading in ComponentState)) and Active then
     raise EInvalidOpException.Create(SBrookActiveServer);
+end;
+
+procedure TBrookHTTPServer.InternalLibUnloadEvent(ASender: TObject);
+begin
+  TBrookHTTPServer(ASender).Close;
+end;
+
+procedure TBrookHTTPServer.HandleAuthenticateError(
+  AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
+  AResponse: TBrookHTTPResponse; AException: Exception);
+begin
+  AResponse.Clear;
+  try
+    DoAuthenticateError(Self, AAuthentication, ARequest, AResponse, AException);
+  except
+    on E: Exception do
+      AResponse.Send(E.Message, BROOK_CT_TEXT_PLAIN, 500);
+  end;
+end;
+
+function TBrookHTTPServer.HandleAuthenticate(
+  AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
+  AResponse: TBrookHTTPResponse): Boolean;
+begin
+  try
+    Result := DoAuthenticate(Self, AAuthentication, ARequest, AResponse);
+  except
+    on E: Exception do
+    begin
+      Result := False;
+      HandleAuthenticateError(AAuthentication, ARequest, AResponse, E);
+    end;
+  end;
+end;
+
+procedure TBrookHTTPServer.HandleRequestError(ARequest: TBrookHTTPRequest;
+  AResponse: TBrookHTTPResponse; AException: Exception);
+begin
+  AResponse.Clear;
+  try
+    DoRequestError(Self, ARequest, AResponse, AException);
+  except
+    on E: Exception do
+      AResponse.Send(E.Message, BROOK_CT_TEXT_PLAIN, 500);
+  end;
+end;
+
+procedure TBrookHTTPServer.HandleRequest(ARequest: TBrookHTTPRequest;
+  AResponse: TBrookHTTPResponse);
+begin
+  try
+    DoRequest(Self, ARequest, AResponse);
+  except
+    on E: Exception do
+      HandleRequestError(ARequest, AResponse, E);
+  end;
 end;
 
 procedure TBrookHTTPServer.Loaded;
@@ -569,57 +620,6 @@ begin
     FOnRequestError(ASender, ARequest, AResponse, AException)
   else
     AResponse.Send(AException.Message, BROOK_CT_TEXT_PLAIN, 500);
-end;
-
-function TBrookHTTPServer.HandleAuthenticate(
-  AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse): Boolean;
-begin
-  try
-    Result := DoAuthenticate(Self, AAuthentication, ARequest, AResponse);
-  except
-    on E: Exception do
-    begin
-      Result := False;
-      HandleAuthenticateError(AAuthentication, ARequest, AResponse, E);
-    end;
-  end;
-end;
-
-procedure TBrookHTTPServer.HandleAuthenticateError(
-  AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse; AException: Exception);
-begin
-  AResponse.Clear;
-  try
-    DoAuthenticateError(Self, AAuthentication, ARequest, AResponse, AException);
-  except
-    on E: Exception do
-      AResponse.Send(E.Message, BROOK_CT_TEXT_PLAIN, 500);
-  end;
-end;
-
-procedure TBrookHTTPServer.HandleRequest(ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse);
-begin
-  try
-    DoRequest(Self, ARequest, AResponse);
-  except
-    on E: Exception do
-      HandleRequestError(ARequest, AResponse, E);
-  end;
-end;
-
-procedure TBrookHTTPServer.HandleRequestError(ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse; AException: Exception);
-begin
-  AResponse.Clear;
-  try
-    DoRequestError(Self, ARequest, AResponse, AException);
-  except
-    on E: Exception do
-      AResponse.Send(E.Message, BROOK_CT_TEXT_PLAIN, 500);
-  end;
 end;
 
 procedure TBrookHTTPServer.SetPort(AValue: UInt16);
