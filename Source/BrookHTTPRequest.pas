@@ -59,6 +59,7 @@ type
     FMethod: string;
     FPath: string;
     FIsUploading: Boolean;
+    FClient: Pointer;
     FTLSSession: Pointer;
     FHandle: Psg_httpreq;
     function GetIP: string;
@@ -123,6 +124,8 @@ type
     property IsUploading: Boolean read FIsUploading;
     { List of the uploaded files. }
     property Uploads: TBrookHTTPUploads read FUploads;
+    { Contains the socket handle of the client. }
+    property Client: Pointer read FClient;
     { Contains the TLS session handle (GnuTLS). }
     property TLSSession: Pointer read FTLSSession;
     { User-defined data to be stored temporally in the request object. }
@@ -145,6 +148,7 @@ begin
   FMethod := TMarshal.ToString(sg_httpreq_method(FHandle));
   FPath := TMarshal.ToString(sg_httpreq_path(FHandle));
   FIsUploading := sg_httpreq_is_uploading(FHandle);
+  FClient := sg_httpreq_client(FHandle);
   if Assigned(sg_httpreq_tls_session) then
     FTLSSession := sg_httpreq_tls_session(FHandle);
 end;
