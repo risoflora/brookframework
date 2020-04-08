@@ -118,6 +118,10 @@ type
     ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
     AException: Exception) of object;
 
+  { Event signature used by HTTP server to handle client connection events. }
+  TBrookHTTPServerClientConnectionEvent = procedure(ASender: TObject;
+    const AClient: Pointer; var AClosed: Boolean) of object;
+
   { Handles exceptions related to HTTP server. }
   EBrookHTTPServer = class(Exception);
 
@@ -144,6 +148,7 @@ type
     FOnAuthenticateError: TBrookHTTPAuthenticateErrorEvent;
     FOnRequest: TBrookHTTPRequestEvent;
     FOnRequestError: TBrookHTTPRequestErrorEvent;
+    FOnClientConnection: TBrookHTTPServerClientConnectionEvent;
     FOnError: TBrookErrorEvent;
     FOnStart: TNotifyEvent;
     FOnStop: TNotifyEvent;
@@ -189,6 +194,8 @@ type
       Areq: Psg_httpreq; Ares: Psg_httpres): cbool; cdecl; static;
     class procedure DoRequestCallback(Acls: Pcvoid; Areq: Psg_httpreq;
       Ares: Psg_httpres); cdecl; static;
+    class procedure DoClientConnectionCallback(Acls: Pcvoid;
+      const Aclient: Pcvoid; Aclosed: Pcbool); cdecl; static;
     class procedure DoErrorCallback(Acls: Pcvoid;
       const Aerr: Pcchar); cdecl; static;
     function CreateAuthentication(
@@ -219,6 +226,8 @@ type
       AResponse: TBrookHTTPResponse); virtual;
     procedure DoRequestError(ASender: TObject; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse; AException: Exception); virtual;
+    procedure DoClientConnection(ASender: TObject; const AClient: Pointer;
+      var AClosed: Boolean); virtual;
     procedure CheckInactive; inline;
     procedure SetActive(AValue: Boolean); virtual;
     procedure DoOpen; virtual;
@@ -286,6 +295,9 @@ type
     { Event triggered when a client request raises errors. }
     property OnRequestError: TBrookHTTPRequestErrorEvent read FOnRequestError
       write FOnRequestError;
+    { Event triggered when a client connects to or disconnects from the server. }
+    property OnClientConnection: TBrookHTTPServerClientConnectionEvent
+      read FOnClientConnection write FOnClientConnection;
     { Event triggered when the HTTP server raises errors. }
     property OnError: TBrookErrorEvent read FOnError write FOnError;
     { Event triggered when the HTTP server starts successfully. }
@@ -469,6 +481,12 @@ begin
   end;
 end;
 
+class procedure TBrookHTTPServer.DoClientConnectionCallback(Acls: Pcvoid;
+  const Aclient: Pcvoid; Aclosed: Pcbool);
+begin
+  TBrookHTTPServer(Acls).DoClientConnection(Acls, Aclient, PBoolean(Aclosed)^);
+end;
+
 class procedure TBrookHTTPServer.DoErrorCallback(Acls: Pcvoid;
   const Aerr: Pcchar);
 var
@@ -620,6 +638,13 @@ begin
     FOnRequestError(ASender, ARequest, AResponse, AException)
   else
     AResponse.Send(AException.Message, BROOK_CT_TEXT_PLAIN, 500);
+end;
+
+procedure TBrookHTTPServer.DoClientConnection(ASender: TObject;
+  const AClient: Pointer; var AClosed: Boolean);
+begin
+  if Assigned(FOnClientConnection) then
+    FOnClientConnection(ASender, AClient, AClosed);
 end;
 
 procedure TBrookHTTPServer.SetPort(AValue: UInt16);
@@ -911,6 +936,8 @@ begin
   if FConnectionLimit > 0 then
     InternalCheckServerOption(sg_httpsrv_set_con_limit(FHandle,
       FConnectionLimit));
+  InternalCheckServerOption(sg_httpsrv_set_cli_cb(FHandle,
+    DoClientConnectionCallback, Self));
   if FSecurity.Active then
   begin
     FSecurity.Validate;

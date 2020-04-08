@@ -7,7 +7,7 @@
  *
  * Cross-platform library which helps to develop web servers or frameworks.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -119,6 +119,7 @@ type
   cchar = Byte;
   Pcchar = MarshaledAString;
   cbool = Boolean;
+  Pcbool = PBoolean;
   cuint16_t = UInt16;
   cint = Int32;
   cuint = UInt32;
@@ -269,6 +270,10 @@ type
   Psg_httpsrv = ^sg_httpsrv;
   sg_httpsrv = record
   end;
+
+type
+  sg_httpsrv_cli_cb = procedure(cls: Pcvoid; const client: Pcvoid;
+    closed: Pcbool); cdecl;
 
 type
   sg_httpauth_cb = function(cls: Pcvoid; auth: Psg_httpauth; req: Psg_httpreq;
@@ -450,6 +455,9 @@ var
   sg_httpsrv_port: function(srv: Psg_httpsrv): cuint16_t; cdecl;
 
   sg_httpsrv_is_threaded: function(srv: Psg_httpsrv): cbool; cdecl;
+
+  sg_httpsrv_set_cli_cb: function(srv: Psg_httpsrv; cb: sg_httpsrv_cli_cb;
+    cls: Pcvoid): cint; cdecl;
 
   sg_httpsrv_set_upld_cbs: function(srv: Psg_httpsrv; cb: sg_httpupld_cb;
     cls: Pcvoid; write_cb: sg_write_cb; free_cb: sg_free_cb;
@@ -957,6 +965,7 @@ begin //FI:C101
     sg_httpsrv_shutdown := GetProcAddress(GHandle, 'sg_httpsrv_shutdown');
     sg_httpsrv_port := GetProcAddress(GHandle, 'sg_httpsrv_port');
     sg_httpsrv_is_threaded := GetProcAddress(GHandle, 'sg_httpsrv_is_threaded');
+    sg_httpsrv_set_cli_cb := GetProcAddress(GHandle, 'sg_httpsrv_set_cli_cb');
     sg_httpsrv_set_upld_cbs := GetProcAddress(GHandle, 'sg_httpsrv_set_upld_cbs');
     sg_httpsrv_set_upld_dir := GetProcAddress(GHandle, 'sg_httpsrv_set_upld_dir');
     sg_httpsrv_upld_dir := GetProcAddress(GHandle, 'sg_httpsrv_upld_dir');
@@ -1121,6 +1130,7 @@ begin //FI:C101
     sg_httpsrv_shutdown := nil;
     sg_httpsrv_port := nil;
     sg_httpsrv_is_threaded := nil;
+    sg_httpsrv_set_cli_cb := nil;
     sg_httpsrv_set_upld_cbs := nil;
     sg_httpsrv_set_upld_dir := nil;
     sg_httpsrv_upld_dir := nil;
