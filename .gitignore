@@ -101,17 +101,19 @@ PasDoc/Cache
 # Generated examples:
 HTTPAuth_Example
 HTTPCookie_Example
-HTTPRouter_Example
 HTTPServer_Example
+HTTPServerSSE_Example
 HTTPUpload_Example
+URLRouter_Example
 MediaTypes_Example
 StringMap_Example
 String_Example
 hellohttpsrv
 httpauth
 httpcookies
-httprouter
+httpsrvsse
 httpuploads
+urlrouter
 mediatypes
 stringbuffer
 stringmap

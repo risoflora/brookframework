@@ -30,7 +30,7 @@ set -e
 out_dir="HTML"
 cache_dir="Cache"
 
-cd $(dirname "$0")
+cd "$(dirname "$0")"
 
 rm -rf $out_dir && mkdir -p $out_dir
 
@@ -54,20 +54,20 @@ pasdoc \
   --define MSWINDOWS \
   --include ../Source \
   ../Source/BrookExtra.pas \
-  ../Source/BrookHandledClasses.pas \
   ../Source/BrookHTTPAuthentication.pas \
   ../Source/BrookHTTPCookies.pas \
   ../Source/BrookHTTPRequest.pas \
   ../Source/BrookHTTPResponse.pas \
-  ../Source/BrookHTTPRouter.pas \
   ../Source/BrookHTTPServer.pas \
   ../Source/BrookHTTPUploads.pas \
+  ../Source/BrookHandledClasses.pas \
   ../Source/BrookLibraryLoader.pas \
   ../Source/BrookMediaTypes.pas \
   ../Source/BrookReader.pas \
-  ../Source/BrookStringMap.pas \
   ../Source/BrookString.pas \
+  ../Source/BrookStringMap.pas \
   ../Source/BrookURLEntryPoints.pas \
+  ../Source/BrookURLRouter.pas \
   ../Source/BrookUtility.pas \
   --cache-dir $cache_dir \
   --output $out_dir

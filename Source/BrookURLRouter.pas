@@ -49,40 +49,50 @@ uses
   BrookHTTPResponse;
 
 resourcestring
+  { Error message @code('Inactive router.'). }
   SBrookInactiveRouter = 'Inactive router.';
+  { Error message @code('No routes defined.'). }
   SBrookNoRoutesDefined = 'No routes defined.';
+  { Error message @code('<new-class>: pattern cannot be empty.'). }
   SBrookEmptyRoutePattern = '%s: pattern cannot be empty.';
-  SBrookRouteAlreadyExists = '%s: pattern ''%s'' already exists.';
-  SBrookRequestMethodNotAllowed = 'Request method not allowed: %s';
-  SBrookRequestNoMethodDefined = 'No method(s) defined';
-  SBrookRouteNotFound = 'Route not found: %s';
+  { Error message @code('<new-class>: pattern <pattern> already
+    exists in <existing-class>.'). }
+  SBrookRouteAlreadyExists = '%s: pattern ''%s'' already exists in ''%s''.';
+  { Error message @code('Request method not allowed: <method>.'). }
+  SBrookRequestMethodNotAllowed = 'Request method not allowed: %s.';
+  { Error message @code('No routes defined.'). }
+  SBrookRequestNoMethodDefined = 'No method(s) defined.';
+  { Error message @code('Route not found: <route>.'). }
+  SBrookRouteNotFound = 'Route not found: %s.';
+  { Error message @code('A default route already exists.'). }
   SBrookDefaultRouteAlreadyExists = 'A default route already exists.';
 
 type
   TBrookURLRoute = class;
 
+  TBrookURLRoutes = class;
+
+  { Event signature used by @code(TBrookURLRoute) to notify a route matching. }
   TBrookURLRouteMatchEvent = procedure(ARoute: TBrookURLRoute) of object;
 
+  { Event signature used by @code(TBrookURLRoute) to notify a client request. }
   TBrookURLRouteRequestEvent = procedure(ASender: TObject;
     ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
     AResponse: TBrookHTTPResponse) of object;
 
+  { Event signature used by @code(TBrookURLRoute) to notify a request method
+    matching. }
   TBrookURLRouteRequestMethodEvent = procedure(ASender: TObject;
     ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
     AResponse: TBrookHTTPResponse; var AAllowed: Boolean) of object;
 
+  { Handles exceptions related to route classes. }
   EBrookURLRoute = class(Exception);
 
-  TBrookURLRouteClosure = record
-    Request: TBrookHTTPRequest;
-    Response: TBrookHTTPResponse;
-    Sender: TObject;
-  end;
-
-  TBrookURLRoutes = class;
-
+  { Class to represent a URL route item. }
   TBrookURLRoute = class(TBrookHandledCollectionItem)
   public const
+    { Default route HTTP methods. }
     DefaultReqMethods = [rmGET, rmPOST];
   private
     FOnMath: TBrookURLRouteMatchEvent;
@@ -99,7 +109,7 @@ type
     function GetPath: string;
     function GetRawPattern: string;
     function GetVariables: TBrookStringMap;
-    function GetRegexHandle: Pointer;
+    function GetPCRE2Handle: Pointer;
     function GetUserData: Pointer;
     function IsDefaultStored: Boolean;
     procedure SetDefault(AValue: Boolean);
@@ -129,39 +139,62 @@ type
     procedure CheckMethods; inline;
     property Routes: TBrookURLRoutes read FRoutes;
   public
+    { Creates an instance of @code(TBrookURLRoute).
+      @param(ACollection[in] Routes list.) }
     constructor Create(ACollection: TCollection); override;
+    { Frees an instance of @code(TBrookURLRoute). }
     destructor Destroy; override;
-    procedure Assign(ASource: TPersistent); override;
+    { Checks if the route pattern is valid. }
     procedure Validate; inline;
-    property RegexHandle: Pointer read GetRegexHandle;
+    { Contains the PCRE2 instance. }
+    property PCRE2Handle: Pointer read GetPCRE2Handle;
+    { Contains all path segments (a.k.a. path levels). }
     property Segments: TArray<string> read GetSegments;
+    { Contains all path variables (a.k.a. query-string parameters). }
     property Variables: TBrookStringMap read GetVariables;
+    { Contains the raw route pattern. For example, given a pattern @code(/foo),
+      the raw pattern is @code(^/foo$). }
     property RawPattern: string read GetRawPattern;
+    { Contains the route path. }
     property Path: string read GetPath;
+    { User-defined data to be stored temporally in the route object. }
     property UserData: Pointer read GetUserData;
   published
+    { Default route called if URL does not match any registered route. }
     property Default: Boolean read FDefault write SetDefault
       stored IsDefaultStored default False;
+    { Pattern to find the route. It must be a valid regular expression in
+      PCRE2 syntax. }
     property Pattern: string read GetPattern write SetPattern;
+    { Allowed methods to find the route. }
     property Methods: TBrookHTTPRequestMethods read FMethods write FMethods
       stored IsMethodsStored default TBrookURLRoute.DefaultReqMethods;
+    { Event triggered when the path matches the route pattern. }
     property OnMath: TBrookURLRouteMatchEvent read FOnMath write FOnMath;
+    { Event triggered when the HTTP method matches a route allowed method. }
     property OnRequestMethod: TBrookURLRouteRequestMethodEvent
       read FOnRequestMethod write FOnRequestMethod;
+    { Event triggered when a client requests the route. }
     property OnRequest: TBrookURLRouteRequestEvent read FOnRequest
       write FOnRequest;
   end;
 
+  { Class-reference for @code(TBrookURLRoute). }
   TBrookURLRouteClass = class of TBrookURLRoute;
 
+  { List enumerator for @code(TBrookURLRoutes). }
   TBrookURLRoutesEnumerator = class(TCollectionEnumerator)
   public
+    { Get current route item. }
     function GetCurrent: TBrookURLRoute;
+    { Current route item. }
     property Current: TBrookURLRoute read GetCurrent;
   end;
 
+  { Handles exceptions related to routes classes. }
   EBrookURLRoutes = class(Exception);
 
+  { Class to represent an list of URL routes. }
   TBrookURLRoutes = class(TBrookHandledOwnedCollection)
   private
     FHandle: Psg_route;
@@ -176,27 +209,46 @@ type
     procedure Prepare; virtual;
     procedure Unprepare; virtual;
   public
+    { Creates an instance of @code(TBrookURLRoutes).
+      @param(AOwner[in] Routes persistent.) }
     constructor Create(AOwner: TPersistent); virtual;
+    { Frees an instance of @code(TBrookURLRoutes). }
     destructor Destroy; override;
+    { Gets the default class for route item creation. }
     class function GetRouterClass: TBrookURLRouteClass; virtual;
+    { Creates an enumerator to iterate the routes though @code(for..in). }
     function GetEnumerator: TBrookURLRoutesEnumerator;
-    procedure Assign(ASource: TPersistent); override;
+    { Generates a new route pattern. }
     function NewPattern: string; virtual;
+    { Adds a new item to the routes list.
+      @returns(Route item.) }
     function Add: TBrookURLRoute; virtual;
+    { Gets the first route in the routes list. }
     function First: TBrookURLRoute; virtual;
+    { Gets the last route in the routes list. }
     function Last: TBrookURLRoute; virtual;
+    { Gets the route index by its pattern. }
     function IndexOf(const APattern: string): Integer; virtual;
+    { Finds a route in the routes list by its pattern.
+      @param(APattern[in] Route name.) }
     function Find(const APattern: string): TBrookURLRoute; virtual;
+    { Finds a default route in the routes list. }
     function FindDefault: TBrookURLRoute; virtual;
+    { Removes a route from the routes list by its pattern.
+      @param(APattern[in] Route name.) }
     function Remove(const APattern: string): Boolean; virtual;
+    { Clears the routes list. }
     procedure Clear; virtual;
+    { Gets/sets a route from/to the routes list by its index. }
     property Items[AIndex: Integer]: TBrookURLRoute read GetItem
       write SetItem; default;
   end;
 
+  { Event signature used by @code(TBrookURLRouter) to handle routing. }
   TBrookURLRouterRouteEvent = procedure(ASender: TObject; const ARoute: string;
     ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse) of object;
 
+  { URL router component. }
   TBrookURLRouter = class(TBrookHandledComponent)
   private
     FRoutes: TBrookURLRoutes;
@@ -224,28 +276,61 @@ type
     procedure CheckItems; inline;
     procedure CheckActive; inline;
   public
+    { Creates an instance of @code(TBrookURLRouter).
+      @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
+    { Destroys an instance of @code(TBrookURLRouter). }
     destructor Destroy; override;
+    { Enabled the router component. }
     procedure Open;
+    { Disables the router component. }
     procedure Close;
+    { Finds a route and dispatches it to the client.
+      @param(APath[in] Route path.)
+      @param(AUserData[in] User-defined data.) }
     function DispatchRoute(const APath: string;
       AUserData: Pointer): Boolean; virtual;
+    { Routes a request passing a given path.
+      @param(ASender[in] Sender object.)
+      @param(APath[in] Route path.)
+      @param(ARequest[in] Request object.)
+      @param(AResponse[in] Response object.) }
     procedure Route(ASender: TObject;
-      const ARoute: string; ARequest: TBrookHTTPRequest;
+      const APath: string; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); overload; virtual;
+    { Routes a request obtaining path from the request object.
+      @param(ASender[in] Sender object.)
+      @param(ARequest[in] Request object.)
+      @param(AResponse[in] Response object.) }
     procedure Route(ASender: TObject; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); overload; virtual;
   published
+    { Enabled/disables the router component. }
     property Active: Boolean read FActive write SetActive stored IsActiveStored;
+    { Available routes list. }
     property Routes: TBrookURLRoutes read FRoutes write SetRoutes;
+    { Event triggered when the router dispatches a route. }
     property OnRoute: TBrookURLRouterRouteEvent read FOnRoute write FOnRoute;
+    { Event triggered when a route is not found. }
     property OnNotFound: TBrookURLRouterRouteEvent read FOnNotFound
       write FOnNotFound;
+    { Event triggered when the router component is enabled. }
     property OnActivate: TNotifyEvent read FOnActivate write FOnActivate;
+    { Event triggered when the router component is disabled. }
     property OnDeactivate: TNotifyEvent read FOnDeactivate write FOnDeactivate;
   end;
 
 implementation
+
+type
+
+  { TBrookURLRouteHolder }
+
+  TBrookURLRouteHolder = record
+    Request: TBrookHTTPRequest;
+    Response: TBrookHTTPResponse;
+    Sender: TObject;
+  end;
 
 { TBrookURLRoute }
 
@@ -321,20 +406,6 @@ begin
   Result := FHandle;
 end;
 
-procedure TBrookURLRoute.Assign(ASource: TPersistent);
-var
-  VSource: TBrookURLRoute;
-begin
-  if ASource is TBrookURLRoute then
-  begin
-    VSource := ASource as TBrookURLRoute;
-    FPattern := VSource.Pattern;
-    FMethods := VSource.Methods;
-  end
-  else
-    inherited Assign(ASource);
-end;
-
 function TBrookURLRoute.GetSegments: TArray<string>;
 begin
   Result := nil;
@@ -355,7 +426,7 @@ begin
 {$IFNDEF VER3_0}@{$ENDIF}DoVarsIterCallback, FVariables));
 end;
 
-function TBrookURLRoute.GetRegexHandle: Pointer;
+function TBrookURLRoute.GetPCRE2Handle: Pointer;
 begin
   if not Assigned(FHandle) then
     Exit(nil);
@@ -430,7 +501,8 @@ begin
   NP := Brook.FixPath(AValue);
   RT := FRoutes.Find(NP);
   if Assigned(RT) and (RT <> Self) then
-    raise EBrookURLRoute.CreateFmt(SBrookRouteAlreadyExists, [GetNamePath, NP]);
+    raise EBrookURLRoute.CreateFmt(SBrookRouteAlreadyExists,
+      [GetNamePath, NP, RT.GetNamePath]);
   FPattern := NP;
   if Assigned(FRoutes.FHandle) then
   begin
@@ -470,11 +542,11 @@ end;
 
 procedure TBrookURLRoute.HandleMatch(ARoute: TBrookURLRoute);
 var
-  CLS: TBrookURLRouteClosure;
+  H: TBrookURLRouteHolder;
 begin
   DoMatch(ARoute);
-  CLS := TBrookURLRouteClosure(ARoute.UserData^);
-  HandleRequest(CLS.Sender, TBrookURLRoute(ARoute), CLS.Request, CLS.Response);
+  H := TBrookURLRouteHolder(ARoute.UserData^);
+  HandleRequest(H.Sender, TBrookURLRoute(ARoute), H.Request, H.Response);
 end;
 
 procedure TBrookURLRoute.HandleRequest(ASender: TObject;
@@ -569,20 +641,6 @@ end;
 function TBrookURLRoutes.GetEnumerator: TBrookURLRoutesEnumerator;
 begin
   Result := TBrookURLRoutesEnumerator.Create(Self);
-end;
-
-procedure TBrookURLRoutes.Assign(ASource: TPersistent);
-var
-  R: TBrookURLRoute;
-begin
-  if ASource is TBrookURLRoutes then
-  begin
-    Clear;
-    for R in (ASource as TBrookURLRoutes) do
-      Add.Assign(R);
-  end
-  else
-    inherited Assign(ASource);
 end;
 
 procedure TBrookURLRoutes.InternalAdd(ARoute: TBrookURLRoute);
@@ -880,21 +938,21 @@ begin
     SgLib.CheckLastError(R);
 end;
 
-procedure TBrookURLRouter.Route(ASender: TObject; const ARoute: string;
+procedure TBrookURLRouter.Route(ASender: TObject; const APath: string;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 var
-  CLS: TBrookURLRouteClosure;
+  H: TBrookURLRouteHolder;
   R: TBrookURLRoute;
 begin
-  CLS.Request := ARequest;
-  CLS.Response := AResponse;
-  CLS.Sender := ASender;
-  if DispatchRoute(ARoute, @CLS) then
+  H.Request := ARequest;
+  H.Response := AResponse;
+  H.Sender := ASender;
+  if DispatchRoute(APath, @H) then
   begin
-    DoRoute(ASender, ARoute, ARequest, AResponse);
+    DoRoute(ASender, APath, ARequest, AResponse);
     Exit;
   end;
-  if ARoute = '/' then
+  if APath = '/' then
   begin
     R := FRoutes.FindDefault;
     if Assigned(R) then
@@ -903,7 +961,7 @@ begin
       Exit;
     end;
   end;
-  DoNotFound(ASender, ARoute, ARequest, AResponse);
+  DoNotFound(ASender, APath, ARequest, AResponse);
 end;
 
 procedure TBrookURLRouter.Route(ASender: TObject;

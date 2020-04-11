@@ -6,6 +6,7 @@ GnuTLS
 Gzip
 HMAC
 HTTPS
+MHD
 Nginx
 SHA
 TLS

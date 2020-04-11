@@ -132,7 +132,7 @@ type
     procedure CheckPrepared; inline;
   public
     { Creates an instance of @code(TBrookURLEntryPointList).
-      @param(AOwner[in] Entry-points persistent.)}
+      @param(AOwner[in] Entry-points persistent.) }
     constructor Create(AOwner: TPersistent); virtual;
     { Frees an instance of @code(TBrookURLEntryPointList). }
     destructor Destroy; override;
