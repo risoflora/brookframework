@@ -1,4 +1,4 @@
-# Brook Framework
+# Brook framework
 
 Microframework which helps to develop web Pascal applications.
 

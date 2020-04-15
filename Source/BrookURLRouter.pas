@@ -168,7 +168,7 @@ type
     property Pattern: string read GetPattern write SetPattern;
     { Allowed methods to find the route. }
     property Methods: TBrookHTTPRequestMethods read FMethods write FMethods
-      stored IsMethodsStored default TBrookURLRoute.DefaultReqMethods;
+      stored IsMethodsStored default DefaultReqMethods;
     { Event triggered when the path matches the route pattern. }
     property OnMath: TBrookURLRouteMatchEvent read FOnMath write FOnMath;
     { Event triggered when the HTTP method matches a route allowed method. }
@@ -344,7 +344,7 @@ begin
     FPattern := FRoutes.NewPattern;
   end
   else
-    SetPattern('/');
+    FPattern := '/';
   FMethods := DefaultReqMethods;
 end;
 
@@ -374,6 +374,7 @@ var
   VSegments: ^TArray<string>;
 begin
   VSegments := Acls;
+  { TODO: use Concat() below. }
 {$IFDEF VER3_0}
   { TODO: use 'Aindex' and remove -w5024. }
   SetLength(VSegments^, Succ(Length(VSegments^)));
@@ -406,6 +407,14 @@ begin
   Result := FHandle;
 end;
 
+function TBrookURLRoute.GetPCRE2Handle: Pointer;
+begin
+  if not Assigned(FHandle) then
+    Exit(nil);
+  SgLib.Check;
+  Result := sg_route_handle(FHandle);
+end;
+
 function TBrookURLRoute.GetSegments: TArray<string>;
 begin
   Result := nil;
@@ -419,19 +428,12 @@ end;
 function TBrookURLRoute.GetVariables: TBrookStringMap;
 begin
   Result := FVariables;
-  FVariables.Clear;
   if not Assigned(FHandle) then
     Exit;
+  FVariables.Clear;
+  SgLib.Check;
   SgLib.CheckLastError(sg_route_vars_iter(FHandle,
 {$IFNDEF VER3_0}@{$ENDIF}DoVarsIterCallback, FVariables));
-end;
-
-function TBrookURLRoute.GetPCRE2Handle: Pointer;
-begin
-  if not Assigned(FHandle) then
-    Exit(nil);
-  SgLib.Check;
-  Result := sg_route_handle(FHandle);
 end;
 
 function TBrookURLRoute.GetRawPattern: string;

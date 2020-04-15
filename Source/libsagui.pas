@@ -110,9 +110,8 @@ const
 
 resourcestring
   SSgLibEmptyName = 'Empty library name.';
-  SSgLibNotFound =
-    'Library ''%s'' not found. It can be downloaded at: https://github.com/risoflora/libsagui/releases';
-  SSgLibNotLoaded = 'Library ''%s'' not loaded.';
+  SSgLibNotLoaded = Concat('Library ''%s'' not loaded. If it is not available ',
+   'on the system, please download it at: https://github.com/risoflora/libsagui/releases');
   SSgLibInvalid = 'Invalid library ''%s''.';
   SSgLibVersion = 'Application requires Sagui library v%d.%d.%d or higher.';
   SSgUnloadEventAlreadyRegistered = 'Unload event already registered.';
@@ -857,8 +856,6 @@ begin //FI:C101
   try
     if AName = '' then
       raise EArgumentException.Create(SSgLibEmptyName);
-    if not FileExists(AName) then
-      raise EFileNotFoundException.CreateFmt(SSgLibNotFound, [AName]);
     GHandle := SafeLoadLibrary(AName);
     if GHandle = NilHandle then
     begin
