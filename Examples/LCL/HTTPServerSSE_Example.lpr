@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *)
 
-program HTTPRouter_Example;
+program HTTPServerSSE_Example;
 
 {$MODE DELPHI}
 
@@ -33,7 +33,7 @@ uses
 {$ENDIF}
   Interfaces,
   Forms,
-  HTTPRouter_frMain;
+  HTTPServerSSE_frMain;
 
 {$R *.res}
 
@@ -46,3 +46,4 @@ begin
   Application.CreateForm(TfrMain, frMain);
   Application.Run;
 end.
+

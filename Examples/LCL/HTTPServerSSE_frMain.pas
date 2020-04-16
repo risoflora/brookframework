@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *)
 
-unit HTTPRouter_frMain;
+unit HTTPServerSSE_frMain;
 
 {$MODE DELPHI}
 {$PUSH}{$WARN 5024 OFF}
@@ -46,15 +46,25 @@ uses
   BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
-  BrookHTTPRouter,
   BrookHTTPServer;
 
 type
+
+  { TSSEStream }
+
+  TSSEStream = class(TStream)
+  private
+    FCount: Cardinal;
+  public
+    function Read(var ABuffer; ACount: LongInt): LongInt; override;
+  end;
+
+  { TfrMain }
+
   TfrMain = class(TForm)
     acStart: TAction;
     acStop: TAction;
     alMain: TActionList;
-    BrookHTTPRouter1: TBrookHTTPRouter;
     BrookHTTPServer1: TBrookHTTPServer;
     BrookLibraryLoader1: TBrookLibraryLoader;
     btStart: TButton;
@@ -64,17 +74,6 @@ type
     lbPort: TLabel;
     procedure acStartExecute(Sender: TObject);
     procedure acStopExecute(Sender: TObject);
-    procedure BrookHTTPRouter1NotFound(ASender: TObject; const ARoute: string;
-      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
-    procedure BrookHTTPRouter1Routes0Request(ASender: TObject;
-      ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
-      AResponse: TBrookHTTPResponse);
-    procedure BrookHTTPRouter1Routes1Request(ASender: TObject;
-      ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
-      AResponse: TBrookHTTPResponse);
-    procedure BrookHTTPRouter1Routes2Request(ASender: TObject;
-      ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
-      AResponse: TBrookHTTPResponse);
     procedure BrookHTTPServer1Error(ASender: TObject; AException: Exception);
     procedure BrookHTTPServer1Request(ASender: TObject;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
@@ -93,12 +92,63 @@ type
     procedure UpdateControls; inline;
   end;
 
+const
+  PAGE_COUNTING = Concat(
+    '<!DOCTYPE html>', sLineBreak,
+    '<html>', sLineBreak,
+    '<head>', sLineBreak,
+    '<title>SSE example</title>', sLineBreak,
+    '</head><body><h2 id="counter">Please wait ...</h2>', sLineBreak,
+    '<script>', sLineBreak,
+    'const es = new EventSource("/");', sLineBreak,
+    'es.onmessage = function (ev) {', sLineBreak,
+    '  document.getElementById("counter").innerText = "Counting: " + ev.data;', sLineBreak,
+    '};', sLineBreak,
+    '</script>', sLineBreak,
+    '</body>', sLineBreak,
+    '</html>'
+  );
+  PAGE_ERROR = Concat(
+    '<!DOCTYPE html>', sLineBreak,
+    '<html>', sLineBreak,
+    '<head>', sLineBreak,
+    '<title>Error</title>', sLineBreak,
+    '</head>', sLineBreak,
+    '<body>', sLineBreak,
+    '<font color="red">%s</font>', sLineBreak,
+    '</body>', sLineBreak,
+    '</html>'
+  );
+  HTML_HEADER = 'text/html; charset=utf-8';
+  SSE_HEADER = 'text/event-stream';
+  IGNORED_ERROR = 'Connection was closed while sending response body.';
+
 var
   frMain: TfrMain;
 
 implementation
 
 {$R *.lfm}
+
+{ TSSEStream }
+
+function TSSEStream.Read(var ABuffer; ACount: LongInt): LongInt;
+var
+  VMsg: string;
+begin
+  if FCount = 0 then
+    VMsg := Concat('retry: 1000', sLineBreak)
+  else
+  begin
+    VMsg := Concat('data: ', FCount.ToString, sLineBreak, sLineBreak);
+    Sleep(1000);
+  end;
+  Inc(FCount);
+  Result := Length(VMsg);
+  Move(VMsg[1], ABuffer, Result);
+end;
+
+{ TfrMain }
 
 procedure TfrMain.DoError(AData: PtrInt);
 var
@@ -127,7 +177,6 @@ end;
 procedure TfrMain.acStartExecute(Sender: TObject);
 begin
   BrookLibraryLoader1.Open;
-  BrookHTTPRouter1.Open;
   BrookHTTPServer1.Open;
 end;
 
@@ -154,52 +203,21 @@ end;
 procedure TfrMain.BrookHTTPServer1Request(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
-  BrookHTTPRouter1.Route(ASender, ARequest, AResponse);
+  if ARequest.Headers['Accept'] = SSE_HEADER then
+  begin
+    AResponse.Headers.Add('Access-Control-Allow-Origin', '*');
+    AResponse.Headers.Add('Content-Type', SSE_HEADER);
+    AResponse.SendStream(TSSEStream.Create, 200);
+  end
+  else
+    AResponse.Send(PAGE_COUNTING, HTML_HEADER, 200);
 end;
 
 procedure TfrMain.BrookHTTPServer1RequestError(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
   AException: Exception);
 begin
-  AResponse.SendFmt(
-    '<html><head><title>Error</title></head><body><font color="red">%s</font></body></html>',
-    [AException.Message], 'text/html; charset=utf-8', 500);
-end;
-
-procedure TfrMain.BrookHTTPRouter1NotFound(ASender: TObject;
-  const ARoute: string; ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse);
-begin
-  AResponse.SendFmt(
-    '<html><head><title>Not found</title></head><body>Page not found: %s</body></html>',
-    [ARequest.Path], 'text/html; charset=utf-8', 404);
-end;
-
-procedure TfrMain.BrookHTTPRouter1Routes0Request(ASender: TObject;
-  ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse);
-begin
-  AResponse.Send(
-    '<html><head><title>Home page</title></head><body>Home page</body></html>',
-    'text/html; charset=utf-8', 200);
-end;
-
-procedure TfrMain.BrookHTTPRouter1Routes1Request(ASender: TObject;
-  ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse);
-begin
-  AResponse.SendFmt(
-    '<html><head><title>Downloads</title></head><body>Downloaded file: %s</body></html>',
-    [ARoute.Variables['file']], 'text/html; charset=utf-8', 200);
-end;
-
-procedure TfrMain.BrookHTTPRouter1Routes2Request(ASender: TObject;
-  ARoute: TBrookHTTPRoute; ARequest: TBrookHTTPRequest;
-  AResponse: TBrookHTTPResponse);
-begin
-  AResponse.SendFmt(
-    '<html><head><title>Page</title></head><body>Page number: %d</body></html>',
-    [ARoute.Segments[0].ToInteger], 'text/html; charset=utf-8', 200);
+  AResponse.SendFmt(PAGE_ERROR, [AException.Message], HTML_HEADER, 500);
 end;
 
 procedure TfrMain.BrookHTTPServer1Start(Sender: TObject);
@@ -221,7 +239,8 @@ end;
 procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
   AException: Exception);
 begin
-  Application.QueueAsyncCall(DoError, PtrInt(NewStr(AException.Message)));
+  if AException.Message.TrimRight <> IGNORED_ERROR then
+    Application.QueueAsyncCall(DoError, PtrInt(NewStr(AException.Message)));
 end;
 {$POP}
 

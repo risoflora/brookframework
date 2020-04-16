@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="10"/>
+    <PathDelim Value="\"/>
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
@@ -10,7 +11,7 @@
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <Title Value="Test_URLRouter"/>
+      <Title Value="urlrouter"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -19,49 +20,40 @@
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
-      <UseFileFilters Value="True"/>
     </PublishOptions>
     <RunParams>
-      <FormatVersion Value="2"/>
-      <Modes Count="0"/>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
     </RunParams>
     <RequiredPackages Count="1">
       <Item1>
         <PackageName Value="BrookTardigrade"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="1">
       <Unit0>
-        <Filename Value="Test_URLRouter.dpr"/>
+        <Filename Value="urlrouter.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="Tests.inc"/>
-        <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="Test.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
-      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <PathDelim Value="\"/>
     <Target>
-      <Filename Value="Test_URLRouter"/>
+      <Filename Value="urlrouter"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3" IgnoreAll="True">
+    <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>

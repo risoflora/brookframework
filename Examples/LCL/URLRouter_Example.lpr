@@ -23,16 +23,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *)
 
-program HTTPRouter_Example;
+program URLRouter_Example;
+
+{$MODE DELPHI}
 
 uses
-  System.StartUpCopy,
-  FMX.Forms,
-  HTTPRouter_frMain in 'HTTPRouter_frMain.pas' {frMain};
+{$IFDEF UNIX}
+  CThreads,
+{$ENDIF}
+  Interfaces,
+  Forms,
+  URLRouter_frMain;
 
 {$R *.res}
 
 begin
+{$IFNDEF VER3_0_0}
+  Application.Scaled := True;
+{$ENDIF}
+  RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TfrMain, frMain);
   Application.Run;

@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{4B06BA79-AD47-43AE-84FD-2E76EEC02B63}</ProjectGuid>
     </PropertyGroup>
@@ -12,10 +12,13 @@
         <Projects Include="httpcookies.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="httprouter.dproj">
+        <Projects Include="httpsrvsse.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="httpuploads.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="mediatypes.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="stringbuffer.dproj">
@@ -24,7 +27,7 @@
         <Projects Include="stringmap.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="mediatypes.dproj">
+        <Projects Include="urlrouter.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -62,14 +65,14 @@
     <Target Name="httpcookies:Make">
         <MSBuild Projects="httpcookies.dproj" Targets="Make"/>
     </Target>
-    <Target Name="httprouter">
-        <MSBuild Projects="httprouter.dproj"/>
+    <Target Name="httpsrvsse">
+        <MSBuild Projects="httpsrvsse.dproj"/>
     </Target>
-    <Target Name="httprouter:Clean">
-        <MSBuild Projects="httprouter.dproj" Targets="Clean"/>
+    <Target Name="httpsrvsse:Clean">
+        <MSBuild Projects="httpsrvsse.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="httprouter:Make">
-        <MSBuild Projects="httprouter.dproj" Targets="Make"/>
+    <Target Name="httpsrvsse:Make">
+        <MSBuild Projects="httpsrvsse.dproj" Targets="Make"/>
     </Target>
     <Target Name="httpuploads">
         <MSBuild Projects="httpuploads.dproj"/>
@@ -79,6 +82,15 @@
     </Target>
     <Target Name="httpuploads:Make">
         <MSBuild Projects="httpuploads.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="mediatypes">
+        <MSBuild Projects="mediatypes.dproj"/>
+    </Target>
+    <Target Name="mediatypes:Clean">
+        <MSBuild Projects="mediatypes.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="mediatypes:Make">
+        <MSBuild Projects="mediatypes.dproj" Targets="Make"/>
     </Target>
     <Target Name="stringbuffer">
         <MSBuild Projects="stringbuffer.dproj"/>
@@ -98,23 +110,23 @@
     <Target Name="stringmap:Make">
         <MSBuild Projects="stringmap.dproj" Targets="Make"/>
     </Target>
-    <Target Name="mediatypes">
-        <MSBuild Projects="mediatypes.dproj"/>
+    <Target Name="urlrouter">
+        <MSBuild Projects="urlrouter.dproj"/>
     </Target>
-    <Target Name="mediatypes:Clean">
-        <MSBuild Projects="mediatypes.dproj" Targets="Clean"/>
+    <Target Name="urlrouter:Clean">
+        <MSBuild Projects="urlrouter.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="mediatypes:Make">
-        <MSBuild Projects="mediatypes.dproj" Targets="Make"/>
+    <Target Name="urlrouter:Make">
+        <MSBuild Projects="urlrouter.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httprouter;httpuploads;stringbuffer;stringmap;mediatypes"/>
+        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httpsrvsse;httpuploads;mediatypes;stringbuffer;stringmap;urlrouter"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httprouter:Clean;httpuploads:Clean;stringbuffer:Clean;stringmap:Clean;mediatypes:Clean"/>
+        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httpsrvsse:Clean;httpuploads:Clean;mediatypes:Clean;stringbuffer:Clean;stringmap:Clean;urlrouter:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httprouter:Make;httpuploads:Make;stringbuffer:Make;stringmap:Make;mediatypes:Make"/>
+        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httpsrvsse:Make;httpuploads:Make;mediatypes:Make;stringbuffer:Make;stringmap:Make;urlrouter:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

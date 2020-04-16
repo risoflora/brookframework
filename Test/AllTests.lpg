@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="14">
+    <Targets Count="15">
       <Target0 FileName="Test_HTTPAuthentication.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
@@ -54,10 +54,14 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target12>
-      <Target13 FileName="Test_Utility.lpi">
+      <Target13 FileName="Test_URLRouter.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target13>
+      <Target14 FileName="Test_Utility.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target14>
     </Targets>
   </ProjectGroup>
 </CONFIG>

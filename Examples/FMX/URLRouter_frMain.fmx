@@ -145,25 +145,25 @@ object frMain: TfrMain
     Left = 48
     Top = 120
   end
-  object BrookHTTPRouter1: TBrookHTTPRouter
+  object BrookURLRouter1: TBrookURLRouter
     Routes = <
       item
         Default = True
         Pattern = '/home'
         Methods = [rmGET]
-        OnRequest = BrookHTTPRouter1Routes0Request
+        OnRequest = BrookURLRouter1Routes0Request
       end
       item
         Pattern = '/download/(?P<file>[a-z]+)'
         Methods = [rmGET]
-        OnRequest = BrookHTTPRouter1Routes1Request
+        OnRequest = BrookURLRouter1Routes1Request
       end
       item
         Pattern = '/page/([0-9]+)'
         Methods = [rmGET]
-        OnRequest = BrookHTTPRouter1Routes2Request
+        OnRequest = BrookURLRouter1Routes2Request
       end>
-    OnNotFound = BrookHTTPRouter1NotFound
+    OnNotFound = BrookURLRouter1NotFound
     Left = 288
     Top = 120
   end

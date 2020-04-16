@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *)
 
-program httprouter;
+program urlrouter;
 
 {$IFDEF MSWINDOWS}
  {$APPTYPE CONSOLE}
@@ -36,16 +36,16 @@ uses
   BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
-  BrookHTTPRouter,
-  BrookHTTPServer;
+  BrookHTTPServer,
+  BrookURLRouter;
 
 type
 
   { TRouteHome }
 
-  TRouteHome = class(TBrookHTTPRoute)
+  TRouteHome = class(TBrookURLRoute)
   protected
-    procedure DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+    procedure DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); override;
   public
     procedure AfterConstruction; override;
@@ -53,9 +53,9 @@ type
 
   { TRouteDownload }
 
-  TRouteDownload = class(TBrookHTTPRoute)
+  TRouteDownload = class(TBrookURLRoute)
   protected
-    procedure DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+    procedure DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); override;
   public
     procedure AfterConstruction; override;
@@ -63,9 +63,9 @@ type
 
   { TRoutePage }
 
-  TRoutePage = class(TBrookHTTPRoute)
+  TRoutePage = class(TBrookURLRoute)
   protected
-    procedure DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+    procedure DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); override;
   public
     procedure AfterConstruction; override;
@@ -73,7 +73,7 @@ type
 
   { TRouter }
 
-  TRouter = class(TBrookHTTPRouter)
+  TRouter = class(TBrookURLRouter)
   protected
     procedure DoNotFound(ASender: TObject; const ARoute: string;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); override;
@@ -100,7 +100,7 @@ begin
   Default := True;
 end;
 
-procedure TRouteHome.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+procedure TRouteHome.DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   AResponse.Send('Home page', 'text/plain', 200);
@@ -114,7 +114,7 @@ begin
   Pattern := '/download/(?P<file>[a-z]+)';
 end;
 
-procedure TRouteDownload.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+procedure TRouteDownload.DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   AResponse.SendFmt('Downloaded file: %s',
@@ -129,7 +129,7 @@ begin
   Pattern := '/page/([0-9]+)';
 end;
 
-procedure TRoutePage.DoRequest(ASender: TObject; ARoute: TBrookHTTPRoute;
+procedure TRoutePage.DoRequest(ASender: TObject; ARoute: TBrookURLRoute;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 begin
   AResponse.SendFmt('Page number: %d', [ARoute.Segments[0].ToInteger],

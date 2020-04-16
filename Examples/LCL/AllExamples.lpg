@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="8">
+    <Targets Count="9">
       <Target0 FileName="HTTPAuth_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
@@ -10,11 +10,11 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target1>
-      <Target2 FileName="HTTPRouter_Example.lpi">
+      <Target2 FileName="HTTPServer_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target2>
-      <Target3 FileName="HTTPServer_Example.lpi">
+      <Target3 FileName="HTTPServerSSE_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target3>
@@ -34,6 +34,10 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target7>
+      <Target8 FileName="URLRouter_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target8>
     </Targets>
   </ProjectGroup>
 </CONFIG>
