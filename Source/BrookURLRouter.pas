@@ -489,7 +489,7 @@ begin
   if FDefault = AValue then
     Exit;
   if AValue and Assigned(FRoutes) and Assigned(FRoutes.FindDefault()) then
-    raise EInvalidOpException.Create(SBrookDefaultRouteAlreadyExists);
+    raise EBrookURLRoute.Create(SBrookDefaultRouteAlreadyExists);
   FDefault := AValue;
 end;
 

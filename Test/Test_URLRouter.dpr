@@ -39,7 +39,9 @@ uses
   Platform,
   libsagui,
   BrookLibraryLoader,
+  BrookExtra,
   BrookUtility,
+  BrookStringMap,
   BrookURLRouter,
   BrookHTTPRequest,
   BrookHTTPResponse,
@@ -51,6 +53,8 @@ type
 
   TFakeURLRoutes = class(TBrookURLRoutes)
   public
+    procedure Prepare; override;
+    procedure Unprepare; override;
     function NewPattern: string; override;
   end;
 
@@ -76,6 +80,11 @@ type
   { TFakeHTTPRequest }
 
   TFakeHTTPRequest = class(TBrookHTTPRequest)
+  protected
+    function CreateHeaders(AHandle: Pointer): TBrookStringMap; override;
+    function CreateCookies(AHandle: Pointer): TBrookStringMap; override;
+    function CreateParams(AHandle: Pointer): TBrookStringMap; override;
+    function CreateFields(AHandle: Pointer): TBrookStringMap; override;
   public
     constructor Create(AHandle: Pointer); override;
     destructor Destroy; override;
@@ -89,6 +98,20 @@ type
     destructor Destroy; override;
   end;
 
+  { TFakeURLRouter }
+
+  TFakeURLRouter = class(TBrookURLRouter)
+  public
+    procedure FakeOnRoute(ASender: TObject; const APath: string;
+      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
+    procedure FakeOnRequest(ASender: TObject; ARoute: TBrookURLRoute;
+      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
+    procedure FakeOnNotFound(ASender: TObject; const ARoute: string;
+      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
+    procedure FakeOnActivate(ASender: TObject);
+    procedure FakeOnDeactivate(ASender: TObject);
+  end;
+
 const
   FakeHandle = Pointer(123);
 
@@ -97,7 +120,85 @@ var
   FakeHTTPResponse: TFakeHTTPResponse;
   FakeFlag: Boolean;
 
+function fake_router_dispatch1(router: Psg_router; const path: Pcchar;
+  user_data: Pcvoid): cint; cdecl;
+begin
+  Assert(user_data = FakeHandle);
+  Assert(path = '/route');
+  Result := 0;
+end;
+
+function fake_router_dispatch2(router: Psg_router; const path: Pcchar;
+  user_data: Pcvoid): cint; cdecl;
+begin
+  if path <> '/route' then
+    Exit(ENOENT);
+  Result := 0;
+end;
+
+function fake_httpreq_path(req: Psg_httpreq): Pcchar; cdecl;
+begin
+  Result := '/route';
+end;
+
+function fake_httpreq_method(req: Psg_httpreq): Pcchar; cdecl;
+begin
+  Result := 'GET';
+end;
+
+procedure TFakeURLRouter.FakeOnRoute(ASender: TObject; const APath: string;
+  ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
+begin
+  Assert(ASender = FakeHandle);
+  Assert(APath = '/route');
+  Assert(ARequest = FakeHTTPRequest);
+  Assert(AResponse = FakeHTTPResponse);
+  FakeFlag := True;
+end;
+
+procedure TFakeURLRouter.FakeOnRequest(ASender: TObject;
+  ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
+  AResponse: TBrookHTTPResponse);
+begin
+  Assert(ASender = ARoute);
+  Assert(ARequest = FakeHTTPRequest);
+  Assert(AResponse = FakeHTTPResponse);
+  FakeFlag := True;
+end;
+
+procedure TFakeURLRouter.FakeOnNotFound(ASender: TObject; const ARoute: string;
+  ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
+begin
+  Assert(ASender = FakeHandle);
+  Assert((ARoute = '/') or (ARoute = 'xxx'));
+  Assert(ARequest = FakeHTTPRequest);
+  Assert(AResponse = FakeHTTPResponse);
+  FakeFlag := True;
+end;
+
+procedure TFakeURLRouter.FakeOnActivate(ASender: TObject);
+begin
+  Assert(Assigned(ASender));
+  FakeFlag := True;
+end;
+
+procedure TFakeURLRouter.FakeOnDeactivate(ASender: TObject);
+begin
+  Assert(Assigned(ASender));
+  FakeFlag := True;
+end;
+
 { TFakeURLRoutes }
+
+procedure TFakeURLRoutes.Prepare;
+begin
+  inherited Prepare;
+end;
+
+procedure TFakeURLRoutes.Unprepare;
+begin
+  inherited Unprepare;
+end;
 
 function TFakeURLRoutes.NewPattern: string;
 begin
@@ -168,10 +269,42 @@ end;
 
 constructor TFakeHTTPRequest.Create(AHandle: Pointer);
 begin
+  sg_httpreq_path := fake_httpreq_path;
+  sg_httpreq_method := fake_httpreq_method;
+  inherited Create(AHandle);
 end;
 
 destructor TFakeHTTPRequest.Destroy;
 begin
+  inherited Destroy;
+end;
+
+function TFakeHTTPRequest.CreateHeaders(AHandle: Pointer): TBrookStringMap;
+var
+  X: Pointer;
+begin
+  Result := inherited CreateHeaders(@X);
+end;
+
+function TFakeHTTPRequest.CreateCookies(AHandle: Pointer): TBrookStringMap;
+var
+  X: Pointer;
+begin
+  Result := inherited CreateCookies(@X);
+end;
+
+function TFakeHTTPRequest.CreateParams(AHandle: Pointer): TBrookStringMap;
+var
+  X: Pointer;
+begin
+  Result := inherited CreateParams(@X);
+end;
+
+function TFakeHTTPRequest.CreateFields(AHandle: Pointer): TBrookStringMap;
+var
+  X: Pointer;
+begin
+  Result := inherited CreateFields(@X);
 end;
 
 { TFakeHTTPResponse }
@@ -487,6 +620,425 @@ begin
   end;
 end;
 
+
+procedure Test_URLRoutesCreate;
+var
+  RS: TFakeURLRoutes;
+  P: TPersistent;
+begin
+  P := TPersistent.Create;
+  RS := TFakeURLRoutes.Create(P);
+  try
+    Assert(RS.Owner = P);
+    RS.Add.Pattern := 'foo';
+    RS.Prepare;
+    Assert(Assigned(RS.Handle));
+    TBrookLibraryLoader.Unload;
+    Assert(not Assigned(RS.Handle));
+    TBrookLibraryLoader.Load;
+  finally
+    RS.Free;
+    P.Free;
+  end;
+end;
+
+procedure Test_URLRoutesGetRouterClass;
+begin
+  Assert(TBrookURLRoutes.GetRouterClass = TBrookURLRoute);
+end;
+
+procedure Test_URLRoutesNewPattern(AList: TBrookURLRoutes);
+var
+  RT: TBrookURLRoute;
+begin
+  AList.Clear;
+
+  RT := TBrookURLRoute.Create(AList);
+  Assert(RT.RawPattern = '^/route1$');
+  RT := TBrookURLRoute.Create(AList);
+  Assert(RT.RawPattern = '^/route2$');
+  RT := TBrookURLRoute.Create(AList);
+  Assert(RT.RawPattern = '^/route3$');
+end;
+
+procedure Test_URLRoutesAdd;
+var
+  RS: TBrookURLRoutes;
+  RT: TBrookURLRoute;
+begin
+  RS := TBrookURLRoutes.Create(nil);
+  try
+    Assert(RS.Count = 0);
+    RT := RS.Add;
+    Assert(Assigned(RT));
+    RT := RS.Add;
+    Assert(Assigned(RT));
+    RT := RS.Add;
+    Assert(Assigned(RT));
+    Assert(RS.Count = 3);
+  finally
+    RS.Free;
+  end;
+end;
+
+procedure Test_URLRoutesFirst(AList: TBrookURLRoutes);
+var
+  RT: TBrookURLRoute;
+begin
+  AList.Clear;
+
+  RT := AList.First;
+  Assert(not Assigned(RT));
+  AList.Add;
+  AList.Add;
+  RT := AList.First;
+  Assert(Assigned(RT));
+  Assert(RT.Pattern = '/route1');
+end;
+
+procedure Test_URLRoutesLast(AList: TBrookURLRoutes);
+var
+  RT: TBrookURLRoute;
+begin
+  AList.Clear;
+
+  RT := AList.Last;
+  Assert(not Assigned(RT));
+  AList.Add;
+  AList.Add;
+  RT := AList.Last;
+  Assert(Assigned(RT));
+  Assert(RT.Pattern = '/route2');
+end;
+
+procedure Test_URLRoutesIndexOf(AList: TBrookURLRoutes);
+begin
+  AList.Clear;
+
+  Assert(AList.IndexOf('/route1') = -1);
+  Assert(AList.IndexOf('/route2') = -1);
+  AList.Add;
+  AList.Add;
+  Assert(AList.IndexOf('/route1') = 0);
+  Assert(AList.IndexOf('/route2') = 1);
+end;
+
+procedure Test_URLRoutesFind(AList: TBrookURLRoutes);
+begin
+  AList.Clear;
+
+  Assert(not Assigned(AList.Find('/route1')));
+  Assert(not Assigned(AList.Find('/route2')));
+  AList.Add;
+  AList.Add;
+  Assert(Assigned(AList.Find('/route1')));
+  Assert(Assigned(AList.Find('/route2')));
+end;
+
+procedure DoURLRoutesDefaultRouteAlreadyExists(const AArgs: array of const);
+begin
+  TBrookURLRoute(AArgs[0].VObject).Default := True;
+end;
+
+procedure Test_URLRoutesFindDefault(AList: TBrookURLRoutes);
+var
+  RT: TBrookURLRoute;
+begin
+  AList.Clear;
+
+  Assert(not Assigned(AList.FindDefault));
+  AList.Add.Default := True;
+  Assert(Assigned(AList.FindDefault));
+
+  RT := AList.Add;
+  AssertExcept(DoURLRoutesDefaultRouteAlreadyExists, EBrookURLRoute,
+    SBrookDefaultRouteAlreadyExists, [RT]);
+end;
+
+procedure Test_URLRoutesRemove(AList: TBrookURLRoutes);
+begin
+  AList.Clear;
+
+  Assert(not Assigned(AList.Find('/route1')));
+  Assert(not Assigned(AList.Find('/route2')));
+  AList.Add;
+  AList.Add;
+  Assert(Assigned(AList.Find('/route1')));
+  Assert(Assigned(AList.Find('/route2')));
+  Assert(AList.Remove('/route1'));
+  Assert(not Assigned(AList.Find('/route1')));
+  Assert(Assigned(AList.Find('/route2')));
+  Assert(not AList.Remove('/route1'));
+  Assert(AList.Remove('/route2'));
+  Assert(not Assigned(AList.Find('/route1')));
+  Assert(not Assigned(AList.Find('/route2')));
+  Assert(not AList.Remove('/route2'));
+end;
+
+procedure Test_URLRoutesClear;
+var
+  RS: TFakeURLRoutes;
+begin
+  RS := TFakeURLRoutes.Create(nil);
+  try
+    Assert(RS.Count = 0);
+    Assert(not Assigned(RS.Handle));
+    RS.Add.Pattern := 'foo';
+    RS.Add.Pattern := 'bar';
+    RS.Prepare;
+    Assert(Assigned(RS.Handle));
+    RS.Clear;
+    Assert(RS.Count = 0);
+    Assert(not Assigned(RS.Handle));
+  finally
+    RS.Free;
+  end;
+end;
+
+procedure Test_URLRoutesItems(AList: TBrookURLRoutes);
+var
+  RT: TBrookURLRoute;
+begin
+  AList.Clear;
+
+  Assert(AList.Count = 0);
+  AList.Add;
+  AList.Add;
+  Assert(AList.Count = 2);
+  RT := AList[0];
+  Assert(Assigned(RT));
+  Assert(RT.Pattern = '/route1');
+  RT := AList[1];
+  Assert(Assigned(RT));
+  Assert(RT.Pattern = '/route2');
+end;
+
+procedure Test_URLRouterCreate;
+var
+  R: TBrookURLRouter;
+begin
+  R := TBrookURLRouter.Create(nil);
+  try
+    Assert(Assigned(R.Routes));
+  finally
+    R.Free;
+  end;
+end;
+
+procedure Test_URLRouterOpen;
+var
+  R: TBrookURLRouter;
+begin
+  R := TBrookURLRouter.Create(nil);
+  try
+    Assert(not R.Active);
+    R.Open;
+    Assert(not R.Active);
+    R.Routes.Add;
+    R.Open;
+    Assert(R.Active);
+    R.Open;
+  finally
+    R.Free;
+  end;
+end;
+
+procedure Test_URLRouterClose;
+var
+  R: TBrookURLRouter;
+begin
+  R := TBrookURLRouter.Create(nil);
+  try
+    R.Routes.Add;
+    R.Open;
+    Assert(R.Active);
+    R.Close;
+    Assert(not R.Active);
+    R.Close;
+  finally
+    R.Free;
+  end;
+end;
+
+procedure DoURLRouterNoRoutesDefined(const AArgs: array of const);
+begin
+  TBrookURLRouter(AArgs[0].VObject).DispatchRoute('/route', nil);
+end;
+
+procedure DoURLRouterInactiveRouter(const AArgs: array of const);
+begin
+  TBrookURLRouter(AArgs[0].VObject).DispatchRoute('/route', nil);
+end;
+
+procedure Test_URLRouterDispatchRoute;
+var
+  R: TBrookURLRouter;
+begin
+  R := TBrookURLRouter.Create(nil);
+  try
+    R.Routes.Add.Pattern := '/foo';
+    R.Open;
+    sg_router_dispatch := fake_router_dispatch1;
+    R.DispatchRoute('/route', FakeHandle);
+
+    R.Routes.Clear;
+    AssertExcept(DoURLRouterNoRoutesDefined, EBrookURLRoutes,
+      SBrookNoRoutesDefined, [R]);
+    R.Routes.Add.Pattern := '/foo';
+    R.Close;
+    AssertExcept(DoURLRouterInactiveRouter, EInvalidOpException,
+      SBrookInactiveRouter, [R]);
+  finally
+    R.Free;
+  end;
+end;
+
+procedure Test_URLRouterRoute;
+var
+  RT: TFakeURLRouter;
+  R: TBrookURLRoute;
+begin
+  FakeHTTPRequest := TFakeHTTPRequest.Create(nil);
+  FakeHTTPResponse := TFakeHTTPResponse.Create(nil);
+  RT := TFakeURLRouter.Create(nil);
+  try
+    RT.Routes.Add.Pattern := '/foo';
+    RT.Routes.Add.Pattern := '/route';
+    R := RT.Routes.Add;
+    R.Default := True;
+    R.Pattern := '/bar';
+    R.OnRequest := RT.FakeOnRequest;
+    RT.Open;
+    RT.OnRoute := RT.FakeOnRoute;
+    sg_router_dispatch := fake_router_dispatch2;
+    FakeFlag := False;
+    RT.Route(FakeHandle, '/route', FakeHTTPRequest, FakeHTTPResponse);
+    Assert(FakeFlag);
+
+    FakeFlag := False;
+    RT.Route(FakeHandle, FakeHTTPRequest, FakeHTTPResponse);
+    Assert(FakeFlag);
+
+    FakeFlag := False;
+    RT.Route(R, '/', FakeHTTPRequest, FakeHTTPResponse);
+    Assert(FakeFlag);
+
+    RT.Routes.Remove('/bar');
+    RT.OnNotFound := RT.FakeOnNotFound;
+    FakeFlag := False;
+    RT.Route(FakeHandle, '/', FakeHTTPRequest, FakeHTTPResponse);
+    Assert(FakeFlag);
+  finally
+    RT.Free;
+    FakeHTTPResponse.Free;
+    FakeHTTPRequest.Free;
+  end;
+end;
+
+procedure Test_URLRouterActive;
+var
+  R: TBrookURLRouter;
+begin
+  R := TBrookURLRouter.Create(nil);
+  try
+    R.Routes.Add;
+    Assert(not R.Active);
+    R.Active := not R.Active;
+    Assert(R.Active);
+    Assert(Assigned(R.Routes.Handle));
+  finally
+    R.Free;
+  end;
+end;
+
+procedure Test_URLRouterRoutes;
+var
+  R: TBrookURLRouter;
+begin
+  R := TBrookURLRouter.Create(nil);
+  try
+    R.Routes.Add;
+    R.Routes.Add;
+    R.Routes.Add;
+    Assert(R.Routes[0].Pattern = '/route1');
+    Assert(R.Routes[1].Pattern = '/route2');
+    Assert(R.Routes[2].Pattern = '/route3');
+  finally
+    R.Free;
+  end;
+end;
+
+procedure Test_URLRouterOnRoute;
+var
+  RT: TFakeURLRouter;
+begin
+  RT := TFakeURLRouter.Create(nil);
+  try
+    RT.Routes.Add.Pattern := '/route';
+    RT.Open;
+    RT.OnRoute := RT.FakeOnRoute;
+    FakeFlag := False;
+    RT.Route(FakeHandle, FakeHTTPRequest, FakeHTTPResponse);
+    Assert(FakeFlag);
+  finally
+    RT.Free;
+  end;
+end;
+
+procedure Test_URLRouterOnNotFound;
+var
+  R: TFakeURLRouter;
+begin
+  FakeHTTPRequest := TFakeHTTPRequest.Create(nil);
+  FakeHTTPResponse := TFakeHTTPResponse.Create(nil);
+  R := TFakeURLRouter.Create(nil);
+  try
+    R.Routes.Add;
+    R.Open;
+    R.OnNotFound := R.FakeOnNotFound;
+    FakeFlag := False;
+    R.Route(FakeHandle, 'xxx', FakeHTTPRequest, FakeHTTPResponse);
+    Assert(FakeFlag);
+  finally
+    R.Free;
+    FakeHTTPRequest.Free;
+    FakeHTTPResponse.Free;
+  end;
+end;
+
+procedure Test_URLRouterOnActivate;
+var
+  R: TFakeURLRouter;
+begin
+  R := TFakeURLRouter.Create(nil);
+  try
+    R.OnActivate := R.FakeOnActivate;
+    FakeFlag := False;
+    R.Routes.Add.Pattern := '/foo';
+    R.Open;
+    Assert(FakeFlag);
+  finally
+    R.Free;
+  end;
+end;
+
+procedure Test_URLRouterOnDeactivate;
+var
+  R: TFakeURLRouter;
+begin
+  R := TFakeURLRouter.Create(nil);
+  try
+    R.Routes.Add;
+    R.Open;
+    R.OnDeactivate := R.FakeOnDeactivate;
+    FakeFlag := False;
+    R.Close;
+    Assert(FakeFlag);
+  finally
+    R.Free;
+  end;
+end;
+
 var
   RS: TBrookURLRoutes;
 begin
@@ -510,6 +1062,29 @@ begin
     Test_URLRouteOnMath;
     Test_URLRouteOnRequestMethod;
     Test_URLRouteOnRequest;
+    Test_URLRoutesCreate;
+    Test_URLRoutesGetRouterClass;
+    Test_URLRoutesNewPattern(RS);
+    Test_URLRoutesAdd;
+    Test_URLRoutesFirst(RS);
+    Test_URLRoutesLast(RS);
+    Test_URLRoutesIndexOf(RS);
+    Test_URLRoutesFind(RS);
+    Test_URLRoutesFindDefault(RS);
+    Test_URLRoutesRemove(RS);
+    Test_URLRoutesClear;
+    Test_URLRoutesItems(RS);
+    Test_URLRouterCreate;
+    Test_URLRouterOpen;
+    Test_URLRouterClose;
+    Test_URLRouterDispatchRoute;
+    Test_URLRouterRoute;
+    Test_URLRouterActive;
+    Test_URLRouterRoutes;
+    Test_URLRouterOnRoute;
+    Test_URLRouterOnNotFound;
+    Test_URLRouterOnActivate;
+    Test_URLRouterOnDeactivate;
   finally
     RS.Free;
     TBrookLibraryLoader.Unload;

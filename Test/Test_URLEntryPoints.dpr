@@ -95,12 +95,9 @@ type
 
 var
   FakeRoutedPath: string;
-  FakeRouted: Boolean;
+  FakeFlag: Boolean;
   FakeResponseFakeFmt: string;
   FakeStatus: Word;
-  FakeNotFound: Boolean;
-  FakeActivate: Boolean;
-  FakeDeactivate: Boolean;
 
 { TFakeHTTPRequest }
 
@@ -144,17 +141,17 @@ procedure TFakeURLEntryPoints.FakeOnNotFound(ASender: TObject;
 begin
   Assert(AEntryPoint = '/xxx');
   Assert(APath = '/');
-  FakeNotFound := True;
+  FakeFlag := True;
 end;
 
 procedure TFakeURLEntryPoints.FakeOnActivate(ASender: TObject);
 begin
-  FakeActivate := True;
+  FakeFlag := True;
 end;
 
 procedure TFakeURLEntryPoints.FakeOnDeactivate(ASender: TObject);
 begin
-  FakeDeactivate := True;
+  FakeFlag := True;
 end;
 
 { TFakeURLRouter }
@@ -162,7 +159,7 @@ end;
 procedure TFakeURLRouter.Route(ASender: TObject; const ARoute: string;
   AReq: TBrookHTTPRequest; ARes: TBrookHTTPResponse);
 begin
-  FakeRouted := ARoute = FakeRoutedPath;
+  FakeFlag := ARoute = FakeRoutedPath;
 end;
 
 procedure Test_URLEntryPointCreate(AList: TBrookURLEntryPointList);
@@ -721,14 +718,14 @@ begin
   try
     EPL.Add.Router := RT;
     EPL.Open;
-    FakeRouted := False;
+    FakeFlag := False;
     FakeRoutedPath := '/';
     EPL.Enter(nil, 'api1', nil, nil);
-    Assert(FakeRouted);
-    FakeRouted := False;
+    Assert(FakeFlag);
+    FakeFlag := False;
     FakeRoutedPath := '/test';
     EPL.Enter(nil, 'api1/test', nil, nil);
-    Assert(FakeRouted);
+    Assert(FakeFlag);
 
     EPL.Close;
     EPL.Add;
@@ -819,9 +816,9 @@ begin
     FakeResponseFakeFmt := SBrookEntryPointNotFound;
     FakeRoutedPath := '/xxx';
     FakeStatus := 404;
-    FakeNotFound := False;
+    FakeFlag := False;
     EPL.Enter(nil, 'xxx', nil, nil);
-    Assert(FakeNotFound);
+    Assert(FakeFlag);
   finally
     EPL.Free;
   end;
@@ -834,10 +831,10 @@ begin
   EPL := TFakeURLEntryPoints.Create(nil);
   try
     EPL.OnActivate := EPL.FakeOnActivate;
-    FakeActivate := False;
+    FakeFlag := False;
     EPL.Add;
     EPL.Open;
-    Assert(FakeActivate);
+    Assert(FakeFlag);
   finally
     EPL.Free;
   end;
@@ -852,9 +849,9 @@ begin
     EPL.Add;
     EPL.Open;
     EPL.OnDeactivate := EPL.FakeOnDeactivate;
-    FakeDeactivate := False;
+    FakeFlag := False;
     EPL.Close;
-    Assert(FakeDeactivate);
+    Assert(FakeFlag);
   finally
     EPL.Free;
   end;
