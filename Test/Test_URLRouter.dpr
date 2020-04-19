@@ -743,12 +743,15 @@ end;
 procedure Test_URLRoutesFindDefault(AList: TBrookURLRoutes);
 var
   RT: TBrookURLRoute;
+  R: TBrookURLRoute;
 begin
   AList.Clear;
 
-  Assert(not Assigned(AList.FindDefault));
+  R := AList.FindDefault;
+  Assert(not Assigned(R));
   AList.Add.Default := True;
-  Assert(Assigned(AList.FindDefault));
+  R := AList.FindDefault;
+  Assert(Assigned(R));
 
   RT := AList.Add;
   AssertExcept(DoURLRoutesDefaultRouteAlreadyExists, EBrookURLRoute,
@@ -972,6 +975,8 @@ procedure Test_URLRouterOnRoute;
 var
   RT: TFakeURLRouter;
 begin
+  FakeHTTPRequest := TFakeHTTPRequest.Create(nil);
+  FakeHTTPResponse := TFakeHTTPResponse.Create(nil);
   RT := TFakeURLRouter.Create(nil);
   try
     RT.Routes.Add.Pattern := '/route';
@@ -982,6 +987,8 @@ begin
     Assert(FakeFlag);
   finally
     RT.Free;
+    FakeHTTPRequest.Free;
+    FakeHTTPResponse.Free;
   end;
 end;
 
