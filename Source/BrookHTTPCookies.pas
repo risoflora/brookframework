@@ -38,9 +38,6 @@ uses
 {$IFDEF FPC}
   HMAC,
   Base64,
- {$IFDEF VER3_0_0}
-  FPC300Fixes,
- {$ENDIF}
 {$ELSE}
   System.Hash,
   System.NetEncoding,

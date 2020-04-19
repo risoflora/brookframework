@@ -28,12 +28,6 @@
  {$IFDEF VER3_0} // it should be {$IF FPC_FULLVERSION <= 30101}, but it was commented to fix "[dcc32 Error] E2026 Constant expression expected"
   {$PUSH}{$MACRO ON}
   {$DEFINE EInvalidOpException := Exception}
-  {$IFDEF VER3_0_0}
-   {$DEFINE PMethod := ^TMethod}
-   {$DEFINE EArgumentNilException := Exception}
-   {$DEFINE EFileNotFoundException := Exception}
-   {$DEFINE ENotSupportedException := Exception}
-  {$ENDIF}
   {$POP}
  {$ENDIF}
 {$ENDIF}

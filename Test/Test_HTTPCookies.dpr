@@ -35,9 +35,6 @@ uses
   Hash,
   NetEncoding,
 {$ENDIF}
-{$IFDEF VER3_0_0}
-  FPC300Fixes,
-{$ENDIF}
   BrookLibraryLoader,
   BrookUtility,
   BrookHTTPCookies,

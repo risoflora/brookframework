@@ -35,9 +35,6 @@ unit libsagui;
   {$PUSH}{$MACRO ON}
   {$DEFINE MarshaledAString := PAnsiChar}
   {$DEFINE EInvalidOpException := Exception}
-  {$IFDEF VER3_0_0}
-   {$DEFINE EFileNotFoundException := Exception}
-  {$ENDIF}
   {$POP}
  {$ENDIF}
 {$ENDIF}
@@ -120,7 +117,7 @@ type
   cchar = Byte;
   Pcchar = MarshaledAString;
   cbool = Boolean;
-  Pcbool = PBoolean;
+  Pcbool = ^Boolean;
   cuint16_t = UInt16;
   cint = Int32;
   cuint = UInt32;

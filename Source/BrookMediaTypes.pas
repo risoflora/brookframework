@@ -35,9 +35,6 @@ uses
   RTLConsts,
   SysUtils,
   Classes,
-{$IFDEF VER3_0_0}
-  FPC300Fixes,
-{$ENDIF}
   libsagui,
   BrookExtra,
   BrookReader,

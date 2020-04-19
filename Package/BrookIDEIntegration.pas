@@ -180,10 +180,8 @@ begin
 {$IFDEF LCL}
   RegisterPropertyEditor(TypeInfo(TFileName), TBrookMIME,
     'FileName', TFileNamePropertyEditor);
- {$IFNDEF VER3_0_0}
   RegisterPropertyEditor(TypeInfo(string), TBrookHTTPServerSecurity,
     'PrivatePassword', TPasswordStringPropertyEditor);
- {$ENDIF}
   RegisterPropertyEditor(TypeInfo(TBrookHTTPRequestMethods), nil, '',
     TBrookHTTPRequestMethodsPropertyEditor);
   RegisterPropertyEditor(TypeInfo(string), TBrookHTTPServer, 'UploadsDir',

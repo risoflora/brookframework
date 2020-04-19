@@ -37,9 +37,6 @@ uses
   Classes,
   Platform,
   Marshalling,
-{$IFDEF VER3_0_0}
-  FPC300Fixes,
-{$ENDIF}
   libsagui,
   BrookUtility,
   BrookHandledClasses,

@@ -44,9 +44,6 @@ uses
   System.NetEncoding,
 {$ENDIF}
   Marshalling,
-{$IFDEF VER3_0_0}
-  FPC300Fixes,
-{$ENDIF}
   libsagui;
 
 const

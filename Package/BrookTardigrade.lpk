@@ -29,7 +29,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with Brook framework; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"/>
     <Version Major="5"/>
-    <Files Count="22">
+    <Files Count="21">
       <Item1>
         <Filename Value="../Source/libsagui.pas"/>
         <UnitName Value="libsagui"/>
@@ -43,82 +43,78 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"/
         <UnitName Value="Marshalling"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/FPC300Fixes.pas"/>
-        <UnitName Value="FPC300Fixes"/>
-      </Item4>
-      <Item5>
         <Filename Value="../Source/BrookDefines.inc"/>
         <Type Value="Include"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="../Source/BrookLibraryLoader.pas"/>
         <UnitName Value="BrookLibraryLoader"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="../Source/BrookUtility.pas"/>
         <UnitName Value="BrookUtility"/>
-      </Item7>
-      <Item8>
+      </Item6>
+      <Item7>
         <Filename Value="../Source/BrookHandledClasses.pas"/>
         <UnitName Value="BrookHandledClasses"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="../Source/BrookString.pas"/>
         <UnitName Value="BrookString"/>
-      </Item9>
-      <Item10>
+      </Item8>
+      <Item9>
         <Filename Value="../Source/BrookStringMap.pas"/>
         <UnitName Value="BrookStringMap"/>
-      </Item10>
-      <Item11>
+      </Item9>
+      <Item10>
         <Filename Value="../Source/BrookExtra.pas"/>
         <UnitName Value="BrookExtra"/>
-      </Item11>
-      <Item12>
+      </Item10>
+      <Item11>
         <Filename Value="../Source/BrookReader.pas"/>
         <UnitName Value="BrookReader"/>
-      </Item12>
-      <Item13>
+      </Item11>
+      <Item12>
         <Filename Value="../Source/BrookMediaTypes.pas"/>
         <UnitName Value="BrookMediaTypes"/>
-      </Item13>
-      <Item14>
+      </Item12>
+      <Item13>
         <Filename Value="../Source/BrookURLEntryPoints.pas"/>
         <UnitName Value="BrookURLEntryPoints"/>
-      </Item14>
-      <Item15>
+      </Item13>
+      <Item14>
         <Filename Value="../Source/BrookURLRouter.pas"/>
         <UnitName Value="BrookURLRouter"/>
-      </Item15>
-      <Item16>
+      </Item14>
+      <Item15>
         <Filename Value="../Source/BrookHTTPAuthentication.pas"/>
         <UnitName Value="BrookHTTPAuthentication"/>
-      </Item16>
-      <Item17>
+      </Item15>
+      <Item16>
         <Filename Value="../Source/BrookHTTPCookies.pas"/>
         <UnitName Value="BrookHTTPCookies"/>
-      </Item17>
-      <Item18>
+      </Item16>
+      <Item17>
         <Filename Value="../Source/BrookHTTPUploads.pas"/>
         <UnitName Value="BrookHTTPUploads"/>
-      </Item18>
-      <Item19>
+      </Item17>
+      <Item18>
         <Filename Value="../Source/BrookHTTPRequest.pas"/>
         <UnitName Value="BrookHTTPRequest"/>
-      </Item19>
-      <Item20>
+      </Item18>
+      <Item19>
         <Filename Value="../Source/BrookHTTPResponse.pas"/>
         <UnitName Value="BrookHTTPResponse"/>
-      </Item20>
-      <Item21>
+      </Item19>
+      <Item20>
         <Filename Value="../Source/BrookHTTPServer.pas"/>
         <UnitName Value="BrookHTTPServer"/>
-      </Item21>
-      <Item22>
+      </Item20>
+      <Item21>
         <Filename Value="BrookIDEIntegration.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="BrookIDEIntegration"/>
-      </Item22>
+      </Item21>
     </Files>
     <RequiredPkgs Count="1">
       <Item1>
