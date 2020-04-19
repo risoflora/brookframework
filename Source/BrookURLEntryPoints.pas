@@ -148,7 +148,7 @@ type
     { Adds a new item to the entry-point list.
       @returns(Entry-point item.) }
     function Add: TBrookURLEntryPoint; virtual;
-    { Removes a item from the entry-point list by its name.
+    { Removes an item from the entry-point list by its name.
       @param(AName[in] Entry-point name.)
       @returns(@True if an entry-point is removed.) }
     function Remove(const AName: string): Boolean; virtual;
@@ -217,7 +217,7 @@ type
     { Adds a new item to the entry-point list.
       @returns(Entry-point item.) }
     function Add: TBrookURLEntryPoint; inline;
-    { Removes a item from the entry-point list by its name.
+    { Removes an item from the entry-point list by its name.
       @param(AName[in] Entry-point name.) }
     procedure Remove(const AName: string); inline;
     { Clears the entry-point list. }

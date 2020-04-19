@@ -99,7 +99,7 @@ type
     { Saves the uploaded file allowing to define the destination path.
       @param(APath[in] Absolute destination path.) }
     procedure SaveAs(const APath: TFileName); overload;
-    { Handle of a upload. }
+    { Handle of an upload. }
     property Handle: Pointer read GetHandle;
     { Stream handle of the upload. }
     property StreamHandle: Pointer read FStreamHandle;

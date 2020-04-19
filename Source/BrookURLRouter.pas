@@ -256,8 +256,10 @@ type
     FOnRoute: TBrookURLRouterRouteEvent;
     FOnActivate: TNotifyEvent;
     FOnDeactivate: TNotifyEvent;
+    function GetItem(AIndex: Integer): TBrookURLRoute;
     function IsActiveStored: Boolean;
     procedure SetActive(AValue: Boolean);
+    procedure SetItem(AIndex: Integer; AValue: TBrookURLRoute);
     procedure SetRoutes(AValue: TBrookURLRoutes);
     procedure InternalLibUnloadEvent(ASender: TObject);
   protected
@@ -278,6 +280,16 @@ type
     constructor Create(AOwner: TComponent); override;
     { Destroys an instance of @code(TBrookURLRouter). }
     destructor Destroy; override;
+    { Creates an enumerator to iterate the routes though @code(for..in). }
+    function GetEnumerator: TBrookURLRoutesEnumerator;
+    { Adds a new item to the routes list.
+      @returns(Route item.) }
+    function Add: TBrookURLRoute; inline;
+    { Removes an item from the routes list by its pattern.
+      @param(APattern[in] Route name.) }
+    procedure Remove(const APattern: string); inline;
+    { Clears the routes list. }
+    procedure Clear; inline;
     { Enabled the router component. }
     procedure Open;
     { Disables the router component. }
@@ -301,6 +313,9 @@ type
       @param(AResponse[in] Response object.) }
     procedure Route(ASender: TObject; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse); overload; virtual;
+    { Gets/sets a route from/to the routes list by its index. }
+    property Items[AIndex: Integer]: TBrookURLRoute read GetItem
+      write SetItem; default;
   published
     { Enabled/disables the router component. }
     property Active: Boolean read FActive write SetActive stored IsActiveStored;
@@ -789,6 +804,11 @@ begin
   Result := TBrookURLRoutes.Create(Self);
 end;
 
+function TBrookURLRouter.GetEnumerator: TBrookURLRoutesEnumerator;
+begin
+  Result := TBrookURLRoutesEnumerator.Create(FRoutes);
+end;
+
 procedure TBrookURLRouter.InternalLibUnloadEvent(ASender: TObject);
 begin
   TBrookURLRouter(ASender).Close;
@@ -828,6 +848,31 @@ end;
 function TBrookURLRouter.GetHandle: Pointer;
 begin
   Result := FHandle;
+end;
+
+function TBrookURLRouter.Add: TBrookURLRoute;
+begin
+  Result := FRoutes.Add;
+end;
+
+procedure TBrookURLRouter.Remove(const APattern: string);
+begin
+  FRoutes.Remove(APattern);
+end;
+
+procedure TBrookURLRouter.Clear;
+begin
+  FRoutes.Clear;
+end;
+
+function TBrookURLRouter.GetItem(AIndex: Integer): TBrookURLRoute;
+begin
+  Result := FRoutes[AIndex];
+end;
+
+procedure TBrookURLRouter.SetItem(AIndex: Integer; AValue: TBrookURLRoute);
+begin
+  FRoutes[AIndex] := AValue;
 end;
 
 procedure TBrookURLRouter.SetRoutes(AValue: TBrookURLRoutes);

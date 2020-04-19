@@ -825,6 +825,72 @@ begin
   end;
 end;
 
+procedure Test_URLRouterAdd;
+var
+  RT: TBrookURLRouter;
+  R: TBrookURLRoute;
+begin
+  RT := TBrookURLRouter.Create(nil);
+  try
+    Assert(RT.Routes.Count = 0);
+    R := RT.Add;
+    Assert(Assigned(R));
+    R := RT.Add;
+    Assert(Assigned(R));
+    R := RT.Add;
+    Assert(Assigned(R));
+    Assert(RT.Routes.Count = 3);
+  finally
+    RT.Free;
+  end;
+end;
+
+procedure Test_URLRouterRemove;
+var
+  RT: TBrookURLRouter;
+  R: TBrookURLRoute;
+begin
+  RT := TBrookURLRouter.Create(nil);
+  try
+    Assert(RT.Routes.Count = 0);
+    R := RT.Add;
+    Assert(Assigned(R));
+    R := RT.Add;
+    Assert(Assigned(R));
+    R := RT.Add;
+    Assert(Assigned(R));
+    Assert(RT.Routes.Count = 3);
+    RT.Remove('/route1');
+    RT.Remove('/route2');
+    RT.Remove('/route3');
+    Assert(RT.Routes.Count = 0);
+  finally
+    RT.Free;
+  end;
+end;
+
+procedure Test_URLRouterClear;
+var
+  RT: TBrookURLRouter;
+  R: TBrookURLRoute;
+begin
+  RT := TBrookURLRouter.Create(nil);
+  try
+    Assert(RT.Routes.Count = 0);
+    R := RT.Add;
+    Assert(Assigned(R));
+    R := RT.Add;
+    Assert(Assigned(R));
+    R := RT.Add;
+    Assert(Assigned(R));
+    Assert(RT.Routes.Count = 3);
+    RT.Clear;
+    Assert(RT.Routes.Count = 0);
+  finally
+    RT.Free;
+  end;
+end;
+
 procedure Test_URLRouterOpen;
 var
   R: TBrookURLRouter;
@@ -935,6 +1001,23 @@ begin
   end;
 end;
 
+procedure Test_URLRouterItems;
+var
+  R: TBrookURLRouter;
+begin
+  R := TBrookURLRouter.Create(nil);
+  try
+    R.Add;
+    R.Add;
+    R.Add;
+    Assert(R[0].Pattern = '/route1');
+    Assert(R[1].Pattern = '/route2');
+    Assert(R[2].Pattern = '/route3');
+  finally
+    R.Free;
+  end;
+end;
+
 procedure Test_URLRouterActive;
 var
   R: TBrookURLRouter;
@@ -957,12 +1040,7 @@ var
 begin
   R := TBrookURLRouter.Create(nil);
   try
-    R.Routes.Add;
-    R.Routes.Add;
-    R.Routes.Add;
-    Assert(R.Routes[0].Pattern = '/route1');
-    Assert(R.Routes[1].Pattern = '/route2');
-    Assert(R.Routes[2].Pattern = '/route3');
+    Assert(Assigned(R.Routes));
   finally
     R.Free;
   end;
@@ -1079,10 +1157,14 @@ begin
     Test_URLRoutesClear;
     Test_URLRoutesItems(RS);
     Test_URLRouterCreate;
+    Test_URLRouterAdd;
+    Test_URLRouterRemove;
+    Test_URLRouterClear;
     Test_URLRouterOpen;
     Test_URLRouterClose;
     Test_URLRouterDispatchRoute;
     Test_URLRouterRoute;
+    Test_URLRouterItems;
     Test_URLRouterActive;
     Test_URLRouterRoutes;
     Test_URLRouterOnRoute;
