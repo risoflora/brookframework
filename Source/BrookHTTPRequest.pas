@@ -37,16 +37,34 @@ uses
   libsagui,
   BrookUtility,
   BrookHandledClasses,
+  BrookExtra,
   BrookString,
   BrookStringMap,
-  BrookHTTPUploads;
+  BrookHTTPUploads,
+  BrookHTTPResponse;
 
 type
+  TBrookHTTPRequest = class;
+
+  { Procedure signature used to trigger isolated requests. }
+  TBrookHTTPRequestIsolatedProc = procedure(ARequest: TBrookHTTPRequest;
+    AResponse: TBrookHTTPResponse; AUserData: Pointer);
+
+{$IFNDEF FPC}
+
+  { Procedure anonymous signature used to trigger isolated requests. }
+  TBrookHTTPRequestIsolatedAnonymousProc = reference to procedure(
+    ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
+    AUserData: Pointer);
+
+{$ENDIF}
+
   { Class which provides headers, cookies, query-string, fields, payloads,
     uploads and other data sent by the client. }
   TBrookHTTPRequest = class(TBrookHandledPersistent)
   private
     FUploads: TBrookHTTPUploads;
+    FServerHandle: Pointer;
     FHeaders: TBrookStringMap;
     FCookies: TBrookStringMap;
     FParams: TBrookStringMap;
@@ -65,12 +83,24 @@ type
     function GetReferer: string; inline;
     function GetUserAgent: string; inline;
   protected
+    class procedure DoRequestIsolatedProcCallback(Acls: Pcvoid;
+      Areq: Psg_httpreq; Ares: Psg_httpres); cdecl; static;
+{$IFNDEF FPC}
+    class procedure DoRequestIsolatedAnonymousProcCallback(Acls: Pcvoid;
+      Areq: Psg_httpreq; Ares: Psg_httpres); cdecl; static;
+{$ENDIF}
+    class function CreateRequest(AHandle: Pointer): TBrookHTTPRequest; virtual;
+    class function CreateResponse(AHandle: Pointer): TBrookHTTPResponse; virtual;
     function CreateUploads(AHandle: Pointer): TBrookHTTPUploads; virtual;
     function CreateHeaders(AHandle: Pointer): TBrookStringMap; virtual;
     function CreateCookies(AHandle: Pointer): TBrookStringMap; virtual;
     function CreateParams(AHandle: Pointer): TBrookStringMap; virtual;
     function CreateFields(AHandle: Pointer): TBrookStringMap; virtual;
     function CreatePayload(AHandle: Pointer): TBrookString; virtual;
+    procedure HandleRequestError(ARequest: TBrookHTTPRequest;
+      AResponse: TBrookHTTPResponse; AException: Exception);
+    procedure DoRequestError(ASender: TObject; ARequest: TBrookHTTPRequest;
+      AResponse: TBrookHTTPResponse; AException: Exception); virtual;
     function GetHandle: Pointer; override;
     function GetUserData: Pointer; virtual;
     procedure SetUserData(AValue: Pointer); virtual;
@@ -91,6 +121,24 @@ type
     function IsCachable: Boolean; inline;
     { Checks if the request was done by an Ajax client. }
     function IsXhr: Boolean; inline;
+    { Isolates a request from the main event loop to an own dedicated thread,
+      bringing it back when the request finishes.
+      @param(AProc[in] Procedure to handle requests and responses isolated from
+      the main event loop.)
+      @param(AUserData[in] User-defined data.) }
+    procedure Isolate(AProc: TBrookHTTPRequestIsolatedProc;
+      AUserData: Pointer = nil);{$IFNDEF FPC}overload;{$ENDIF}virtual;
+{$IFNDEF FPC}
+    { Isolates a request from the main event loop to an own dedicated thread,
+      bringing it back when the request finishes.
+      @param(AProc[in] Anonymous Procedure to handle requests and responses
+      isolated from the main event loop.)
+      @param(AUserData[in] User-defined data.) }
+    procedure Isolate(const AProc: TBrookHTTPRequestIsolatedAnonymousProc;
+      AUserData: Pointer = nil); overload; virtual;
+{$ENDIF}
+    { Reference to the server instance. }
+    property ServerHandle: Pointer read FServerHandle;
     { Hash table containing the request headers. }
     property Headers: TBrookStringMap read FHeaders;
     { Hash table containing the request cookies. }
@@ -131,6 +179,32 @@ type
 
 implementation
 
+type
+
+  { TBrookHTTPReqIsolatedProcHolder }
+
+  TBrookHTTPReqIsolatedProcHolder<T> = class
+  private
+    FProc: T;
+    FUserData: Pointer;
+  public
+    constructor Create(const AProc: T; AUserData: Pointer);
+    property Proc: T read FProc;
+    property UserData: Pointer read FUserData;
+  end;
+
+{ TBrookHTTPReqIsolatedProcHolder }
+
+constructor TBrookHTTPReqIsolatedProcHolder<T>.Create(const AProc: T;
+  AUserData: Pointer);
+begin
+  inherited Create;
+  FProc := AProc;
+  FUserData := AUserData;
+end;
+
+{ TBrookHTTPRequest }
+
 constructor TBrookHTTPRequest.Create(AHandle: Pointer);
 begin
   inherited Create;
@@ -141,6 +215,7 @@ begin
   FParams := CreateParams(sg_httpreq_params(FHandle));
   FFields := CreateFields(sg_httpreq_fields(FHandle));
   FPayload := CreatePayload(sg_httpreq_payload(FHandle));
+  FServerHandle := sg_httpreq_srv(FHandle);
   FVersion := TMarshal.ToString(sg_httpreq_version(FHandle));
   FMethod := TMarshal.ToString(sg_httpreq_method(FHandle));
   FPath := TMarshal.ToString(sg_httpreq_path(FHandle));
@@ -159,6 +234,76 @@ begin
   FFields.Free;
   FPayload.Free;
   inherited Destroy;
+end;
+
+class procedure TBrookHTTPRequest.DoRequestIsolatedProcCallback(Acls: Pcvoid;
+  Areq: Psg_httpreq; Ares: Psg_httpres);
+var
+  VHolder: TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedProc>;
+  VReq: TBrookHTTPRequest;
+  VRes: TBrookHTTPResponse;
+begin
+  VHolder := Acls;
+  try
+    VReq := CreateRequest(Areq);
+    VRes := CreateResponse(Ares);
+    try
+      try
+        VHolder.Proc(VReq, VRes, VHolder.UserData);
+      except
+        on E: Exception do
+          VReq.HandleRequestError(VReq, VRes, E);
+      end;
+    finally
+      VRes.Free;
+      VReq.Free;
+    end;
+  finally
+    VHolder.Free;
+  end;
+end;
+
+{$IFNDEF FPC}
+
+class procedure TBrookHTTPRequest.DoRequestIsolatedAnonymousProcCallback(
+  Acls: Pcvoid; Areq: Psg_httpreq; Ares: Psg_httpres);
+var
+  VHolder: TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedAnonymousProc>;
+  VReq: TBrookHTTPRequest;
+  VRes: TBrookHTTPResponse;
+begin
+  VHolder := Acls;
+  try
+    VReq := CreateRequest(Areq);
+    VRes := CreateResponse(Ares);
+    try
+      try
+        VHolder.Proc(VReq, VRes, VHolder.UserData);
+      except
+        on E: Exception do
+          VReq.HandleRequestError(VReq, VRes, E);
+      end;
+    finally
+      VRes.Free;
+      VReq.Free;
+    end;
+  finally
+    VHolder.Free;
+  end;
+end;
+
+{$ENDIF}
+
+class function TBrookHTTPRequest.CreateRequest(
+  AHandle: Pointer): TBrookHTTPRequest;
+begin
+  Result := TBrookHTTPRequest.Create(AHandle);
+end;
+
+class function TBrookHTTPRequest.CreateResponse(
+  AHandle: Pointer): TBrookHTTPResponse;
+begin
+  Result := TBrookHTTPResponse.Create(AHandle);
 end;
 
 function TBrookHTTPRequest.CreateUploads(AHandle: Pointer): TBrookHTTPUploads;
@@ -194,6 +339,31 @@ function TBrookHTTPRequest.CreatePayload(AHandle: Pointer): TBrookString;
 begin
   Result := TBrookString.Create(AHandle);
 end;
+
+procedure TBrookHTTPRequest.HandleRequestError(ARequest: TBrookHTTPRequest;
+  AResponse: TBrookHTTPResponse; AException: Exception);
+begin
+  AResponse.Clear;
+  try
+    DoRequestError(Self, ARequest, AResponse, AException);
+  except
+    on E: Exception do
+      AResponse.Send(E.Message, BROOK_CT_TEXT_PLAIN, 500);
+  end;
+end;
+
+{$IFDEF FPC}
+ {$PUSH}{$WARN 5024 OFF}
+{$ENDIF}
+procedure TBrookHTTPRequest.DoRequestError(ASender: TObject;
+  ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
+  AException: Exception);
+begin
+  AResponse.Send(AException.Message, BROOK_CT_TEXT_PLAIN, 500);
+end;
+{$IFDEF FPC}
+ {$POP}
+{$ENDIF}
 
 function TBrookHTTPRequest.GetHandle: Pointer;
 begin
@@ -258,6 +428,42 @@ function TBrookHTTPRequest.IsXhr: Boolean;
 begin
   Result := SameText(FHeaders.Get('X-Requested-With'), 'xmlhttprequest');
 end;
+
+procedure TBrookHTTPRequest.Isolate(AProc: TBrookHTTPRequestIsolatedProc;
+  AUserData: Pointer);
+var
+  VHolder: TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedProc>;
+begin
+  SgLib.Check;
+  VHolder := TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedProc>.Create(AProc, AUserData);
+  try
+    SgLib.CheckLastError(sg_httpreq_isolate(FHandle,
+{$IFNDEF VER3_0}@{$ENDIF}DoRequestIsolatedProcCallback, VHolder));
+  except
+    VHolder.Free;
+    raise;
+  end;
+end;
+
+{$IFNDEF FPC}
+
+procedure TBrookHTTPRequest.Isolate(
+  const AProc: TBrookHTTPRequestIsolatedAnonymousProc; AUserData: Pointer);
+var
+  VHolder: TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedAnonymousProc>;
+begin
+  SgLib.Check;
+  VHolder := TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedAnonymousProc>.Create(AProc, AUserData);
+  try
+    SgLib.CheckLastError(sg_httpreq_isolate(FHandle,
+{$IFNDEF VER3_0}@{$ENDIF}DoRequestIsolatedAnonymousProcCallback, VHolder));
+  except
+    VHolder.Free;
+    raise;
+  end;
+end;
+
+{$ENDIF}
 
 procedure TBrookHTTPRequest.SetUserData(AValue: Pointer);
 begin

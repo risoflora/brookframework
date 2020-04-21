@@ -212,6 +212,7 @@ type
       AResponse: TBrookHTTPResponse);
     procedure Loaded; override;
     function GetHandle: Pointer; override;
+    function GetMHDHandle: Pointer; virtual;
     procedure DoError(ASender: TObject; AException: Exception); virtual;
     function DoAuthenticate(ASender: TObject;
       AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
@@ -239,6 +240,8 @@ type
     procedure Open;
     { Stops the HTTP(S) server. }
     procedure Close;
+    { Contains the MHD instance. }
+    property MHDHandle: Pointer read GetMHDHandle;
   published
     { Activates the HTTP(S) server. }
     property Active: Boolean read FActive write SetActive stored IsActiveStored;
@@ -585,6 +588,12 @@ end;
 function TBrookHTTPServer.GetHandle: Pointer;
 begin
   Result := FHandle;
+end;
+
+function TBrookHTTPServer.GetMHDHandle: Pointer;
+begin
+  SgLib.Check;
+  Result := sg_httpsrv_handle(FHandle);
 end;
 
 procedure TBrookHTTPServer.DoError(ASender: TObject;

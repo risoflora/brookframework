@@ -70,16 +70,16 @@ type
 {$ENDIF}
 
 const
-  SG_VERSION_MAJOR = 2;
+  SG_VERSION_MAJOR = 3;
 
-  SG_VERSION_MINOR = 5;
+  SG_VERSION_MINOR = 0;
 
-  SG_VERSION_PATCH = 5;
+  SG_VERSION_PATCH = 0;
 
   SG_VERSION_HEX = (SG_VERSION_MAJOR shl 16) or (SG_VERSION_MINOR shl 8) or
     SG_VERSION_PATCH;
 
-  SG_VERSION_MAJOR_STR = '2';
+  SG_VERSION_MAJOR_STR = '3';
 
   SG_ERR_SIZE = 256;
 
@@ -334,6 +334,8 @@ var
     overwritten: cbool): cint; cdecl;
 
 var
+  sg_httpreq_srv: function(req: Psg_httpreq): Psg_httpsrv; cdecl;
+
   sg_httpreq_headers: function(req: Psg_httpreq): PPsg_strmap; cdecl;
 
   sg_httpreq_cookies: function(req: Psg_httpreq): PPsg_strmap; cdecl;
@@ -357,6 +359,9 @@ var
   sg_httpreq_client: function(req: Psg_httpreq): Pcvoid; cdecl;
 
   sg_httpreq_tls_session: function(req: Psg_httpreq): Pcvoid; cdecl;
+
+  sg_httpreq_isolate: function(req: Psg_httpreq; cb: sg_httpreq_cb;
+    cls: Pcvoid): cint; cdecl;
 
   sg_httpreq_set_user_data: function(req: Psg_httpreq;
     data: Pcvoid): cint; cdecl;
@@ -495,6 +500,8 @@ var
     limit: cuint): cint; cdecl;
 
   sg_httpsrv_con_limit: function(srv: Psg_httpsrv): cuint; cdecl;
+
+  sg_httpsrv_handle: function(srv: Psg_httpsrv): Pcvoid; cdecl;
 
 type
   PPsg_entrypoint = ^Psg_entrypoint;
@@ -925,6 +932,7 @@ begin //FI:C101
     sg_httpupld_save := GetProcAddress(GHandle, 'sg_httpupld_save');
     sg_httpupld_save_as := GetProcAddress(GHandle, 'sg_httpupld_save_as');
 
+    sg_httpreq_srv := GetProcAddress(GHandle, 'sg_httpreq_srv');
     sg_httpreq_headers := GetProcAddress(GHandle, 'sg_httpreq_headers');
     sg_httpreq_cookies := GetProcAddress(GHandle, 'sg_httpreq_cookies');
     sg_httpreq_params := GetProcAddress(GHandle, 'sg_httpreq_params');
@@ -937,6 +945,7 @@ begin //FI:C101
     sg_httpreq_uploads := GetProcAddress(GHandle, 'sg_httpreq_uploads');
     sg_httpreq_client := GetProcAddress(GHandle, 'sg_httpreq_client');
     sg_httpreq_tls_session := GetProcAddress(GHandle, 'sg_httpreq_tls_session');
+    sg_httpreq_isolate := GetProcAddress(GHandle, 'sg_httpreq_isolate');
     sg_httpreq_set_user_data := GetProcAddress(GHandle, 'sg_httpreq_set_user_data');
     sg_httpreq_user_data := GetProcAddress(GHandle, 'sg_httpreq_user_data');
 
@@ -979,6 +988,7 @@ begin //FI:C101
     sg_httpsrv_con_timeout := GetProcAddress(GHandle, 'sg_httpsrv_con_timeout');
     sg_httpsrv_set_con_limit := GetProcAddress(GHandle, 'sg_httpsrv_set_con_limit');
     sg_httpsrv_con_limit := GetProcAddress(GHandle, 'sg_httpsrv_con_limit');
+    sg_httpsrv_handle := GetProcAddress(GHandle, 'sg_httpsrv_handle');
 
     sg_entrypoint_name := GetProcAddress(GHandle, 'sg_entrypoint_name');
     sg_entrypoint_set_user_data := GetProcAddress(GHandle, 'sg_entrypoint_set_user_data');
@@ -1090,6 +1100,7 @@ begin //FI:C101
     sg_httpupld_save := nil;
     sg_httpupld_save_as := nil;
 
+    sg_httpreq_srv := nil;
     sg_httpreq_headers := nil;
     sg_httpreq_cookies := nil;
     sg_httpreq_params := nil;
@@ -1102,6 +1113,7 @@ begin //FI:C101
     sg_httpreq_uploads := nil;
     sg_httpreq_client := nil;
     sg_httpreq_tls_session := nil;
+    sg_httpreq_isolate := nil;
     sg_httpreq_set_user_data := nil;
     sg_httpreq_user_data := nil;
 
@@ -1144,6 +1156,7 @@ begin //FI:C101
     sg_httpsrv_con_timeout := nil;
     sg_httpsrv_set_con_limit := nil;
     sg_httpsrv_con_limit := nil;
+    sg_httpsrv_handle := nil;
 
     sg_entrypoint_name := nil;
     sg_entrypoint_set_user_data := nil;
