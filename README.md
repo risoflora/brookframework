@@ -1,5 +1,5 @@
-[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-green.svg)](https://github.com/risoflora/brookframework/blob/master/LICENSE)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/risoflora/brookframework?color=green)
+[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-lemmon.svg)](https://github.com/risoflora/brookframework/blob/master/LICENSE)
+[![GitHub releases](https://img.shields.io/github/v/release/risoflora/brookframework?color=lemmon)](https://github.com/risoflora/brookframework/releases)
 
 # Overview
 
