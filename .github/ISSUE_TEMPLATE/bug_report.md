@@ -19,8 +19,9 @@ Raised error and/or generated log.
 
 OS, compiler and Brook version to reproduce the problem, e.g.:
 
-- openSUSE Tumbleweed
-- Delphi/FPC N.N.N x86_64
+- Windows
+- Delphi N.N.N
 - Brook N.N.N
+- Sagui N.N.N x86_64
 
 Any other information here. If applicable, a screenshot to help explain the problem.

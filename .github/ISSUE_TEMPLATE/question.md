@@ -1,6 +1,6 @@
 ---
 name: Question
-about: The issue tracker is not for questions. Please ask questions on https://stackoverflow.com/questions/tagged/brookframework.
+about: The issue tracker is not for questions. Please ask questions on [StackOverflow/brookframework](https://stackoverflow.com/questions/tagged/brookframework).
 labels: question
 
 ---
