@@ -262,7 +262,7 @@ begin
   SgLib.Check;
   P[0] := 0;
   sg_strerror(AErrorNum, @P[0], AErrorLen);
-  AErrorMsg := TMarshal.ToString(@P[0]);
+  AErrorMsg := TMarshal.ToString(@P[0]).TrimRight;
 end;
 
 class function Sagui.StrError(AErrorNum: Integer): string;

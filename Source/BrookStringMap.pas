@@ -480,8 +480,7 @@ begin
     Exit;
   M.Code := @AIterator;
   M.Data := AData;
-  R := sg_strmap_iter(FHandle^,
-{$IFNDEF VER3_0}@{$ENDIF}DoIterate, @M);
+  R := sg_strmap_iter(FHandle^, DoIterate, @M);
   if R <> -1 then
     SgLib.CheckLastError(R);
 end;
@@ -494,9 +493,12 @@ begin
   SgLib.Check;
   M.Code := @AComparator;
   M.Data := AData;
-  SgLib.CheckLastError(sg_strmap_sort(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoSort, @M));
+  SgLib.CheckLastError(sg_strmap_sort(FHandle, DoSort, @M));
 end;
+
+{$IFDEF FPC}
+ {$PUSH}{$WARN 6058 OFF}
+{$ENDIF}
 
 procedure TBrookStringMap.Fetch(AObject: TObject; const AAllowed,
   AIgnored: array of string);
@@ -515,6 +517,10 @@ begin
       SetPropValue(AObject, VProp, VPair.Value);
   end;
 end;
+
+{$IFDEF FPC}
+ {$POP}
+{$ENDIF}
 
 procedure TBrookStringMap.Fetch(AObject: TObject);
 begin

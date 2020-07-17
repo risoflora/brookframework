@@ -446,20 +446,18 @@ end;
 
 constructor TBrookStringReader.Create(AEncoding: TEncoding;
   const AString: string; ABufferSize: Integer);
-{$IFNDEF FPC}
 var
-  VEncoding: TEncoding;
-{$ENDIF}
+  VStream: TStream;
 begin
   inherited Create;
 {$IFNDEF FPC}
   if Assigned(AEncoding) then
-    VEncoding := AEncoding
+    VStream := TStringStream.Create(AString, AEncoding)
   else
-    VEncoding := TEncoding.Default;
 {$ENDIF}
-  FProxyReader := TBrookStreamReader.Create(AEncoding, TStringStream.Create(
-    AString{$IFNDEF FPC}, VEncoding{$ENDIF}), ABufferSize, True);
+    VStream := TStringStream.Create(AString);
+  FProxyReader := TBrookStreamReader.Create(AEncoding, VStream,
+    ABufferSize, True);
 end;
 
 constructor TBrookStringReader.Create(AEncoding: TEncoding;

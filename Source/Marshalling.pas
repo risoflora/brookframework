@@ -29,11 +29,6 @@ unit Marshalling;
 
 {$IFDEF FPC}
  {$MODE DELPHI}
- {$IFDEF VER3_0}
-  {$PUSH}{$MACRO ON}
-  {$DEFINE MarshaledAString := PAnsiChar}
-  {$POP}
- {$ENDIF}
 {$ENDIF}
 
 interface
