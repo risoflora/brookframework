@@ -31,12 +31,6 @@ unit libsagui;
 {$IFDEF FPC}
  {$MODE DELPHI}
  {$PACKRECORDS C}
- {$IFDEF VER3_0}
-  {$PUSH}{$MACRO ON}
-  {$DEFINE MarshaledAString := PAnsiChar}
-  {$DEFINE EInvalidOpException := Exception}
-  {$POP}
- {$ENDIF}
 {$ENDIF}
 
 interface
@@ -45,6 +39,7 @@ uses
   RTLConsts,
   SysUtils,
   StrUtils,
+  Math,
   Classes,
   Contnrs,
 {$IFDEF MSWINDOWS}
@@ -55,14 +50,7 @@ uses
 {$ENDIF}
   SyncObjs;
 
-{$IFDEF FPC}
- {$IFDEF VER3_0}
-const
-  NilHandle = DynLibs.NilHandle;
-type
-  TLibHandle = DynLibs.TLibHandle;
- {$ENDIF}
-{$ELSE}
+{$IFNDEF FPC}
 const
   NilHandle = HMODULE(0);
 type
@@ -72,7 +60,7 @@ type
 const
   SG_VERSION_MAJOR = 3;
 
-  SG_VERSION_MINOR = 0;
+  SG_VERSION_MINOR = 1;
 
   SG_VERSION_PATCH = 0;
 
@@ -124,6 +112,7 @@ type
   cuint64_t = UInt64;
   csize_t = NativeUInt;
   cssize_t = NativeInt;
+  cdouble = Double;
   ctime_t = NativeInt;
   Pcvoid = Pointer;
   PPcvoid = PPointer;
@@ -135,6 +124,10 @@ type
   sg_realloc_func = function(ptr: Pcvoid; size: csize_t): Pcvoid; cdecl;
 
   sg_free_func = procedure(ptr: Pcvoid); cdecl;
+
+  sg_pow_func = function(const x: cdouble; const y: cdouble): cdouble; cdecl;
+
+  sg_fmod_func = function(const x: cdouble; const y: cdouble): cdouble; cdecl;
 
   sg_err_cb = procedure(cls: Pcvoid; const err: Pcchar); cdecl;
 
@@ -166,6 +159,9 @@ var
   sg_realloc: function(ptr: Pcvoid; size: csize_t): Pcvoid; cdecl;
 
   sg_free: procedure(ptr: Pcvoid); cdecl;
+
+  sg_math_set: function(pow_func: sg_pow_func;
+    fmod_func: sg_fmod_func): cint; cdecl;
 
   sg_strerror: function(errnum: cint; errmsg: Pcchar;
     errlen: csize_t): Pcchar; cdecl;
@@ -382,10 +378,10 @@ var
     const content_type: Pcchar; status: cuint): cint; cdecl;
 
 function sg_httpres_download(res: Psg_httpres;
-  const filename: Pcchar): cint; inline;
+  const filename: Pcchar; status: cuint): cint; inline;
 
 function sg_httpres_render(res: Psg_httpres;
-  const filename: Pcchar): cint; inline;
+  const filename: Pcchar; status: cuint): cint; inline;
 
 var
   sg_httpres_sendfile2: function(res: Psg_httpres; size: cuint64_t;
@@ -418,10 +414,10 @@ var
     handle: Pcvoid; free_cb: sg_free_cb; status: cuint): cint; cdecl;
 
 function sg_httpres_zdownload(res: Psg_httpres;
-  const filename: Pcchar): cint; inline;
+  const filename: Pcchar; status: cuint): cint; inline;
 
 function sg_httpres_zrender(res: Psg_httpres;
-  const filename: Pcchar): cint; inline;
+  const filename: Pcchar; status: cuint): cint; inline;
 
 var
   sg_httpres_zsendfile2: function(res: Psg_httpres; level: cint;
@@ -622,6 +618,72 @@ var
     user_data: Pcvoid): cint; cdecl;
 
 type
+  Psg_expr = ^sg_expr;
+  sg_expr = record
+  end;
+
+type
+  sg_expr_err_type = cenum;
+const
+  SG_EXPR_ERR_UNKNOWN = 0;
+  SG_EXPR_ERR_UNEXPECTED_NUMBER = 1;
+  SG_EXPR_ERR_UNEXPECTED_WORD = 2;
+  SG_EXPR_ERR_UNEXPECTED_PARENS = 3;
+  SG_EXPR_ERR_MISSING_OPERAND = 4;
+  SG_EXPR_ERR_UNKNOWN_OPERATOR = 5;
+  SG_EXPR_ERR_INVALID_FUNC_NAME = 6;
+  SG_EXPR_ERR_BAD_PARENS = 7;
+  SG_EXPR_ERR_TOO_FEW_FUNC_ARGS = 8;
+  SG_EXPR_ERR_FIRST_ARG_IS_NOT_VAR = 9;
+  SG_EXPR_ERR_BAD_VARIABLE_NAME = 10;
+  SG_EXPR_ERR_BAD_ASSIGNMENT = 11;
+
+type
+  Psg_expr_argument = ^sg_expr_argument;
+  sg_expr_argument = record
+  end;
+
+type
+  sg_expr_func = function(cls: Pcvoid; args: Psg_expr_argument;
+    const identifier: Pcchar): cdouble; cdecl;
+
+type
+  Psg_expr_extension = ^sg_expr_extension;
+  sg_expr_extension = record
+    func: sg_expr_func;
+    identifier: Pcchar;
+    cls: Pcvoid;
+  end;
+
+var
+  sg_expr_new: function: Psg_expr; cdecl;
+
+  sg_expr_free: procedure(expr: Psg_expr); cdecl;
+
+  sg_expr_compile: function(expr: Psg_expr; const str: Pcchar; len: csize_t;
+    extensions: Psg_expr_extension): cint; cdecl;
+
+  sg_expr_clear: function(expr: Psg_expr): cint; cdecl;
+
+  sg_expr_eval: function(expr: Psg_expr): cdouble; cdecl;
+
+  sg_expr_var: function(expr: Psg_expr; const name: Pcchar;
+    len: csize_t): cdouble; cdecl;
+
+  sg_expr_set_var: function(expr: Psg_expr; const name: Pcchar; len: csize_t;
+    const val: cdouble): cint; cdecl;
+
+  sg_expr_arg: function(args: Psg_expr_argument; index: cint): cdouble; cdecl;
+
+  sg_expr_near: function(expr: Psg_expr): cint; cdecl;
+
+  sg_expr_err: function(expr: Psg_expr): sg_expr_err_type; cdecl;
+
+  sg_expr_strerror: function(expr: Psg_expr): Pcchar; cdecl;
+
+  sg_expr_calc: function(const str: Pcchar; len: csize_t): cdouble; cdecl;
+
+type
 
   { ESgLibNotLoaded }
 
@@ -631,22 +693,38 @@ type
 
   ESgUnloadEvent = class(Exception);
 
+  { TSgUnloadEvents }
+
+  TSgUnloadEvents = class sealed
+  private
+    FCS: TCriticalSection;
+    FList: TObjectList;
+  protected
+    property CS: TCriticalSection read FCS;
+    property List: TObjectList read FList;
+  public
+    constructor Create(ACS: TCriticalSection); virtual;
+    destructor Destroy; override;
+    procedure Add(AEvent: TNotifyEvent; ASender: TObject); virtual;
+    procedure Remove(AEvent: TNotifyEvent); virtual;
+    procedure Clear; virtual;
+    procedure Call; virtual;
+  end;
+
   { SgLib }
 
   SgLib = record
   private class var
     GCS: TCriticalSection;
-    GUnloadEvents: TObjectList;
+    GUnloadEvents: TSgUnloadEvents;
     GLastName: TFileName;
     GHandle: TLibHandle;
   private
-    class procedure CallUnloadEvents; static;
+    class function InternalLoad(
+      const AName: TFileName): TLibHandle; static;
   public
     class procedure Init; static;
     class procedure Done; static;
-    class procedure AddUnloadEvent(AEvent: TNotifyEvent;
-      ASender: TObject); static;
-    class procedure RemoveUnloadEvent(AEvent: TNotifyEvent); static;
     class function GetLastName: string; static;
     class procedure CheckVersion(AVersion: Integer); overload; static;
     class procedure CheckVersion; overload; static; inline;
@@ -655,8 +733,13 @@ type
     class function Unload: TLibHandle; static;
     class function IsLoaded: Boolean; static;
     class procedure Check; static;
+    class property UnloadEvents: TSgUnloadEvents read GUnloadEvents;
     class property Handle: TLibHandle read GHandle;
   end;
+
+function cpow(const X, Y: cdouble): cdouble; cdecl; inline;
+
+function cfmod(const X, Y: cdouble): cdouble; cdecl; inline;
 
 implementation
 
@@ -664,6 +747,16 @@ function SameNotifyEvent(AN1, AN2: TNotifyEvent): Boolean; inline;
 begin
   Result := (TMethod(AN1).Code = TMethod(AN2).Code) and
     (TMethod(AN1).Data = TMethod(AN2).Data);
+end;
+
+function cpow(const X, Y: cdouble): cdouble;
+begin
+  Result := Power(X, Y);
+end;
+
+function cfmod(const X, Y: cdouble): cdouble;
+begin
+  Result := X - Y * Int(X / Y);
 end;
 
 function sg_httpres_send(res: Psg_httpres; const val: Pcchar;
@@ -678,14 +771,16 @@ begin
   Result := sg_httpres_sendbinary(res, val, len, content_type, status);
 end;
 
-function sg_httpres_download(res: Psg_httpres; const filename: Pcchar): cint;
+function sg_httpres_download(res: Psg_httpres; const filename: Pcchar;
+  status: cuint): cint;
 begin
-  Result := sg_httpres_sendfile2(res, 0, 0, 0, filename, 'attachment', 200);
+  Result := sg_httpres_sendfile2(res, 0, 0, 0, filename, 'attachment', status);
 end;
 
-function sg_httpres_render(res: Psg_httpres; const filename: Pcchar): cint;
+function sg_httpres_render(res: Psg_httpres; const filename: Pcchar;
+  status: cuint): cint;
 begin
-  Result := sg_httpres_sendfile2(res, 0, 0, 0, filename, 'inline', 200);
+  Result := sg_httpres_sendfile2(res, 0, 0, 0, filename, 'inline', status);
 end;
 
 function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
@@ -700,14 +795,17 @@ begin
   Result := sg_httpres_zsendbinary(res, val, len, content_type, status);
 end;
 
-function sg_httpres_zdownload(res: Psg_httpres; const filename: Pcchar): cint;
+function sg_httpres_zdownload(res: Psg_httpres; const filename: Pcchar;
+  status: cuint): cint;
 begin
-  Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'attachment', 200);
+  Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'attachment',
+    status);
 end;
 
-function sg_httpres_zrender(res: Psg_httpres; const filename: Pcchar): cint;
+function sg_httpres_zrender(res: Psg_httpres; const filename: Pcchar;
+  status: cuint): cint;
 begin
-  Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'inline', 200);
+  Result := sg_httpres_zsendfile2(res, 1, 0, 0, 0, filename, 'inline', status);
 end;
 
 { TSgLibUnloadHolder }
@@ -731,77 +829,105 @@ begin
   FSender := ASender;
 end;
 
+{ TSgUnloadEvents }
+
+constructor TSgUnloadEvents.Create(ACS: TCriticalSection);
+begin
+  inherited Create;
+  if not Assigned(ACS) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['ACS']);
+  FList := TObjectList.Create;
+  FCS := ACS;
+end;
+
+destructor TSgUnloadEvents.Destroy;
+begin
+  Clear;
+  FList.Free;
+  inherited Destroy;
+end;
+
+procedure TSgUnloadEvents.Add(AEvent: TNotifyEvent; ASender: TObject);
+var
+  I: Integer;
+begin
+  if not Assigned(AEvent) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AEvent']);
+  FCS.Acquire;
+  try
+    for I := 0 to Pred(FList.Count) do
+      if SameNotifyEvent(TSgLibUnloadHolder(FList[I]).Event, AEvent) then
+        raise ESgUnloadEvent.Create(SSgUnloadEventAlreadyRegistered);
+    FList.Add(TSgLibUnloadHolder.Create(AEvent, ASender));
+  finally
+    FCS.Release;
+  end;
+end;
+
+procedure TSgUnloadEvents.Remove(AEvent: TNotifyEvent);
+var
+  I: Integer;
+begin
+  if not Assigned(AEvent) then
+    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AEvent']);
+  FCS.Acquire;
+  try
+    for I := 0 to Pred(FList.Count) do
+      if SameNotifyEvent(TSgLibUnloadHolder(FList[I]).Event, AEvent) then
+      begin
+        FList.Delete(I);
+        Break;
+      end;
+  finally
+    FCS.Release;
+  end;
+end;
+
+procedure TSgUnloadEvents.Clear;
+begin
+  FCS.Acquire;
+  try
+    FList.Clear;
+  finally
+    FCS.Release;
+  end;
+end;
+
+procedure TSgUnloadEvents.Call;
+var
+  H: TSgLibUnloadHolder;
+  I: Integer;
+begin
+  FCS.Acquire;
+  try
+    for I := Pred(FList.Count) downto 0 do
+    begin
+      H := FList[I] as TSgLibUnloadHolder;
+      H.Event(H.Sender);
+    end;
+  finally
+    FCS.Release;
+  end;
+end;
+
 { SgLib }
 
 class procedure SgLib.Init;
 begin
   GCS := TCriticalSection.Create;
-  GUnloadEvents := TObjectList.Create;
+  GUnloadEvents := TSgUnloadEvents.Create(GCS);
+  InternalLoad(SG_LIB_NAME);
 end;
 
 class procedure SgLib.Done;
 begin
   GCS.Acquire;
   try
+    Unload;
     GUnloadEvents.Free;
   finally
     GCS.Release;
     GCS.Free;
-  end;
-end;
-
-class procedure SgLib.CallUnloadEvents;
-var
-  H: TSgLibUnloadHolder;
-  I: Integer;
-begin
-  GCS.Acquire;
-  try
-    for I := Pred(GUnloadEvents.Count) downto 0 do
-    begin
-      H := GUnloadEvents[I] as TSgLibUnloadHolder;
-      H.Event(H.Sender);
-      GUnloadEvents.Delete(I);
-    end;
-  finally
-    GCS.Release;
-  end;
-end;
-
-class procedure SgLib.AddUnloadEvent(AEvent: TNotifyEvent;
-  ASender: TObject);
-var
-  I: Integer;
-begin
-  if not Assigned(AEvent) then
-    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AEvent']);
-  GCS.Acquire;
-  try
-    for I := 0 to Pred(GUnloadEvents.Count) do
-      if SameNotifyEvent(TSgLibUnloadHolder(GUnloadEvents[I]).Event, AEvent) then
-        raise ESgUnloadEvent.Create(SSgUnloadEventAlreadyRegistered);
-    GUnloadEvents.Add(TSgLibUnloadHolder.Create(AEvent, ASender));
-  finally
-    GCS.Release;
-  end;
-end;
-
-class procedure SgLib.RemoveUnloadEvent(AEvent: TNotifyEvent);
-var
-  I: Integer;
-begin
-  if not Assigned(AEvent) then
-    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AEvent']);
-  GCS.Acquire;
-  try
-    for I := 0 to Pred(GUnloadEvents.Count) do
-      if SameNotifyEvent(TSgLibUnloadHolder(GUnloadEvents[I]).Event, AEvent) then
-      begin
-        GUnloadEvents.Delete(I);
-        Break;
-      end;
-  finally
-    GCS.Release;
   end;
 end;
 
@@ -849,26 +975,20 @@ begin
 {$ELSE}
   S := TMarshal.ReadStringAsUtf8(TPtrWrapper.Create(@P[0]));
 {$ENDIF}
-  E := EOSError.Create(S);
+  E := EOSError.Create(S.TrimRight);
   E.ErrorCode := ALastError;
   raise E;
 end;
 
-class function SgLib.Load(const AName: TFileName): TLibHandle;
+class function SgLib.InternalLoad(const AName: TFileName): TLibHandle;
 begin //FI:C101
   GCS.Acquire;
   try
-    if AName = '' then
-      raise EArgumentException.Create(SSgLibEmptyName);
+    if GHandle <> NilHandle then
+      Exit(GHandle);
     GHandle := SafeLoadLibrary(AName);
     if GHandle = NilHandle then
-    begin
-{$IFDEF MSWINDOWS}
-      if GetLastError = ERROR_BAD_EXE_FORMAT then
-        raise ESgLibNotLoaded.CreateFmt(SSgLibInvalid, [AName]);
-{$ENDIF}
-      raise ESgLibNotLoaded.CreateFmt(SSgLibNotLoaded, [AName])
-    end;
+      Exit(NilHandle);
     GLastName := AName;
 
     sg_version := GetProcAddress(GHandle, 'sg_version');
@@ -881,6 +1001,7 @@ begin //FI:C101
     sg_alloc := GetProcAddress(GHandle, 'sg_alloc');
     sg_realloc := GetProcAddress(GHandle, 'sg_realloc');
     sg_free := GetProcAddress(GHandle, 'sg_free');
+    sg_math_set := GetProcAddress(GHandle, 'sg_math_set');
     sg_strerror := GetProcAddress(GHandle, 'sg_strerror');
     sg_is_post := GetProcAddress(GHandle, 'sg_is_post');
     sg_extract_entrypoint := GetProcAddress(GHandle, 'sg_extract_entrypoint');
@@ -1024,9 +1145,39 @@ begin //FI:C101
     sg_router_dispatch2 := GetProcAddress(GHandle, 'sg_router_dispatch2');
     sg_router_dispatch := GetProcAddress(GHandle, 'sg_router_dispatch');
 
+    sg_expr_new := GetProcAddress(GHandle, 'sg_expr_new');
+    sg_expr_free := GetProcAddress(GHandle, 'sg_expr_free');
+    sg_expr_compile := GetProcAddress(GHandle, 'sg_expr_compile');
+    sg_expr_clear := GetProcAddress(GHandle, 'sg_expr_clear');
+    sg_expr_eval := GetProcAddress(GHandle, 'sg_expr_eval');
+    sg_expr_var := GetProcAddress(GHandle, 'sg_expr_var');
+    sg_expr_set_var := GetProcAddress(GHandle, 'sg_expr_set_var');
+    sg_expr_arg := GetProcAddress(GHandle, 'sg_expr_arg');;
+    sg_expr_near := GetProcAddress(GHandle, 'sg_expr_near');
+    sg_expr_err := GetProcAddress(GHandle, 'sg_expr_err');
+    sg_expr_strerror := GetProcAddress(GHandle, 'sg_expr_strerror');
+    sg_expr_calc := GetProcAddress(GHandle, 'sg_expr_calc');
+
+    sg_math_set(cpow, cfmod);
+
     Result := GHandle;
   finally
     GCS.Release;
+  end;
+end;
+
+class function SgLib.Load(const AName: TFileName): TLibHandle;
+begin
+  if AName = '' then
+    raise EArgumentException.Create(SSgLibEmptyName);
+  Result := SgLib.InternalLoad(AName);
+  if Result = NilHandle then
+  begin
+{$IFDEF MSWINDOWS}
+    if GetLastError = ERROR_BAD_EXE_FORMAT then
+      raise ESgLibNotLoaded.CreateFmt(SSgLibInvalid, [AName]);
+{$ENDIF}
+    raise ESgLibNotLoaded.CreateFmt(SSgLibNotLoaded, [AName])
   end;
 end;
 
@@ -1036,7 +1187,7 @@ begin //FI:C101
   try
     if GHandle = NilHandle then
       Exit(NilHandle);
-    CallUnloadEvents;
+    UnloadEvents.Call;
     if not FreeLibrary(GHandle) then
       Exit(GHandle);
     GHandle := NilHandle;
@@ -1049,6 +1200,7 @@ begin //FI:C101
     sg_alloc := nil;
     sg_realloc := nil;
     sg_free := nil;
+    sg_math_set := nil;
     sg_strerror := nil;
     sg_is_post := nil;
     sg_extract_entrypoint := nil;
@@ -1190,6 +1342,19 @@ begin //FI:C101
     sg_router_free := nil;
     sg_router_dispatch2 := nil;
     sg_router_dispatch := nil;
+
+    sg_expr_new := nil;
+    sg_expr_free := nil;
+    sg_expr_compile := nil;
+    sg_expr_clear := nil;
+    sg_expr_eval := nil;
+    sg_expr_var := nil;
+    sg_expr_set_var := nil;
+    sg_expr_arg := nil;
+    sg_expr_near := nil;
+    sg_expr_err := nil;
+    sg_expr_strerror := nil;
+    sg_expr_calc := nil;
 
     Result := NilHandle;
   finally

@@ -64,7 +64,6 @@ type
     FHandle: Psg_httpres;
     FCompressed: Boolean;
     procedure SetCookies(AValue: TBrookHTTPCookies);
-    procedure InternalSendCookies; inline;
   protected
     class function DoStreamRead(Acls: Pcvoid; Aoffset: cuint64_t; Abuf: Pcchar;
       Asize: csize_t): cssize_t; cdecl; static;
@@ -158,11 +157,21 @@ type
     procedure SendAndRedirect(const AValue, ADestination,
       AContentType: string); overload; virtual;
     { Offer a file as download.
+      @param(AFileName[in] Path of the file to be sent.)
+      @param(AStatus[in] HTTP status code.) }
+    procedure Download(const AFileName: TFileName;
+      AStatus: Word); overload; virtual;
+    { Sends a file to be rendered.
+      @param(AFileName[in] Path of the file to be sent.)
+      @param(AStatus[in] HTTP status code.) }
+    procedure Render(const AFileName: TFileName;
+      AStatus: Word); overload; virtual;
+    { Offer a file as download.
       @param(AFileName[in] Path of the file to be sent.) }
-    procedure Download(const AFileName: TFileName); virtual;
+    procedure Download(const AFileName: TFileName); overload; virtual;
     { Sends a file to be rendered.
       @param(AFileName[in] Path of the file to be sent.) }
-    procedure Render(const AFileName: TFileName); virtual;
+    procedure Render(const AFileName: TFileName); overload; virtual;
     { Clears all headers, cookies, statuses and internal buffers of the response
       object. }
     procedure Clear; virtual;
@@ -187,8 +196,11 @@ begin
 end;
 
 destructor TBrookHTTPResponse.Destroy;
+var
+  C: TBrookHTTPCookie;
 begin
-  InternalSendCookies;
+  for C in FCookies do
+    FHeaders.Add('Set-Cookie', C.ToString);
   FCookies.Free;
   FHeaders.Free;
   inherited Destroy;
@@ -197,14 +209,6 @@ end;
 function TBrookHTTPResponse.GetHandle: Pointer;
 begin
   Result := FHandle;
-end;
-
-procedure TBrookHTTPResponse.InternalSendCookies;
-var
-  C: TBrookHTTPCookie;
-begin
-  for C in FCookies do
-    FHeaders.Add('Set-Cookie', C.ToString);
 end;
 
 procedure TBrookHTTPResponse.CheckAlreadySent(Aret: cint);
@@ -245,6 +249,7 @@ end;
 {$IFDEF FPC}
  {$PUSH}{$WARN 5024 OFF}
 {$ENDIF}
+
 class function TBrookHTTPResponse.DoStreamRead(
   Acls: Pcvoid; Aoffset: cuint64_t; //FI:O804
   Abuf: Pcchar; Asize: csize_t): cssize_t;
@@ -255,6 +260,7 @@ begin
   if Result < 0 then
     Result := sg_eor(True);
 end;
+
 {$IFDEF FPC}
  {$POP}
 {$ENDIF}
@@ -369,18 +375,16 @@ begin
   CheckStatus(AStatus);
   SgLib.Check;
   if AFreed then
-    FCb := {$IFNDEF VER3_0}@{$ENDIF}DoStreamFree
+    FCb := DoStreamFree
   else
     FCb := nil;
   if FCompressed then
   begin
-    R := sg_httpres_zsendstream(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
+    R := sg_httpres_zsendstream(FHandle, DoStreamRead, AStream, FCb, AStatus);
     CheckZLib(R);
   end
   else
-    R := sg_httpres_sendstream(FHandle, 0,
-{$IFNDEF VER3_0}@{$ENDIF}DoStreamRead, AStream, FCb, AStatus);
+    R := sg_httpres_sendstream(FHandle, 0, DoStreamRead, AStream, FCb, AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);
 end;
@@ -417,7 +421,8 @@ begin
   SendAndRedirect(AValue, ADestination, AContentType, 302);
 end;
 
-procedure TBrookHTTPResponse.Download(const AFileName: TFileName);
+procedure TBrookHTTPResponse.Download(const AFileName: TFileName;
+  AStatus: Word);
 var
   M: TMarshaller;
   R: cint;
@@ -425,11 +430,36 @@ begin
   SgLib.Check;
   if FCompressed then
   begin
-    R := sg_httpres_zdownload(FHandle, M.ToCString(AFileName));
+    R := sg_httpres_zdownload(FHandle, M.ToCString(AFileName), AStatus);
     CheckZLib(R);
   end
   else
-    R := sg_httpres_download(FHandle, M.ToCString(AFileName));
+    R := sg_httpres_download(FHandle, M.ToCString(AFileName), AStatus);
+  CheckAlreadySent(R);
+  if R = ENOENT then
+    raise EFileNotFoundException.Create(SFileNotFound);
+  SgLib.CheckLastError(R);
+end;
+
+procedure TBrookHTTPResponse.Download(const AFileName: TFileName);
+begin
+  Download(AFileName, 200);
+end;
+
+procedure TBrookHTTPResponse.Render(const AFileName: TFileName;
+  AStatus: Word);
+var
+  M: TMarshaller;
+  R: cint;
+begin
+  SgLib.Check;
+  if FCompressed then
+  begin
+    R := sg_httpres_zrender(FHandle, M.ToCString(AFileName), AStatus);
+    CheckZLib(R);
+  end
+  else
+    R := sg_httpres_render(FHandle, M.ToCString(AFileName), AStatus);
   CheckAlreadySent(R);
   if R = ENOENT then
     raise EFileNotFoundException.Create(SFileNotFound);
@@ -437,22 +467,8 @@ begin
 end;
 
 procedure TBrookHTTPResponse.Render(const AFileName: TFileName);
-var
-  M: TMarshaller;
-  R: cint;
 begin
-  SgLib.Check;
-  if FCompressed then
-  begin
-    R := sg_httpres_zrender(FHandle, M.ToCString(AFileName));
-    CheckZLib(R);
-  end
-  else
-    R := sg_httpres_render(FHandle, M.ToCString(AFileName));
-  CheckAlreadySent(R);
-  if R = ENOENT then
-    raise EFileNotFoundException.Create(SFileNotFound);
-  SgLib.CheckLastError(R);
+  Render(AFileName, 200);
 end;
 
 procedure TBrookHTTPResponse.Clear;

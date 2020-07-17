@@ -32,7 +32,6 @@ object frMain: TfrMain
   object btAddNow: TButton
     Align = Top
     Cursor = crHandPoint
-    Enabled = False
     Margins.Left = 4.000000000000000000
     Margins.Top = 4.000000000000000000
     Margins.Right = 4.000000000000000000
@@ -85,10 +84,5 @@ object frMain: TfrMain
     OnClick = btClearClick
     Left = 256
     Top = 40
-  end
-  object BrookLibraryLoader1: TBrookLibraryLoader
-    OnLoad = BrookLibraryLoader1Load
-    Left = 88
-    Top = 160
   end
 end

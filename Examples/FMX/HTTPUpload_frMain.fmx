@@ -139,10 +139,6 @@ object frMain: TfrMain
     OnError = BrookHTTPServer1Error
     OnStart = BrookHTTPServer1Start
     OnStop = BrookHTTPServer1Stop
-    Left = 280
-    Top = 120
-  end
-  object BrookLibraryLoader1: TBrookLibraryLoader
     Left = 152
     Top = 120
   end

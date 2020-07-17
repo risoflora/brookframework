@@ -41,8 +41,6 @@ uses
 resourcestring
   { Indicates not allowed operation when the library loader is loaded. }
   SBrookActiveLibLoader = 'Active library loader.';
-  { Indicates library already loaded by other loader. }
-  SBrookLibraryAlreadyLoaded = 'Library already loaded by other loader.';
 
 type
   { Class for dynamic library loading. }
@@ -63,10 +61,10 @@ type
     procedure SetActive(AValue: Boolean);
     procedure SetLibraryName(const AValue: TFileName);
     procedure InternalOpen; inline;
+    procedure InternalLibUnloadEvent(ASender: TObject);
   protected
     procedure Loaded; override;
     procedure CheckInactive; inline;
-    procedure CheckUnloaded; inline;
     function GetHandle: Pointer; override;
   public
     { Creates an instance of @code(TBrookLibraryLoader).
@@ -81,6 +79,8 @@ type
     class procedure Load; overload; static;
     { Unloads the library dynamically. }
     class procedure Unload; static;
+    { Checks if the library is already loaded. }
+    class function IsLoaded: Boolean; static;
     { Loads the library dynamically. }
     procedure Open; virtual;
     { Unloads the library dynamically. }
@@ -106,25 +106,30 @@ implementation
 constructor TBrookLibraryLoader.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
   FLibraryName := SG_LIB_NAME;
 end;
 
 destructor TBrookLibraryLoader.Destroy;
 begin
   Close;
+  SgLib.UnloadEvents.Remove(InternalLibUnloadEvent);
   inherited Destroy;
+end;
+
+procedure TBrookLibraryLoader.InternalLibUnloadEvent(ASender: TObject);
+begin
+  if Assigned(ASender) then
+  begin
+    FActive := False;
+    FVersion := '';
+  end;
 end;
 
 procedure TBrookLibraryLoader.CheckInactive;
 begin
   if not (csLoading in ComponentState) and Active then
     raise EInvalidOpException.Create(SBrookActiveLibLoader);
-end;
-
-procedure TBrookLibraryLoader.CheckUnloaded;
-begin
-  if not (csLoading in ComponentState) and SgLib.IsLoaded then
-    raise EInvalidOpException.Create(SBrookLibraryAlreadyLoaded);
 end;
 
 procedure TBrookLibraryLoader.InternalOpen;
@@ -176,14 +181,18 @@ begin
   SgLib.Unload;
 end;
 
+class function TBrookLibraryLoader.IsLoaded: Boolean;
+begin
+  Result := SgLib.IsLoaded;
+end;
+
 procedure TBrookLibraryLoader.SetActive(AValue: Boolean);
 begin
   if AValue = FActive then
     Exit;
   if csLoading in ComponentState then
   begin
-    if AValue then
-      CheckUnloaded;
+    SgLib.Unload;
     FActive := AValue;
   end
   else
@@ -217,8 +226,7 @@ procedure TBrookLibraryLoader.Open;
 begin
   if FActive then
     Exit;
-  if not FStreamedActive then
-    CheckUnloaded;
+  SgLib.Unload;
   InternalOpen;
 end;
 

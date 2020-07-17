@@ -36,7 +36,6 @@ program httpauth;
 
 uses
   SysUtils,
-  BrookLibraryLoader,
   BrookHTTPAuthentication,
   BrookHTTPRequest,
   BrookHTTPResponse,
@@ -74,7 +73,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with THTTPServer.Create(nil) do
   try
     Authenticated := True;

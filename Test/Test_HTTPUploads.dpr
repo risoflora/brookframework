@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -391,7 +391,7 @@ var
 begin
   UL := TBrookHTTPUploads.Create(FakeUploads);
   try
-    UL.First(U);
+    U := UL.First;
     Assert(U.Handle = FakeUploads);
   finally
     UL.Free;
@@ -405,7 +405,7 @@ var
 begin
   UL := TBrookHTTPUploads.Create(FakeUploads);
   try
-    UL.Next(U);
+    U := UL.Next;
     Assert(U.Handle = FakeUploads);
   finally
     UL.Free;

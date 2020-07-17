@@ -169,6 +169,8 @@ type
     property IsUploading: Boolean read FIsUploading;
     { List of the uploaded files. }
     property Uploads: TBrookHTTPUploads read FUploads;
+    { List of the uploaded files. This is an alias to proeprty @code(Uploads). }
+    property Files: TBrookHTTPUploads read FUploads;
     { Contains the socket handle of the client. }
     property Client: Pointer read FClient;
     { Contains the TLS session handle (GnuTLS). }
@@ -268,7 +270,8 @@ end;
 class procedure TBrookHTTPRequest.DoRequestIsolatedAnonymousProcCallback(
   Acls: Pcvoid; Areq: Psg_httpreq; Ares: Psg_httpres);
 var
-  VHolder: TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedAnonymousProc>;
+  VHolder: TBrookHTTPReqIsolatedProcHolder<
+    TBrookHTTPRequestIsolatedAnonymousProc>;
   VReq: TBrookHTTPRequest;
   VRes: TBrookHTTPResponse;
 begin
@@ -355,12 +358,14 @@ end;
 {$IFDEF FPC}
  {$PUSH}{$WARN 5024 OFF}
 {$ENDIF}
+
 procedure TBrookHTTPRequest.DoRequestError(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
   AException: Exception);
 begin
   AResponse.Send(AException.Message, BROOK_CT_TEXT_PLAIN, 500);
 end;
+
 {$IFDEF FPC}
  {$POP}
 {$ENDIF}
@@ -435,10 +440,11 @@ var
   VHolder: TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedProc>;
 begin
   SgLib.Check;
-  VHolder := TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedProc>.Create(AProc, AUserData);
+  VHolder := TBrookHTTPReqIsolatedProcHolder<
+    TBrookHTTPRequestIsolatedProc>.Create(AProc, AUserData);
   try
     SgLib.CheckLastError(sg_httpreq_isolate(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoRequestIsolatedProcCallback, VHolder));
+      DoRequestIsolatedProcCallback, VHolder));
   except
     VHolder.Free;
     raise;
@@ -450,13 +456,15 @@ end;
 procedure TBrookHTTPRequest.Isolate(
   const AProc: TBrookHTTPRequestIsolatedAnonymousProc; AUserData: Pointer);
 var
-  VHolder: TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedAnonymousProc>;
+  VHolder: TBrookHTTPReqIsolatedProcHolder<
+    TBrookHTTPRequestIsolatedAnonymousProc>;
 begin
   SgLib.Check;
-  VHolder := TBrookHTTPReqIsolatedProcHolder<TBrookHTTPRequestIsolatedAnonymousProc>.Create(AProc, AUserData);
+  VHolder := TBrookHTTPReqIsolatedProcHolder<
+    TBrookHTTPRequestIsolatedAnonymousProc>.Create(AProc, AUserData);
   try
     SgLib.CheckLastError(sg_httpreq_isolate(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoRequestIsolatedAnonymousProcCallback, VHolder));
+      DoRequestIsolatedAnonymousProcCallback, VHolder));
   except
     VHolder.Free;
     raise;

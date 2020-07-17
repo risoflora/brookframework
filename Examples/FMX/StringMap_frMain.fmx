@@ -10,7 +10,6 @@ object frMain: TfrMain
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnShow = FormShow
   DesignerMasterStyle = 0
   object pnTop: TPanel
     Align = Top
@@ -88,9 +87,5 @@ object frMain: TfrMain
       Header = 'Value'
       Size.Width = 120.000000000000000000
     end
-  end
-  object BrookLibraryLoader1: TBrookLibraryLoader
-    Left = 88
-    Top = 104
   end
 end

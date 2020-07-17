@@ -386,14 +386,7 @@ var
   VSegments: ^TArray<string>;
 begin
   VSegments := Acls;
-  { TODO: use Concat() below. }
-{$IFDEF VER3_0}
-  { TODO: use 'Aindex' and remove -w5024. }
-  SetLength(VSegments^, Succ(Length(VSegments^)));
-  VSegments^[High(VSegments^)] := TMarshal.ToString(Asegment);
-{$ELSE}
-  VSegments^ := VSegments^ + [TMarshal.ToString(Asegment)];
-{$ENDIF}
+  VSegments^ := Concat(VSegments^, [TMarshal.ToString(Asegment)]);
   Result := 0;
 end;
 
@@ -433,8 +426,8 @@ begin
   if not Assigned(FHandle) then
     Exit(nil);
   SgLib.Check;
-  SgLib.CheckLastError(sg_route_segments_iter(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoSegmentsIterCallback, @Result));
+  SgLib.CheckLastError(sg_route_segments_iter(FHandle, DoSegmentsIterCallback,
+    @Result));
 end;
 
 function TBrookURLRoute.GetVariables: TBrookStringMap;
@@ -444,8 +437,8 @@ begin
     Exit;
   FVariables.Clear;
   SgLib.Check;
-  SgLib.CheckLastError(sg_route_vars_iter(FHandle,
-{$IFNDEF VER3_0}@{$ENDIF}DoVarsIterCallback, FVariables));
+  SgLib.CheckLastError(sg_route_vars_iter(FHandle, DoVarsIterCallback,
+    FVariables));
 end;
 
 function TBrookURLRoute.GetRawPattern: string;
@@ -607,13 +600,13 @@ end;
 constructor TBrookURLRoutes.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, GetRouterClass);
-  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
+  SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
 end;
 
 destructor TBrookURLRoutes.Destroy;
 begin
   Unprepare;
-  SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
+  SgLib.UnloadEvents.Remove(InternalLibUnloadEvent);
   inherited Destroy;
 end;
 
@@ -634,7 +627,8 @@ end;
 
 procedure TBrookURLRoutes.InternalLibUnloadEvent(ASender: TObject);
 begin
-  TBrookURLRoutes(ASender).Unprepare;
+  if Assigned(ASender) then
+    TBrookURLRoutes(ASender).Unprepare;
 end;
 
 function TBrookURLRoutes.FindDefault: TBrookURLRoute;
@@ -667,7 +661,7 @@ var
 begin
   P[0] := 0;
   R := sg_routes_add2(@FHandle, @H, M.ToCNullableString(GetRoutePattern(ARoute)),
-    @P[0], SG_ERR_SIZE, {$IFNDEF VER3_0}@{$ENDIF}ARoute.DoRouteCallback, ARoute);
+    @P[0], SG_ERR_SIZE, ARoute.DoRouteCallback, ARoute);
   if R = 0 then
     Exit;
   if R = EALREADY then
@@ -788,14 +782,14 @@ constructor TBrookURLRouter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRoutes := CreateRoutes;
-  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
+  SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
 end;
 
 destructor TBrookURLRouter.Destroy;
 begin
   SetActive(False);
   FRoutes.Free;
-  SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
+  SgLib.UnloadEvents.Remove(InternalLibUnloadEvent);
   inherited Destroy;
 end;
 
@@ -811,7 +805,8 @@ end;
 
 procedure TBrookURLRouter.InternalLibUnloadEvent(ASender: TObject);
 begin
-  TBrookURLRouter(ASender).Close;
+  if Assigned(ASender) then
+    TBrookURLRouter(ASender).Close;
 end;
 
 procedure TBrookURLRouter.CheckItems;

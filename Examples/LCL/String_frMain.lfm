@@ -9,7 +9,7 @@ object frMain: TfrMain
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poDesktopCenter
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.10.0'
   object lbDesc: TLabel
     Left = 10
     Height = 17
@@ -30,7 +30,6 @@ object frMain: TfrMain
     Top = 40
     Width = 112
     Caption = '&Add now'
-    Enabled = False
     OnClick = btAddNowClick
     TabOrder = 0
   end
@@ -53,10 +52,5 @@ object frMain: TfrMain
     Enabled = False
     OnClick = btClearClick
     TabOrder = 2
-  end
-  object BrookLibraryLoader1: TBrookLibraryLoader
-    OnLoad = BrookLibraryLoader1Load
-    left = 64
-    top = 96
   end
 end

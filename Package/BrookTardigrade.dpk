@@ -58,25 +58,26 @@ requires
   designide;
 
 contains
-  libsagui in '..\Source\libsagui.pas',
-  Platform in '..\Source\Platform.pas',
-  Marshalling in '..\Source\Marshalling.pas',
-  BrookLibraryLoader in '..\Source\BrookLibraryLoader.pas',
-  BrookUtility in '..\Source\BrookUtility.pas',
-  BrookHandledClasses in '..\Source\BrookHandledClasses.pas',
-  BrookString in '..\Source\BrookString.pas',
-  BrookStringMap in '..\Source\BrookStringMap.pas',
   BrookExtra in '..\Source\BrookExtra.pas',
-  BrookReader in '..\Source\BrookReader.pas',
-  BrookMediaTypes in '..\Source\BrookMediaTypes.pas',
-  BrookURLEntryPoints in '..\Source\BrookURLEntryPoints.pas',
-  BrookURLRouter in '..\Source\BrookURLRouter.pas',
+  BrookHandledClasses in '..\Source\BrookHandledClasses.pas',
   BrookHTTPAuthentication in '..\Source\BrookHTTPAuthentication.pas',
   BrookHTTPCookies in '..\Source\BrookHTTPCookies.pas',
-  BrookHTTPUploads in '..\Source\BrookHTTPUploads.pas',
   BrookHTTPRequest in '..\Source\BrookHTTPRequest.pas',
   BrookHTTPResponse in '..\Source\BrookHTTPResponse.pas',
   BrookHTTPServer in '..\Source\BrookHTTPServer.pas',
-  BrookIDEIntegration in 'BrookIDEIntegration.pas';
+  BrookHTTPUploads in '..\Source\BrookHTTPUploads.pas',
+  BrookIDEIntegration in 'BrookIDEIntegration.pas',
+  BrookLibraryLoader in '..\Source\BrookLibraryLoader.pas',
+  BrookMathExpression in '..\Source\BrookMathExpression.pas',
+  BrookMediaTypes in '..\Source\BrookMediaTypes.pas',
+  BrookReader in '..\Source\BrookReader.pas',
+  BrookString in '..\Source\BrookString.pas',
+  BrookStringMap in '..\Source\BrookStringMap.pas',
+  BrookURLEntryPoints in '..\Source\BrookURLEntryPoints.pas',
+  BrookURLRouter in '..\Source\BrookURLRouter.pas',
+  BrookUtility in '..\Source\BrookUtility.pas',
+  libsagui in '..\Source\libsagui.pas',
+  Marshalling in '..\Source\Marshalling.pas',
+  Platform in '..\Source\Platform.pas';
 
 end.

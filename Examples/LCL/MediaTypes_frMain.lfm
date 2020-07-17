@@ -8,18 +8,18 @@ object frMain: TfrMain
   ClientWidth = 320
   OnCreate = FormCreate
   Position = poDesktopCenter
-  LCLVersion = '2.0.2.0'
+  LCLVersion = '2.0.10.0'
   object lbPort: TLabel
     Left = 20
-    Height = 17
+    Height = 15
     Top = 22
-    Width = 23
+    Width = 22
     Caption = 'Port'
     ParentColor = False
   end
   object edPort: TSpinEdit
     Left = 49
-    Height = 27
+    Height = 23
     Top = 17
     Width = 66
     MaxValue = 65535
@@ -45,7 +45,7 @@ object frMain: TfrMain
   object lbLink: TLabel
     Cursor = crHandPoint
     Left = 20
-    Height = 17
+    Height = 15
     Top = 64
     Width = 83
     Caption = 'http://localhost'
@@ -59,8 +59,8 @@ object frMain: TfrMain
     OnMouseLeave = lbLinkMouseLeave
   end
   object alMain: TActionList
-    left = 48
-    top = 60
+    Left = 48
+    Top = 60
     object acStart: TAction
       Category = 'HTTP server'
       Caption = '&Start'
@@ -82,15 +82,11 @@ object frMain: TfrMain
     OnError = BrookHTTPServer1Error
     OnStart = BrookHTTPServer1Start
     OnStop = BrookHTTPServer1Stop
-    left = 248
-    top = 60
-  end
-  object BrookLibraryLoader1: TBrookLibraryLoader
-    left = 136
-    top = 60
+    Left = 152
+    Top = 60
   end
   object BrookMIME1: TBrookMIME
-    left = 48
-    top = 112
+    Left = 264
+    Top = 60
   end
 end

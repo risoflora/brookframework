@@ -115,8 +115,8 @@ object frMain: TfrMain
     end
   end
   object alMain: TActionList
-    Left = 120
-    Top = 56
+    Left = 48
+    Top = 120
     object acStart: TAction
       Category = 'HTTP server'
       Text = '&Start'
@@ -139,10 +139,6 @@ object frMain: TfrMain
     OnStart = BrookHTTPServer1Start
     OnStop = BrookHTTPServer1Stop
     Left = 168
-    Top = 120
-  end
-  object BrookLibraryLoader1: TBrookLibraryLoader
-    Left = 48
     Top = 120
   end
   object BrookURLRouter1: TBrookURLRouter

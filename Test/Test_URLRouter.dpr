@@ -36,7 +36,6 @@ uses
   Platform,
   libsagui,
   BrookLibraryLoader,
-  BrookExtra,
   BrookUtility,
   BrookStringMap,
   BrookURLRouter,

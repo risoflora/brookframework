@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,7 +40,6 @@ uses
   Dialogs,
   Forms,
   LCLIntf,
-  BrookLibraryLoader,
   BrookUtility,
   BrookHTTPUploads,
   BrookHTTPRequest,
@@ -53,7 +52,6 @@ type
     acStop: TAction;
     alMain: TActionList;
     BrookHTTPServer1: TBrookHTTPServer;
-    BrookLibraryLoader1: TBrookLibraryLoader;
     btStart: TButton;
     btStop: TButton;
     edPort: TSpinEdit;
@@ -117,7 +115,6 @@ implementation
 
 procedure TfrMain.FormShow(Sender: TObject);
 begin
-  BrookLibraryLoader1.Open;
   if BrookHTTPServer1.UploadsDir.IsEmpty then
     BrookHTTPServer1.UploadsDir := Sagui.TmpDir;
 end;
@@ -225,11 +222,13 @@ begin
 end;
 
 {$PUSH}{$WARN 4055 OFF}
+
 procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
   AException: Exception);
 begin
   Application.QueueAsyncCall(DoError, PtrInt(NewStr(AException.Message)));
 end;
+
 {$POP}
 
 {$POP}

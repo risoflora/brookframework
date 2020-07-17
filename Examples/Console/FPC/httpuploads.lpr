@@ -31,7 +31,6 @@ program httpuploads;
 uses
   SysUtils,
   BrookUtility,
-  BrookLibraryLoader,
   BrookHTTPUploads,
   BrookHTTPRequest,
   BrookHTTPResponse,
@@ -101,7 +100,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with THTTPServer.Create(nil) do
   try
     UploadsDir := Concat(IncludeTrailingPathDelimiter(Sagui.TmpDir), 'uploads');

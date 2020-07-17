@@ -48,7 +48,6 @@ type
 
 procedure TFakeObject.DoAddUnloadEvent1(ASender: TObject);
 begin
-
   TComponent(ASender).Name := 'abc';
 end;
 
@@ -64,7 +63,7 @@ end;
 
 procedure DoAddUnloadEvent(const AArgs: array of const);
 begin
-  SgLib.AddUnloadEvent(nil, AArgs[0].VObject);
+  SgLib.UnloadEvents.Add(nil, AArgs[0].VObject);
 end;
 
 procedure Test_AddUnloadEvent;
@@ -80,13 +79,14 @@ begin
     AssertExcept(DoAddUnloadEvent, EArgumentNilException,
       Format(SParamIsNil, ['AEvent']), [O]);
 
-    SgLib.AddUnloadEvent(O.DoAddUnloadEvent1, nil);
-    SgLib.RemoveUnloadEvent(O.DoAddUnloadEvent1);
+    SgLib.UnloadEvents.Clear;
+    SgLib.UnloadEvents.Add(O.DoAddUnloadEvent1, nil);
+    SgLib.UnloadEvents.Remove(O.DoAddUnloadEvent1);
 
     SgLib.Load(SG_LIB_NAME);
-    SgLib.AddUnloadEvent(O.DoAddUnloadEvent1, C1);
-    SgLib.AddUnloadEvent(O.DoAddUnloadEvent2, C2);
-    SgLib.AddUnloadEvent(O.DoAddUnloadEvent3, C3);
+    SgLib.UnloadEvents.Add(O.DoAddUnloadEvent1, C1);
+    SgLib.UnloadEvents.Add(O.DoAddUnloadEvent2, C2);
+    SgLib.UnloadEvents.Add(O.DoAddUnloadEvent3, C3);
     Assert(C1.Name = '');
     Assert(C2.Name = '');
     Assert(C3.Name = '');
@@ -94,6 +94,7 @@ begin
     Assert(C1.Name = 'abc');
     Assert(C2.Name = 'def');
     Assert(C3.Name = 'ghi');
+    SgLib.UnloadEvents.Clear;
   finally
     O.Free;
     C3.Free;
@@ -104,7 +105,7 @@ end;
 
 procedure DoRemoveUnloadEvent;
 begin
-  SgLib.RemoveUnloadEvent(nil);
+  SgLib.UnloadEvents.Remove(nil);
 end;
 
 procedure Test_RemoveNotifier;
@@ -120,15 +121,17 @@ begin
   C2 := TComponent.Create(nil);
   C3 := TComponent.Create(nil);
   try
+    SgLib.UnloadEvents.Clear;
     SgLib.Load(SG_LIB_NAME);
-    SgLib.AddUnloadEvent(O.DoAddUnloadEvent1, C1);
-    SgLib.AddUnloadEvent(O.DoAddUnloadEvent2, C2);
-    SgLib.AddUnloadEvent(O.DoAddUnloadEvent3, C3);
-    SgLib.RemoveUnloadEvent(O.DoAddUnloadEvent2);
+    SgLib.UnloadEvents.Add(O.DoAddUnloadEvent1, C1);
+    SgLib.UnloadEvents.Add(O.DoAddUnloadEvent2, C2);
+    SgLib.UnloadEvents.Add(O.DoAddUnloadEvent3, C3);
+    SgLib.UnloadEvents.Remove(O.DoAddUnloadEvent2);
     SgLib.Unload;
     Assert(C1.Name = 'abc');
     Assert(C2.Name = '');
     Assert(C3.Name = 'ghi');
+    SgLib.UnloadEvents.Clear;
   finally
     C3.Free;
     C2.Free;
@@ -293,15 +296,18 @@ begin
   Assert(not Assigned(sg_version));
   Assert(not Assigned(sg_version_str));
 
+  Assert(not Assigned(sg_mm_set));
   Assert(not Assigned(sg_malloc));
   Assert(not Assigned(sg_alloc));
   Assert(not Assigned(sg_realloc));
   Assert(not Assigned(sg_free));
+  Assert(not Assigned(sg_math_set));
   Assert(not Assigned(sg_strerror));
   Assert(not Assigned(sg_is_post));
   Assert(not Assigned(sg_extract_entrypoint));
   Assert(not Assigned(sg_tmpdir));
   Assert(not Assigned(sg_eor));
+  Assert(not Assigned(sg_ip));
 
   Assert(not Assigned(sg_str_new));
   Assert(not Assigned(sg_str_free));
@@ -327,6 +333,7 @@ begin
 
   Assert(not Assigned(sg_httpauth_set_realm));
   Assert(not Assigned(sg_httpauth_realm));
+  Assert(not Assigned(sg_httpauth_deny2));
   Assert(not Assigned(sg_httpauth_deny));
   Assert(not Assigned(sg_httpauth_cancel));
   Assert(not Assigned(sg_httpauth_usr));
@@ -346,6 +353,7 @@ begin
   Assert(not Assigned(sg_httpupld_save));
   Assert(not Assigned(sg_httpupld_save_as));
 
+  Assert(not Assigned(sg_httpreq_srv));
   Assert(not Assigned(sg_httpreq_headers));
   Assert(not Assigned(sg_httpreq_cookies));
   Assert(not Assigned(sg_httpreq_params));
@@ -356,9 +364,11 @@ begin
   Assert(not Assigned(sg_httpreq_payload));
   Assert(not Assigned(sg_httpreq_is_uploading));
   Assert(not Assigned(sg_httpreq_uploads));
+  Assert(not Assigned(sg_httpreq_client));
 {$IFDEF TLS_SUPPORT}
   Assert(not Assigned(sg_httpreq_tls_session));
 {$ENDIF}
+  Assert(not Assigned(sg_httpreq_isolate));
   Assert(not Assigned(sg_httpreq_set_user_data));
   Assert(not Assigned(sg_httpreq_user_data));
 
@@ -387,6 +397,7 @@ begin
   Assert(not Assigned(sg_httpsrv_shutdown));
   Assert(not Assigned(sg_httpsrv_port));
   Assert(not Assigned(sg_httpsrv_is_threaded));
+  Assert(not Assigned(sg_httpsrv_set_cli_cb));
   Assert(not Assigned(sg_httpsrv_set_upld_cbs));
   Assert(not Assigned(sg_httpsrv_set_upld_dir));
   Assert(not Assigned(sg_httpsrv_upld_dir));
@@ -402,6 +413,7 @@ begin
   Assert(not Assigned(sg_httpsrv_con_timeout));
   Assert(not Assigned(sg_httpsrv_set_con_limit));
   Assert(not Assigned(sg_httpsrv_con_limit));
+  Assert(not Assigned(sg_httpsrv_handle));
 
   Assert(not Assigned(sg_entrypoint_name));
   Assert(not Assigned(sg_entrypoint_set_user_data));
@@ -437,20 +449,36 @@ begin
   Assert(not Assigned(sg_router_dispatch2));
   Assert(not Assigned(sg_router_dispatch));
 
+  Assert(not Assigned(sg_expr_new));
+  Assert(not Assigned(sg_expr_free));
+  Assert(not Assigned(sg_expr_compile));
+  Assert(not Assigned(sg_expr_clear));
+  Assert(not Assigned(sg_expr_eval));
+  Assert(not Assigned(sg_expr_var));
+  Assert(not Assigned(sg_expr_set_var));
+  Assert(not Assigned(sg_expr_arg));
+  Assert(not Assigned(sg_expr_near));
+  Assert(not Assigned(sg_expr_err));
+  Assert(not Assigned(sg_expr_strerror));
+  Assert(not Assigned(sg_expr_calc));
+
   SgLib.Load(SG_LIB_NAME);
 
   Assert(Assigned(sg_version));
   Assert(Assigned(sg_version_str));
 
+  Assert(Assigned(sg_mm_set));
   Assert(Assigned(sg_malloc));
   Assert(Assigned(sg_alloc));
   Assert(Assigned(sg_realloc));
   Assert(Assigned(sg_free));
+  Assert(Assigned(sg_math_set));
   Assert(Assigned(sg_strerror));
   Assert(Assigned(sg_is_post));
   Assert(Assigned(sg_extract_entrypoint));
   Assert(Assigned(sg_tmpdir));
   Assert(Assigned(sg_eor));
+  Assert(Assigned(sg_ip));
 
   Assert(Assigned(sg_str_new));
   Assert(Assigned(sg_str_free));
@@ -476,6 +504,7 @@ begin
 
   Assert(Assigned(sg_httpauth_set_realm));
   Assert(Assigned(sg_httpauth_realm));
+  Assert(Assigned(sg_httpauth_deny2));
   Assert(Assigned(sg_httpauth_deny));
   Assert(Assigned(sg_httpauth_cancel));
   Assert(Assigned(sg_httpauth_usr));
@@ -495,6 +524,7 @@ begin
   Assert(Assigned(sg_httpupld_save));
   Assert(Assigned(sg_httpupld_save_as));
 
+  Assert(Assigned(sg_httpreq_srv));
   Assert(Assigned(sg_httpreq_headers));
   Assert(Assigned(sg_httpreq_cookies));
   Assert(Assigned(sg_httpreq_params));
@@ -505,9 +535,11 @@ begin
   Assert(Assigned(sg_httpreq_payload));
   Assert(Assigned(sg_httpreq_is_uploading));
   Assert(Assigned(sg_httpreq_uploads));
+  Assert(Assigned(sg_httpreq_client));
 {$IFDEF TLS_SUPPORT}
   Assert(Assigned(sg_httpreq_tls_session));
 {$ENDIF}
+  Assert(Assigned(sg_httpreq_isolate));
   Assert(Assigned(sg_httpreq_set_user_data));
   Assert(Assigned(sg_httpreq_user_data));
 
@@ -536,6 +568,7 @@ begin
   Assert(Assigned(sg_httpsrv_shutdown));
   Assert(Assigned(sg_httpsrv_port));
   Assert(Assigned(sg_httpsrv_is_threaded));
+  Assert(Assigned(sg_httpsrv_set_cli_cb));
   Assert(Assigned(sg_httpsrv_set_upld_cbs));
   Assert(Assigned(sg_httpsrv_set_upld_dir));
   Assert(Assigned(sg_httpsrv_upld_dir));
@@ -551,6 +584,7 @@ begin
   Assert(Assigned(sg_httpsrv_con_timeout));
   Assert(Assigned(sg_httpsrv_set_con_limit));
   Assert(Assigned(sg_httpsrv_con_limit));
+  Assert(Assigned(sg_httpsrv_handle));
 
   Assert(Assigned(sg_entrypoint_name));
   Assert(Assigned(sg_entrypoint_set_user_data));
@@ -585,6 +619,19 @@ begin
   Assert(Assigned(sg_router_free));
   Assert(Assigned(sg_router_dispatch2));
   Assert(Assigned(sg_router_dispatch));
+
+  Assert(Assigned(sg_expr_new));
+  Assert(Assigned(sg_expr_free));
+  Assert(Assigned(sg_expr_compile));
+  Assert(Assigned(sg_expr_clear));
+  Assert(Assigned(sg_expr_eval));
+  Assert(Assigned(sg_expr_var));
+  Assert(Assigned(sg_expr_set_var));
+  Assert(Assigned(sg_expr_arg));
+  Assert(Assigned(sg_expr_near));
+  Assert(Assigned(sg_expr_err));
+  Assert(Assigned(sg_expr_strerror));
+  Assert(Assigned(sg_expr_calc));
 end;
 
 begin

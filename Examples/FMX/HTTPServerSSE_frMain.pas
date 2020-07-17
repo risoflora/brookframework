@@ -44,7 +44,6 @@ uses
   FMX.Forms,
   FMX.Controls.Presentation,
   BrookHandledClasses,
-  BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPServer,
@@ -74,7 +73,6 @@ type
     acStop: TAction;
     BrookHTTPServer1: TBrookHTTPServer;
     pnTop: TPanel;
-    BrookLibraryLoader1: TBrookLibraryLoader;
     procedure acStartExecute(Sender: TObject);
     procedure acStopExecute(Sender: TObject);
     procedure lbLinkMouseEnter(Sender: TObject);
@@ -171,7 +169,6 @@ end;
 
 procedure TfrMain.acStartExecute(Sender: TObject);
 begin
-  BrookLibraryLoader1.Open;
   BrookHTTPServer1.Open;
 end;
 

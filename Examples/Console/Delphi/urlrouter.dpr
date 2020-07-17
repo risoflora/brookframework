@@ -33,7 +33,6 @@ uses
   SysUtils,
   Classes,
   BrookUtility,
-  BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPServer,
@@ -163,7 +162,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with TServer.Create(nil) do
   try
     Open;

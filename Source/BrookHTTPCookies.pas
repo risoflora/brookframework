@@ -110,14 +110,14 @@ type
       @param(AUnsignedValue[in] Unsigned cookie value to be signed.)
       @returns(Signed cookie value.) }
     class function Sign(const ASecret,
-      AUnsignedValue: string): string; overload; static; inline;
+      AUnsignedValue: string): string; overload; static;
     { Tries to unsign a cookie value.
       @param(ASecret[in] Secret key to unsign the cookie value.)
       @param(ASignedValue[out] Signed cookie value.)
       @param(AUnsignedValue[out] Unsigned cookie value.)
       @returns(@True if cookie value is unsigned successfully.) }
     class function TryUnsign(const ASecret, ASignedValue: string;
-      out AUnsignedValue: string): Boolean; overload; static; inline;
+      out AUnsignedValue: string): Boolean; overload; static;
     { Unsigns a cookie value.
       @param(ASecret[in] Secret key to unsign the cookie value.)
       @param(ASignedValue[in] Signed cookie value.)
@@ -233,6 +233,12 @@ begin
   FPath := '/';
 end;
 
+class function TBrookHTTPCookie.IsSigned(const ASignedValue: string): Boolean;
+begin
+  Result := (Length(ASignedValue) > 0) and CompareMem(@ASignedValue[1],
+    @BROOK_COOKIE_SIG_PREFIX[1], Length(BROOK_COOKIE_SIG_PREFIX) * SizeOf(Char));
+end;
+
 class function TBrookHTTPCookie.Sign(const ASecret,
   AUnsignedValue: string): string;
 var
@@ -240,6 +246,8 @@ var
   VEncoder: TBase64EncodingStream;
   VStream: TStringStream;
   VDigest: THMACSHA1Digest;
+{$ELSE}
+  VEncoder: TBase64Encoding;
 {$ENDIF}
   VPos: Integer;
 begin
@@ -253,15 +261,20 @@ begin
       VDigest := HMACSHA1Digest(ASecret, AUnsignedValue);
       VEncoder.Write(VDigest[0], Length(VDigest));
     finally
-      VEncoder.Free;
+      VEncoder.Destroy;
     end;
     Result := VStream.DataString;
   finally
-    VStream.Free;
+    VStream.Destroy;
   end
 {$ELSE}
-  Result := TNetEncoding.Base64.EncodeBytesToString(
-    THashSHA1.GetHMACAsBytes(AUnsignedValue, ASecret))
+  VEncoder := TBase64Encoding.Create(0, '');
+  try
+    Result := VEncoder.EncodeBytesToString(
+      THashSHA1.GetHMACAsBytes(AUnsignedValue, ASecret))
+  finally
+    VEncoder.Destroy;
+  end;
 {$ENDIF};
   VPos := Pos('=', Result);
   if VPos > 0 then
@@ -295,12 +308,6 @@ class function TBrookHTTPCookie.Unsign(const ASecret,
 begin
   if not TryUnsign(ASecret, ASignedValue, Result) then
     Result := EmptyStr;
-end;
-
-class function TBrookHTTPCookie.IsSigned(const ASignedValue: string): Boolean;
-begin
-  Result := (Length(ASignedValue) > 0) and CompareMem(@ASignedValue[1],
-    @BROOK_COOKIE_SIG_PREFIX[1], Length(BROOK_COOKIE_SIG_PREFIX) * SizeOf(Char));
 end;
 
 procedure TBrookHTTPCookie.Assign(ASource: TPersistent);

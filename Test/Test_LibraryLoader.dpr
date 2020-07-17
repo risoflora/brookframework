@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -83,6 +83,15 @@ begin
   Assert(SgLib.Handle <> NilHandle);
   TBrookLibraryLoader.Unload;
   Assert(SgLib.Handle = NilHandle);
+end;
+
+procedure Test_LibraryLoaderIsLoaded;
+begin
+  Assert(not TBrookLibraryLoader.IsLoaded);
+  TBrookLibraryLoader.Load;
+  Assert(TBrookLibraryLoader.IsLoaded);
+  TBrookLibraryLoader.Unload;
+  Assert(not TBrookLibraryLoader.IsLoaded);
 end;
 
 procedure Test_LibraryLoaderOpen;
@@ -212,6 +221,7 @@ begin
   // Test_LibraryLoaderDestroy - not required
   Test_LibraryLoaderLoad;
   Test_LibraryLoaderUnload;
+  Test_LibraryLoaderIsLoaded;
   Test_LibraryLoaderOpen;
   Test_LibraryLoaderClose;
   // Test_LibraryLoaderDefineProperties - not required

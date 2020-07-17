@@ -7,7 +7,7 @@ object frMain: TfrMain
   ClientHeight = 160
   ClientWidth = 320
   Position = poDesktopCenter
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.0.10.0'
   object lbPort: TLabel
     Left = 20
     Height = 15
@@ -81,33 +81,29 @@ object frMain: TfrMain
     OnError = BrookHTTPServer1Error
     OnStart = BrookHTTPServer1Start
     OnStop = BrookHTTPServer1Stop
-    Left = 152
-    Top = 96
-  end
-  object BrookLibraryLoader1: TBrookLibraryLoader
-    Left = 40
+    Left = 56
     Top = 96
   end
   object BrookURLRouter1: TBrookURLRouter
-    Routes = <
+    Routes = <    
       item
         Default = True
         Pattern = '/home'
         Methods = [rmGET]
         OnRequest = BrookURLRouter1Routes0Request
-      end
+      end    
       item
         Pattern = '/download/(?P<file>[a-z]+)'
         Methods = [rmGET]
         OnRequest = BrookURLRouter1Routes1Request
-      end
+      end    
       item
         Pattern = '/page/([0-9]+)'
         Methods = [rmGET]
         OnRequest = BrookURLRouter1Routes2Request
       end>
     OnNotFound = BrookURLRouter1NotFound
-    Left = 256
+    Left = 208
     Top = 96
   end
 end

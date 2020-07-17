@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -165,7 +165,7 @@ function fake_httpres_zsendstream(res: Psg_httpres; read_cb: sg_read_cb;
   handle: Pcvoid; free_cb: sg_free_cb; status: cuint): cint; cdecl;
 var
   S: TFakeStringStream;
-  B: TBytes;
+  B: TBytes{$IFDEF FPC}= nil{$ENDIF};
   Z: csize_t;
 begin
   Assert(res = FakeResponseHandle);
@@ -196,7 +196,7 @@ function fake_httpres_sendstream(res: Psg_httpres; size: cuint64_t;
   status: cuint): cint; cdecl;
 var
   S: TFakeStringStream;
-  B: TBytes;
+  B: TBytes{$IFDEF FPC}= nil{$ENDIF};
   Z: csize_t;
 begin
   Assert(res = FakeResponseHandle);

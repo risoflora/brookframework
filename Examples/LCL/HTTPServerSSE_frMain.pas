@@ -40,7 +40,6 @@ uses
   Dialogs,
   Forms,
   LCLIntf,
-  BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPServer;
@@ -63,7 +62,6 @@ type
     acStop: TAction;
     alMain: TActionList;
     BrookHTTPServer1: TBrookHTTPServer;
-    BrookLibraryLoader1: TBrookLibraryLoader;
     btStart: TButton;
     btStop: TButton;
     edPort: TSpinEdit;
@@ -173,7 +171,6 @@ end;
 
 procedure TfrMain.acStartExecute(Sender: TObject);
 begin
-  BrookLibraryLoader1.Open;
   BrookHTTPServer1.Open;
 end;
 
@@ -233,12 +230,14 @@ begin
 end;
 
 {$PUSH}{$WARN 4055 OFF}
+
 procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
   AException: Exception);
 begin
   if AException.Message.TrimRight <> IGNORED_ERROR then
     Application.QueueAsyncCall(DoError, PtrInt(NewStr(AException.Message)));
 end;
+
 {$POP}
 
 {$POP}

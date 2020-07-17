@@ -32,7 +32,6 @@ program httpsrvsse;
 uses
   SysUtils,
   Classes,
-  BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPServer;
@@ -118,7 +117,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with THTTPServer.Create(nil) do
   try
     NoFavicon := True;

@@ -31,7 +31,6 @@ program urlrouter;
 uses
   SysUtils,
   Classes,
-  BrookLibraryLoader,
   BrookUtility,
   BrookHTTPRequest,
   BrookHTTPResponse,
@@ -162,7 +161,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with TServer.Create(nil) do
   try
     Open;

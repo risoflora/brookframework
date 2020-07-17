@@ -356,7 +356,7 @@ constructor TBrookHTTPServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FSecurity := CreateSecurity;
-  SgLib.AddUnloadEvent(InternalLibUnloadEvent, Self);
+  SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
   FPostBufferSize := BROOK_POST_BUFFER_SIZE;
   FPayloadLimit := BROOK_PAYLOAD_LIMIT;
   FUploadsLimit := BROOK_UPLOADS_LIMIT;
@@ -368,7 +368,7 @@ begin
     SetActive(False);
   finally
     FSecurity.Free;
-    SgLib.RemoveUnloadEvent(InternalLibUnloadEvent);
+    SgLib.UnloadEvents.Remove(InternalLibUnloadEvent);
     inherited Destroy;
   end;
 end;
@@ -378,12 +378,10 @@ var
   VACb: sg_httpauth_cb;
 begin
   if FAuthenticated then
-    VACb := {$IFNDEF VER3_0}@{$ENDIF}DoAuthenticationCallback
+    VACb := DoAuthenticationCallback
   else
     VACb := nil;
-  FHandle := sg_httpsrv_new2(VACb,
-{$IFNDEF VER3_0}@{$ENDIF}DoRequestCallback,
-{$IFNDEF VER3_0}@{$ENDIF}DoErrorCallback, Self);
+  FHandle := sg_httpsrv_new2(VACb, DoRequestCallback, DoErrorCallback, Self);
   if not Assigned(FHandle) then
     raise EInvalidPointer.Create(SBrookCannotCreateServerHandle);
 end;
@@ -510,7 +508,8 @@ end;
 
 procedure TBrookHTTPServer.InternalLibUnloadEvent(ASender: TObject);
 begin
-  TBrookHTTPServer(ASender).Close;
+  if Assigned(ASender) then
+    TBrookHTTPServer(ASender).Close;
 end;
 
 procedure TBrookHTTPServer.HandleAuthenticateError(
@@ -602,7 +601,9 @@ begin
   if Assigned(FOnError) then
     FOnError(ASender, AException)
   else
-    if Assigned(ApplicationHandleException) then
+    if Assigned(ApplicationShowException) then
+      ApplicationShowException(AException)
+    else if Assigned(ApplicationHandleException) then
       ApplicationHandleException(AException)
     else
       ShowException(AException, Pointer(AException));

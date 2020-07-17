@@ -29,7 +29,6 @@ program hellohttpsrv;
 {$WARN 5024 OFF}
 
 uses
-  BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPServer;
@@ -50,7 +49,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with THTTPServer.Create(nil) do
   try
     Open;

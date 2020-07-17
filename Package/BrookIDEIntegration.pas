@@ -101,9 +101,18 @@ type
     procedure ExecuteVerb(AIndex: Integer); override;
   end;
 
-  { TBrookOnRequestComponentEditor }
+  { TBrookOnMathExtensionComponentEditor }
 
-  TBrookOnRequestComponentEditor = class(TDefaultEditor)
+  TBrookOnMathExtensionComponentEditor = class(TDefaultEditor)
+  protected
+    procedure EditProperty(const AProperty:
+{$IFDEF LCL}TPropertyEditor{$ELSE}IProperty{$ENDIF};
+      var AContinue: Boolean); override;
+  end;
+
+  { TBrookOnHTTPRequestComponentEditor }
+
+  TBrookOnHTTPRequestComponentEditor = class(TDefaultEditor)
   protected
     procedure EditProperty(const AProperty:
 {$IFDEF LCL}TPropertyEditor{$ELSE}IProperty{$ENDIF};
@@ -136,6 +145,7 @@ implementation
 
 uses
   BrookLibraryLoader,
+  BrookMathExpression,
   BrookMediaTypes,
   BrookURLEntryPoints,
   BrookURLRouter,
@@ -170,6 +180,7 @@ procedure Register;
 begin
   RegisterComponents('Brook', [
     TBrookLibraryLoader,
+    TBrookMathExpression,
     TBrookMIME,
     TBrookURLEntryPoints,
     TBrookURLRouter,
@@ -190,9 +201,10 @@ begin
   RegisterPropertyMapper(BrookHTTPRequestMethodsPropertyMapper);
 {$ENDIF}
   RegisterComponentEditor(TBrookLibraryLoader, TBrookLibraryNameComponentEditor);
+  RegisterComponentEditor(TBrookMathExpression, TBrookOnMathExtensionComponentEditor);
   RegisterComponentEditor(TBrookURLEntryPoints, TBrookURLEntryPointsComponentEditor);
   RegisterComponentEditor(TBrookURLRouter, TBrookURLRouterComponentEditor);
-  RegisterComponentEditor(TBrookHTTPServer, TBrookOnRequestComponentEditor);
+  RegisterComponentEditor(TBrookHTTPServer, TBrookOnHTTPRequestComponentEditor);
 end;
 
 {$IFDEF LCL}
@@ -348,9 +360,18 @@ begin
   Edit;
 end;
 
-{ TBrookOnRequestComponentEditor }
+{ TBrookOnMathExtensionComponentEditor }
 
-procedure TBrookOnRequestComponentEditor.EditProperty(const AProperty:
+procedure TBrookOnMathExtensionComponentEditor.EditProperty(const AProperty:
+{$IFDEF LCL}TPropertyEditor{$ELSE}IProperty{$ENDIF}; var AContinue: Boolean);
+begin
+  if SameText(AProperty.GetName, 'OnExtension') then
+    inherited EditProperty(AProperty, AContinue);
+end;
+
+{ TBrookOnHTTPRequestComponentEditor }
+
+procedure TBrookOnHTTPRequestComponentEditor.EditProperty(const AProperty:
 {$IFDEF LCL}TPropertyEditor{$ELSE}IProperty{$ENDIF}; var AContinue: Boolean);
 begin
   if SameText(AProperty.GetName, 'OnRequest') then
@@ -408,3 +429,4 @@ begin
 end;
 
 end.
+

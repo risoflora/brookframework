@@ -32,7 +32,6 @@ uses
   SysUtils,
   FileUtil,
   Classes,
-  BrookLibraryLoader,
   BrookMediaTypes,
   BrookHTTPRequest,
   BrookHTTPResponse,
@@ -108,7 +107,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with THTTPServer.Create(nil) do
   try
     FMIME.Open;

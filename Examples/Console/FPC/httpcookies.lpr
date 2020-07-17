@@ -30,7 +30,6 @@ program httpcookies;
 
 uses
   SysUtils,
-  BrookLibraryLoader,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPServer;
@@ -71,7 +70,6 @@ begin
 end;
 
 begin
-  TBrookLibraryLoader.Load;
   with THTTPServer.Create(nil) do
   try
     NoFavicon := True;

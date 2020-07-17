@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -291,7 +291,7 @@ var
   VStream: TStream;
   VReader: TBrookTextReader;
 begin
-  VStream := TStringStream.Create(AI_19_CRLF{$IFNDEF FPC}, TEncoding.UTF8{$ENDIF});
+  VStream := TStringStream.Create(AI_19_CRLF, TEncoding.UTF8);
   VReader := TBrookStreamReader.Create(VStream);
   try
     Test_IsEOF(VReader);
@@ -306,7 +306,7 @@ var
   VStream: TStream;
   VReader: TBrookTextReader;
 begin
-  VStream := TStringStream.Create(AI_19_CRLF{$IFNDEF FPC}, TEncoding.UTF8{$ENDIF});
+  VStream := TStringStream.Create(AI_19_CRLF, TEncoding.UTF8);
   VReader := TBrookStreamReader.Create(VStream);
   try
     Test_ReadBytes(VReader);
@@ -321,7 +321,7 @@ var
   VStream: TStream;
   VReader: TBrookTextReader;
 begin
-  VStream := TStringStream.Create(AI_19_CRLF{$IFNDEF FPC}, TEncoding.UTF8{$ENDIF});
+  VStream := TStringStream.Create(AI_19_CRLF, TEncoding.UTF8);
   VReader := TBrookStreamReader.Create(VStream);
   try
     Test_Read(VReader);

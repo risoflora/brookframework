@@ -157,10 +157,10 @@ type
     { Retrieves the first upload in the list.
       @param(AUpload[out] First upload returned.)
       @returns(@True when upload is found, @False otherwise.) }
-    procedure First(out AUpload: TBrookHTTPUpload); virtual;
+    function First: TBrookHTTPUpload; virtual;
     { Retrieves the next upload in the list.
       @param(AUpload[out] Next upload returned.) }
-    procedure Next(out AUpload: TBrookHTTPUpload); virtual;
+    function Next: TBrookHTTPUpload; virtual;
     { Indicates the end of list. }
     property EOF: Boolean read IsEOF; //FI:C110
     { Counts the total uploads present in the list. }
@@ -175,7 +175,7 @@ constructor TBrookHTTPUploadsEnumerator.Create(AUploads: TBrookHTTPUploads);
 begin
   inherited Create;
   FUploads := AUploads;
-  FUploads.First(FCurr);
+  FCurr := FUploads.First;
   FBOF := True;
 end;
 
@@ -189,7 +189,7 @@ begin
   if FBOF then
     FBOF := False
   else
-    FUploads.Next(FCurr);
+    FCurr := FUploads.Next;
   Result := not FUploads.EOF;
 end;
 
@@ -297,18 +297,18 @@ begin
   Result := TBrookHTTPUploadsEnumerator.Create(Self);
 end;
 
-procedure TBrookHTTPUploads.First(out AUpload: TBrookHTTPUpload);
+function TBrookHTTPUploads.First: TBrookHTTPUpload;
 begin
   FCurrent := FHandle;
-  AUpload := TBrookHTTPUpload.Create(FCurrent);
+  Result := TBrookHTTPUpload.Create(FCurrent);
 end;
 
-procedure TBrookHTTPUploads.Next(out AUpload: TBrookHTTPUpload);
+function TBrookHTTPUploads.Next: TBrookHTTPUpload;
 begin
   SgLib.Check;
   SgLib.CheckLastError(sg_httpuplds_next(@FCurrent));
   if Assigned(FCurrent) then
-    AUpload := TBrookHTTPUpload.Create(FCurrent);
+    Result := TBrookHTTPUpload.Create(FCurrent);
 end;
 
 function TBrookHTTPUploads.GetCount: Integer;

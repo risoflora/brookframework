@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2019 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,17 +36,14 @@ uses
   StdCtrls,
   Forms,
   Dialogs,
-  BrookLibraryLoader,
   BrookString;
 
 type
   TfrMain = class(TForm)
-    BrookLibraryLoader1: TBrookLibraryLoader;
     btAddNow: TButton;
     btShowContent: TButton;
     btClear: TButton;
     lbDesc: TLabel;
-    procedure BrookLibraryLoader1Load(Sender: TObject);
     procedure btAddNowClick(Sender: TObject);
     procedure btClearClick(Sender: TObject);
     procedure btShowContentClick(Sender: TObject);
@@ -67,7 +64,6 @@ implementation
 
 procedure TfrMain.FormCreate(Sender: TObject);
 begin
-  BrookLibraryLoader1.Open;
   FString := TBrookString.Create(nil);
 end;
 
@@ -86,11 +82,6 @@ procedure TfrMain.btAddNowClick(Sender: TObject);
 begin
   FString.Write(Format('%s%s', [FormatDateTime('hh:nn:ss.zzz', Now), sLineBreak]));
   UpdateButtons;
-end;
-
-procedure TfrMain.BrookLibraryLoader1Load(Sender: TObject);
-begin
-  btAddNow.Enabled := True;
 end;
 
 procedure TfrMain.btShowContentClick(Sender: TObject);
