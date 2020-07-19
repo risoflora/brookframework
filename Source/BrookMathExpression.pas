@@ -23,6 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+{ Contains class to evaluate mathematical expressions. }
+
 unit BrookMathExpression;
 
 {$I BrookDefines.inc}
@@ -41,16 +43,41 @@ uses
   BrookHandledClasses;
 
 resourcestring
+  { Error message @code('Inactive math expression.'). }
   SBrookInactiveMathExpression = 'Inactive math expression.';
 
 type
-  (* experimental *)
-  TBrookMathExpressionErrorKind = (ekNone, ekUnknown, ekUnexpectedNumber,
-    ekUnexpectedWord, ekUnexpectedParens, ekMissingOperand, ekUnknownOperator,
-    ekInvalidFuncName, ekBadParens, ekTooFewFuncArgs, ekFirstArgIsNotVar,
-    ekBadVariableName, ekBadAssignment);
+  { Possible error types returned by the mathematical expression evaluator. }
+  TBrookMathExpressionErrorKind = (
+    { None error. }
+    ekNone,
+    { Error not related to evaluation. }
+    ekUnknown,
+    { Unexpected number, e.g. '(1+2)3'. }
+    ekUnexpectedNumber,
+    { Unexpected word, e.g. '(1+2)x'. }
+    ekUnexpectedWord,
+    { Unexpected parenthesis, e.g. '1(2+3)'. }
+    ekUnexpectedParens,
+    { Missing expected operand, e.g. '0^+1'. }
+    ekMissingOperand,
+    { Unknown operator, e.g. '(1+2).'. }
+    ekUnknownOperator,
+    { Invalid function name, e.g. 'unknownfunc()'. }
+    ekInvalidFuncName,
+    { Bad parenthesis, e.g. '(1+2'. }
+    ekBadParens,
+    { Too few arguments passed to a macro, e.g. '$()'. }
+    ekTooFewFuncArgs,
+    { First macro argument is not variable, e.g. '$(1)'. }
+    ekFirstArgIsNotVar,
+    { Bad variable name, e.g. '2.3.4'. }
+    ekBadVariableName,
+    { Bad assignment, e.g. '2=3'. }
+    ekBadAssignment
+  );
 
-  (* experimental *)
+  { Structured type which holds the mathematical expression errors. }
   TBrookMathExpressionError = packed record
   private
     FHandle: Psg_expr;
@@ -59,18 +86,24 @@ type
     function GetMessage: string;
     function GetHandle: Pointer;
   public
+    { Creates an instance of @code(TBrookMathExpressionError).
+      @param(AHandle[in] Math expression error handle.) }
     constructor Create(AHandle: Pointer);
+    { Nearby position of an error in the mathematical expression. }
     property Near: Integer read GetNear;
+    { Kind of an error in the mathematical expression. }
     property Kind: TBrookMathExpressionErrorKind read GetKind;
+    { Description of an error in the mathematical expression. }
     property Message: string read GetMessage;
+    { Math expression error handle. }
     property Handle: Pointer read GetHandle;
   end;
 
-  (* experimental *)
+  { Event signature used to handle errors in a mathematical expression. }
   TBrookMathExpressionErrorEvent = procedure(ASender: TObject;
     AError: TBrookMathExpressionError) of object;
 
-  (* experimental *)
+  { Structured type which holds the properties of a math expression extension. }
   TBrookMathExpressionExtension = packed record
   private
     FHandle: Psg_expr_argument;
@@ -80,18 +113,25 @@ type
     function GetIdent: string;
     function GetHandle: Pointer;
   public
+    { Creates an instance of @code(TBrookMathExpressionExtension).
+      @param(AHandle[in] Math expression extension handle.)
+      @param(AIdent[in] Function identifier.) }
     constructor Create(AHandle: Pointer; const AIdent: MarshaledAString);
+    { Indicates that extension contains arguments. }
     property HasArgs: Boolean read GetHasArgs;
+    { Function argument by its index. }
     property Args[AIndex: Integer]: Double read GetArg; default;
+    { Function identifier. }
     property Ident: string read GetIdent;
+    { Extension handle. }
     property Handle: Pointer read GetHandle;
   end;
 
-  (* experimental *)
+  { Event signature used to handle extension in a mathematical expression. }
   TBrookMathExpressionExtensionEvent = function(ASender: TObject;
     AExtension: TBrookMathExpressionExtension): Double of object;
 
-  (* experimental *)
+  { Mathematical expression evaluator. }
   TBrookMathExpression = class(TBrookHandledComponent)
   private
     FExtensions: TStringList;
@@ -125,32 +165,65 @@ type
     procedure DoClose; virtual;
     procedure CheckActive; inline;
   public
+    { Creates an instance of @code(TBrookMathExpression).
+      @param(AOwner[in] Owner component.) }
     constructor Create(AOwner: TComponent); override;
+    { Destroys an instance of @code(TBrookMathExpression). }
     destructor Destroy; override;
+    { Opens the math expression. }
     procedure Open;
+    { Closes the math expression. }
     procedure Close;
+    { Compiles a mathematical expression returning the errors if it does not
+      succeed.
+      @param(AExpression[in] Mathematical expression.)
+      @param(AError[out] Mathematical expression error.)
+      @returns(@True if compilation succeeds.) }
     function Compile(const AExpression: string;
       out AError: TBrookMathExpressionError): Boolean; overload; virtual;
+    { Compiles a mathematical expression indicating if it succeeds.
+      @param(AExpression[in] Mathematical expression.)
+      @returns(@True if compilation succeeds.) }
     function Compile(const AExpression: string): Boolean; overload; virtual;
+    { Clears a mathematical expression instance. }
     procedure Clear; virtual;
+    { Evaluates a compiled mathematical expression.
+      @returns(Evaluated mathematical expression) }
     function Evaluate: Double; virtual;
+    { Gets the value of a declared variable.
+      @param(AName[in] Name of the declared variable.)
+      @returns(Value of a declared variable.) }
     function GetVariable(const AName: string): Double; virtual;
+    { Sets a variable to the mathematical expression.
+      @param(AName[in] Name for the variable.)
+      @param(AValue[in] Value for the variable.) }
     procedure SetVariable(const AName: string; const AValue: Double); virtual;
+    { Indicates if a mathematical expression has been successfully compiled. }
     property Compiled: Boolean read FCompiled;
+    { Gets or sets a mathematical expression variable. }
     property Variables[const AName: string]: Double read GetVariable
       write SetVariable; default;
   published
+    { Activates the mathematical expression evaluator. }
     property Active: Boolean read FActive write SetActive stored IsActiveStored;
+    { Declares the mathematical expression. }
     property Expression: string read FExpression write SetExpression;
+    { Declares the list of mathematical expression extensions. }
     property Extensions: TStringList read FExtensions write SetExtensions;
+    { Event triggered when an extensions is called in the mathematical
+      expression. }
     property OnExtension: TBrookMathExpressionExtensionEvent read FOnExtension
       write FOnExtension;
+    { Event triggered when a mathematical expression compilation fails. }
     property OnError: TBrookMathExpressionErrorEvent read FOnError
       write FOnError;
+    { Event triggered when the math expression component is enabled. }
     property OnActivate: TNotifyEvent read FOnActivate write FOnActivate;
+    { Event triggered when the math expression component is disabled. }
     property OnDeactivate: TNotifyEvent read FOnDeactivate write FOnDeactivate;
   end;
 
+{ Evaluates a mathematical expression. }
 function Evaluate(const AExpression: string): Double;
 
 implementation

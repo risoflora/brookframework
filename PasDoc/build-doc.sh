@@ -62,6 +62,7 @@ pasdoc \
   ../Source/BrookHTTPUploads.pas \
   ../Source/BrookHandledClasses.pas \
   ../Source/BrookLibraryLoader.pas \
+  ../Source/BrookMathExpression.pas \
   ../Source/BrookMediaTypes.pas \
   ../Source/BrookReader.pas \
   ../Source/BrookString.pas \

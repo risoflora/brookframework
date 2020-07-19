@@ -105,6 +105,7 @@ HTTPServer_Example
 HTTPServerSSE_Example
 HTTPUpload_Example
 URLRouter_Example
+MathExpression_Example
 MediaTypes_Example
 StringMap_Example
 String_Example
@@ -126,6 +127,7 @@ Test_HTTPResponse
 Test_HTTPServer
 Test_HTTPUploads
 Test_LibraryLoader
+Test_MathExpression
 Test_MediaTypes
 Test_Reader
 Test_String
