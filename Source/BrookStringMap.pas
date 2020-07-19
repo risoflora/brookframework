@@ -60,7 +60,7 @@ type
     AOperation: TBrookStringMapOperation) of object;
 
   { Pair item of @code(TBrookStringMap). }
-  TBrookStringPair = record
+  TBrookStringPair = packed record
   private
     FName: string;
     FValue: string;

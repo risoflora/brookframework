@@ -169,7 +169,7 @@ type
     property IsUploading: Boolean read FIsUploading;
     { List of the uploaded files. }
     property Uploads: TBrookHTTPUploads read FUploads;
-    { List of the uploaded files. This is an alias to proeprty @code(Uploads). }
+    { List of the uploaded files. This is an alias to property @code(Uploads). }
     property Files: TBrookHTTPUploads read FUploads;
     { Contains the socket handle of the client. }
     property Client: Pointer read FClient;

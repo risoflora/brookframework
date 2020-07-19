@@ -43,7 +43,7 @@ type
 
   { Structured type which holds the upload properties and allows to save the
     uploaded file. }
-  TBrookHTTPUpload = record
+  TBrookHTTPUpload = packed record
   private
     FHandle: Psg_httpupld;
     FStreamHandle: Pointer;
