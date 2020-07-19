@@ -29,6 +29,7 @@ program Test_MathExpression;
 
 uses
   SysUtils,
+  StrUtils,
   Math,
   Classes,
   libsagui,
@@ -39,17 +40,27 @@ uses
   BrookMathExpression,
   Test;
 
+var
+  FakeHandle: Pointer = Pointer(1);
+  FakeComponentHandle: TComponent;
+  FakeErrType: sg_expr_err_type;
+  FakeFlag: Boolean;
+
 type
   TFakeMathExpression = class(TBrookMathExpression)
   private
     FFakeError: TBrookMathExpressionError;
-    procedure DoTestError(Sender: TObject; AError: TBrookMathExpressionError);
   public
     constructor Create(AOwner: TComponent); override;
+    procedure FakeOnError(Sender: TObject; AError: TBrookMathExpressionError);
+    function FakeOnExtension(Sender: TObject;
+      AExtension: TBrookMathExpressionExtension): Double;
+    procedure FakeOnActivate(Sender: TObject);
+    procedure FakeOnDeactivate(Sender: TObject);
     property FakeError: TBrookMathExpressionError read FFakeError;
   end;
 
-procedure TFakeMathExpression.DoTestError(Sender: TObject;
+procedure TFakeMathExpression.FakeOnError(Sender: TObject;
   AError: TBrookMathExpressionError);
 begin
   FFakeError := AError;
@@ -58,14 +69,41 @@ end;
 constructor TFakeMathExpression.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  OnError := DoTestError;
+  OnExtension := FakeOnExtension;
+  OnError := FakeOnError;
+  OnActivate := FakeOnActivate;
+  OnDeactivate := FakeOnDeactivate;
   FFakeError := Default(TBrookMathExpressionError);
 end;
 
-var
-  FakeHandle: Pointer = Pointer(1);
-  FakeComponentHandle: TComponent;
-  FakeErrType: sg_expr_err_type;
+{$IFDEF FPC}
+ {$PUSH}{$WARN 6058 OFF}
+{$ENDIF}
+
+function TFakeMathExpression.FakeOnExtension(Sender: TObject;
+  AExtension: TBrookMathExpressionExtension): Double;
+begin
+  if AExtension.HasArgs then
+    case IndexText(AExtension.Ident, ['mysum', 'mymult']) of
+      0: Exit(AExtension.Args[0] + AExtension.Args[1]);
+      1: Exit(AExtension.Args[0] * AExtension.Args[1]);
+    end;
+  Result := NaN;
+end;
+
+{$IFDEF FPC}
+ {$POP}
+{$ENDIF}
+
+procedure TFakeMathExpression.FakeOnActivate(Sender: TObject);
+begin
+  FakeFlag := True;
+end;
+
+procedure TFakeMathExpression.FakeOnDeactivate(Sender: TObject);
+begin
+  FakeFlag := True;
+end;
 
 function fake_expr_near(expr: Psg_expr): cint; cdecl;
 begin
@@ -240,8 +278,8 @@ begin
   sg_expr_arg := fake_expr_arg;
   Assert(E1.Args[0].ToString = NaN.ToString);
   Assert(E1[0].ToString = NaN.ToString);
-  Assert(E2.Args[123].ToString = 12.34.ToString);
-  Assert(E2[123].ToString = 12.34.ToString);
+  Assert(E2.Args[123].ToString = Double(12.34).ToString);
+  Assert(E2[123].ToString = Double(12.34).ToString);
 
   TBrookLibraryLoader.Unload;
   try
@@ -419,11 +457,218 @@ begin
   M := TBrookMathExpression.Create(nil);
   try
     M.Open;
-    Assert(M.Compile('1.2+3.4'));
-    Assert(M.Evaluate.ToString = 4.6.ToString);
+    Assert(not M.Compiled);
+    M.Expression := '1.2+3.4';
+    Assert(M.Evaluate.ToString = Double(4.6).ToString);
+    Assert(M.Compiled);
+    Assert(M.Evaluate.ToString = Double(4.6).ToString);
   finally
     M.Free;
   end;
+end;
+
+procedure DoMathExpressionGetVariableInactiveMathExpression(
+  const AArgs: array of const);
+begin
+  TBrookMathExpression(AArgs[0].VObject).GetVariable('foo');
+end;
+
+procedure Test_MathExpressionGetVariable;
+var
+  M: TBrookMathExpression;
+begin
+  M := TBrookMathExpression.Create(nil);
+  try
+    M.Open;
+    Assert(M.GetVariable('foo').ToString = Double(0).ToString);
+    M.SetVariable('foo', 12.34);
+    Assert(M.GetVariable('foo').ToString = Double(12.34).ToString);
+    M.Expression := 'foo=56.78';
+    M.Evaluate;
+    Assert(M.GetVariable('foo').ToString = Double(56.78).ToString);
+
+    M.Close;
+    AssertExcept(DoMathExpressionGetVariableInactiveMathExpression,
+      EInvalidOpException, SBrookInactiveMathExpression, [M]);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure DoMathExpressionSetVariableInactiveMathExpression(
+  const AArgs: array of const);
+begin
+  TBrookMathExpression(AArgs[0].VObject).SetVariable('foo', 12.34);
+end;
+
+procedure Test_MathExpressionSetVariable;
+var
+  M: TBrookMathExpression;
+begin
+  M := TBrookMathExpression.Create(nil);
+  try
+    M.Open;
+    Assert(M.GetVariable('foo').ToString = Double(0).ToString);
+    M.SetVariable('foo', 12.34);
+    Assert(M.GetVariable('foo').ToString = Double(12.34).ToString);
+    M.Expression := 'foo+56.78';
+    Assert(M.Evaluate.ToString = Double(69.12).ToString);
+
+    M.Close;
+    AssertExcept(DoMathExpressionSetVariableInactiveMathExpression,
+      EInvalidOpException, SBrookInactiveMathExpression, [M]);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionCompiled;
+var
+  M: TBrookMathExpression;
+begin
+  M := TBrookMathExpression.Create(nil);
+  try
+    M.Open;
+    Assert(not M.Compiled);
+    M.Compile('1+2');
+    Assert(M.Compiled);
+
+    M.Close;
+    Assert(not M.Compiled);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionVariables;
+var
+  M: TBrookMathExpression;
+begin
+  M := TBrookMathExpression.Create(nil);
+  try
+    M.Open;
+    M.Variables['foo'] := 12.34;
+    M['bar'] := 56.78;
+    M.Expression := 'foo+bar';
+    Assert(M.Evaluate.ToString = Double(69.12).ToString);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionActive;
+var
+  M: TBrookMathExpression;
+begin
+  M := TBrookMathExpression.Create(nil);
+  try
+    Assert(not M.Active);
+    M.Active := not M.Active;
+    Assert(M.Active);
+    M.Active := True;
+    Assert(M.Active);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionExpression;
+var
+  M: TBrookMathExpression;
+begin
+  M := TBrookMathExpression.Create(nil);
+  try
+    M.Open;
+    Assert(M.Expression.IsEmpty);
+    M.Expression := '1.2+3.4';
+    Assert(M.Expression = '1.2+3.4');
+    Assert(M.Evaluate.ToString = Double(4.6).ToString);
+    Assert(M.Compiled);
+    M.Expression := '1+2';
+    Assert(not M.Compiled);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionExtensions;
+var
+  M: TFakeMathExpression;
+begin
+  M := TFakeMathExpression.Create(nil);
+  try
+    M.Open;
+    Assert(Assigned(M.Extensions));
+    M.Expression := 'mysum(1.2, 3.4) + mymult(5.6, 7.8)';
+    Assert(M.Evaluate.ToString = Double(0).ToString);
+    M.Extensions.AddStrings(['mysum', 'mymult']);
+    Assert(M.Evaluate.ToString = Double(48.28).ToString);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionOnExtension;
+begin
+  Test_MathExpressionExtensions;
+end;
+
+procedure Test_MathExpressionOnError;
+var
+  M: TFakeMathExpression;
+begin
+  M := TFakeMathExpression.Create(nil);
+  try
+    M.Open;
+    Assert(not M.Compile('(1+2'));
+    Assert(M.FakeError.Near = 4);
+    Assert(M.FakeError.Message.Trim = 'Bad parenthesis.');
+    Assert(M.FakeError.Kind = ekBadParens);
+    Assert(not M.Compile('1++2'));
+    Assert(M.FakeError.Near = 2);
+    Assert(M.FakeError.Message.Trim = 'Missing expected operand.');
+    Assert(M.FakeError.Kind = ekMissingOperand);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionOnActivate;
+var
+  M: TFakeMathExpression;
+begin
+  M := TFakeMathExpression.Create(nil);
+  try
+    M.OnActivate := M.FakeOnActivate;
+    FakeFlag := False;
+    M.Open;
+    Assert(FakeFlag);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpressionOnDeactivate;
+var
+  M: TFakeMathExpression;
+begin
+  M := TFakeMathExpression.Create(nil);
+  try
+    M.Open;
+    M.OnDeactivate := M.FakeOnDeactivate;
+    FakeFlag := False;
+    M.Close;
+    Assert(FakeFlag);
+  finally
+    M.Free;
+  end;
+end;
+
+procedure Test_MathExpression_Evaluate;
+begin
+  Assert(Evaluate('').ToString = Double(0).ToString);
+  Assert(Evaluate('1.2+3.4').ToString = Double(4.6).ToString);
+  Assert(Evaluate('foo=9.8, bar=7.6, foo + bar').ToString = Double(17.4).ToString);
 end;
 
 begin
@@ -449,6 +694,18 @@ begin
     Test_MathExpressionCompile;
     Test_MathExpressionClear;
     Test_MathExpressionEvaluate;
+    Test_MathExpressionGetVariable;
+    Test_MathExpressionSetVariable;
+    Test_MathExpressionCompiled;
+    Test_MathExpressionVariables;
+    Test_MathExpressionActive;
+    Test_MathExpressionExpression;
+    Test_MathExpressionExtensions;
+    Test_MathExpressionOnExtension;
+    Test_MathExpressionOnError;
+    Test_MathExpressionOnActivate;
+    Test_MathExpressionOnDeactivate;
+    Test_MathExpression_Evaluate;
   finally
     TBrookLibraryLoader.Unload;
   end;

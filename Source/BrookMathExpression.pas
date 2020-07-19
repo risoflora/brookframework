@@ -379,26 +379,6 @@ begin
       DoClose;
 end;
 
-function TBrookMathExpression.GetVariable(const AName: string): Double;
-var
-  M: TMarshaller;
-begin
-  CheckActive;
-  SgLib.Check;
-  Result := sg_expr_var(FHandle, M.ToCString(AName), Length(AName));
-end;
-
-procedure TBrookMathExpression.SetVariable(const AName: string;
-  const AValue: Double);
-var
-  M: TMarshaller;
-begin
-  CheckActive;
-  SgLib.Check;
-  SgLib.CheckLastError(sg_expr_set_var(FHandle, M.ToCString(AName),
-    Length(AName), AValue));
-end;
-
 function TBrookMathExpression.Compile(const AExpression: string;
   out AError: TBrookMathExpressionError): Boolean;
 var
@@ -470,6 +450,24 @@ begin
   if not FCompiled then
     Compile(FExpression);
   Result := sg_expr_eval(FHandle);
+end;
+
+function TBrookMathExpression.GetVariable(const AName: string): Double;
+var
+  M: TMarshaller;
+begin
+  CheckActive;
+  Result := sg_expr_var(FHandle, M.ToCString(AName), Length(AName));
+end;
+
+procedure TBrookMathExpression.SetVariable(const AName: string;
+  const AValue: Double);
+var
+  M: TMarshaller;
+begin
+  CheckActive;
+  SgLib.CheckLastError(sg_expr_set_var(FHandle, M.ToCString(AName),
+    Length(AName), AValue));
 end;
 
 procedure TBrookMathExpression.Open;

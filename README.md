@@ -80,7 +80,7 @@ end.
 
 There are other examples available in the [`Examples/`](https://github.com/risoflora/brookframework/tree/master/Examples) directory.
 
-# OSes/compilers
+# Targets
 
 Successfully tested on:
 
@@ -91,7 +91,7 @@ Successfully tested on:
 compiled using:
 
 - Delphi XE family (Rio)
-- Lazarus / Free Pascal (Lazarus 2.0+ / FPC 3.0+)
+- Lazarus / Free Pascal (Lazarus 2.0+ / FPC 3.2+)
 
 # Versioning
 
