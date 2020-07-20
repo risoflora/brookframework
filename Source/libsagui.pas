@@ -71,7 +71,7 @@ const
 
   SG_ERR_SIZE = 256;
 
-{$IF (NOT DEFINED(FPC)) OR DEFINED(VER3_0)}
+{$IF NOT DEFINED(FPC)}
   SharedSuffix =
  {$IF DEFINED(MSWINDOWS)}
     'dll'
