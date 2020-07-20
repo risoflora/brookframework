@@ -1,0 +1,101 @@
+object frMain: TfrMain
+  Left = 259
+  Height = 210
+  Top = 149
+  Width = 320
+  Caption = 'Math expression example'
+  ClientHeight = 210
+  ClientWidth = 320
+  OnCreate = FormCreate
+  Position = poDesktopCenter
+  LCLVersion = '2.0.10.0'
+  object lbExpression: TLabel
+    Left = 4
+    Height = 15
+    Top = 2
+    Width = 312
+    Align = alTop
+    BorderSpacing.Left = 4
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 2
+    Caption = 'Expression:'
+    FocusControl = edExpression
+    ParentColor = False
+  end
+  object edExpression: TEdit
+    Left = 4
+    Height = 23
+    Top = 19
+    Width = 312
+    Align = alTop
+    BorderSpacing.Left = 4
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 2
+    TabOrder = 0
+  end
+  object lbVariables: TLabel
+    Left = 4
+    Height = 15
+    Top = 44
+    Width = 312
+    Align = alTop
+    BorderSpacing.Left = 4
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 2
+    Caption = 'Variables:'
+    FocusControl = gdVariables
+    ParentColor = False
+  end
+  object gdVariables: TStringGrid
+    Left = 4
+    Height = 118
+    Top = 61
+    Width = 312
+    Align = alClient
+    BorderSpacing.Left = 4
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 2
+    ColCount = 2
+    FixedCols = 0
+    RowCount = 100
+    TabOrder = 1
+    ColWidths = (
+      110
+      110
+    )
+    Cells = (
+      2
+      0
+      0
+      'Name'
+      1
+      0
+      'Value'
+    )
+  end
+  object btCalculate: TButton
+    Left = 4
+    Height = 25
+    Top = 181
+    Width = 312
+    Align = alBottom
+    BorderSpacing.Left = 4
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 4
+    Caption = 'Calculate now!'
+    Default = True
+    OnClick = btCalculateClick
+    TabOrder = 2
+  end
+  object BrookMathExpression1: TBrookMathExpression
+    OnExtension = BrookMathExpression1Extension
+    OnError = BrookMathExpression1Error
+    Left = 96
+    Top = 112
+  end
+end

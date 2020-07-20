@@ -1,0 +1,97 @@
+object frMain: TfrMain
+  Left = 0
+  Top = 0
+  Caption = 'Math expression example'
+  ClientHeight = 220
+  ClientWidth = 360
+  Position = DesktopCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object lbExpression: TLabel
+    Align = Top
+    FocusControl = edExpression
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 4.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Position.X = 4.000000000000000000
+    Position.Y = 4.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Expression:'
+  end
+  object edExpression: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Align = Top
+    Position.X = 4.000000000000000000
+    Position.Y = 25.000000000000000000
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object lbVariables: TLabel
+    Align = Top
+    FocusControl = gdVariables
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Position.X = 4.000000000000000000
+    Position.Y = 51.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Variables:'
+  end
+  object gdVariables: TStringGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 2.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 118.000000000000000000
+    Size.PlatformDefault = False
+    Viewport.Width = 332.000000000000000000
+    Viewport.Height = 93.000000000000000000
+    object clName: TStringColumn
+      Header = 'Name'
+      Size.Width = 140.000000000000000000
+    end
+    object clValue: TStringColumn
+      Header = 'Value'
+      Size.Width = 140.000000000000000000
+    end
+  end
+  object btCalculate: TButton
+    Align = Bottom
+    Default = True
+    Margins.Left = 4.000000000000000000
+    Margins.Top = 2.000000000000000000
+    Margins.Right = 4.000000000000000000
+    Margins.Bottom = 4.000000000000000000
+    Position.X = 4.000000000000000000
+    Position.Y = 194.000000000000000000
+    Size.Width = 352.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Calculate now!'
+    OnClick = btCalculateClick
+  end
+  object BrookMathExpression1: TBrookMathExpression
+    OnExtension = BrookMathExpression1Extension
+    OnError = BrookMathExpression1Error
+    Left = 64
+    Top = 104
+  end
+end
