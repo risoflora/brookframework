@@ -1,11 +1,11 @@
 object frMain: TfrMain
   Left = 259
-  Height = 210
+  Height = 230
   Top = 149
-  Width = 320
+  Width = 410
   Caption = 'Math expression example'
-  ClientHeight = 210
-  ClientWidth = 320
+  ClientHeight = 230
+  ClientWidth = 410
   OnCreate = FormCreate
   Position = poDesktopCenter
   LCLVersion = '2.0.10.0'
@@ -13,7 +13,7 @@ object frMain: TfrMain
     Left = 4
     Height = 15
     Top = 2
-    Width = 312
+    Width = 402
     Align = alTop
     BorderSpacing.Left = 4
     BorderSpacing.Top = 2
@@ -27,7 +27,7 @@ object frMain: TfrMain
     Left = 4
     Height = 23
     Top = 19
-    Width = 312
+    Width = 402
     Align = alTop
     BorderSpacing.Left = 4
     BorderSpacing.Top = 2
@@ -39,7 +39,7 @@ object frMain: TfrMain
     Left = 4
     Height = 15
     Top = 44
-    Width = 312
+    Width = 402
     Align = alTop
     BorderSpacing.Left = 4
     BorderSpacing.Top = 2
@@ -51,9 +51,9 @@ object frMain: TfrMain
   end
   object gdVariables: TStringGrid
     Left = 4
-    Height = 118
+    Height = 138
     Top = 61
-    Width = 312
+    Width = 402
     Align = alClient
     BorderSpacing.Left = 4
     BorderSpacing.Top = 2
@@ -65,8 +65,8 @@ object frMain: TfrMain
     RowCount = 100
     TabOrder = 1
     ColWidths = (
-      110
-      110
+      160
+      160
     )
     Cells = (
       2
@@ -81,8 +81,8 @@ object frMain: TfrMain
   object btCalculate: TButton
     Left = 4
     Height = 25
-    Top = 181
-    Width = 312
+    Top = 201
+    Width = 402
     Align = alBottom
     BorderSpacing.Left = 4
     BorderSpacing.Top = 2

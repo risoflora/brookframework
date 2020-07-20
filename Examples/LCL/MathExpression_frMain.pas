@@ -69,13 +69,14 @@ implementation
 procedure TfrMain.FormCreate(Sender: TObject);
 begin
   FormatSettings.DecimalSeparator := '.';
-  edExpression.Text := Concat(Double(1.2).ToString, ' + ', Double(3.4).ToString,
-    ' + mysum(foo, bar) / mymult(foo, bar)');
+  edExpression.Text := Concat('$(sum, $1 + $2), ', Double(1.2).ToString, ' + ',
+    Double(3.4).ToString, ' + mysum(foo, bar) / mymult(foo, bar) + sum(1.7, 2.46)');
   BrookMathExpression1.Extensions.AddStrings(['mysum', 'mymult']);
   gdVariables.Cells[0, 1] := 'foo';
   gdVariables.Cells[0, 2] := 'bar';
   gdVariables.Cells[1, 1] := Double(1.2).ToString;
   gdVariables.Cells[1, 2] := Double(3.4).ToString;
+  ActiveControl := btCalculate;
 end;
 
 procedure TfrMain.BrookMathExpression1Error(Sender: TObject;

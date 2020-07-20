@@ -25,7 +25,7 @@ Brook is a cross-platform microframework which helps to develop web Pascal appli
 - **Dual stack:**
   - IPv4 and IPv6 on top of a single socket.
 - **Basic authentication:**
-  - For standard login using user name and password.
+  - For standard login using username and password.
 - **Upload/download:**
   - Static body and payload.
   - Content streaming for real-time applications.
