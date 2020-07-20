@@ -56,7 +56,7 @@ const
 {$ENDIF};
 
 type
-  { Event signature used by stuff that handle errors.
+  { Event signature used by stuff that handles errors.
     @param(ASender[in] Sender object.)
     @param(AException[in] Exception object.) }
   TBrookErrorEvent = procedure(ASender: TObject;

@@ -60,7 +60,7 @@ type
     { Reads a line as static string.
       @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; virtual; abstract;
-    { Reads a line returning it as static string.
+    { Read a line returning it as a static string.
       @returns(Line read as static string.) }
     function Read: string; overload; virtual; abstract;
     { @True if the reader has reached the End-Of-File. }
@@ -122,7 +122,7 @@ type
     { Reads a line as static string.
       @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; override;
-    { Reads a line returning it as static string.
+    { Read a line returning it as a static string.
       @returns(Line read as static string.) }
     function Read: string; overload; override;
     { Source stream containing the lines to be read. }
@@ -156,7 +156,7 @@ type
     { Reads a line returning it as bytes.
       @returns(Line read as bytes.) }
     function ReadBytes: TBytes; overload; override;
-    { Reads a line as static string.
+    { Read a line as a static string.
       @param(ALine[out] read as static string.) }
     procedure Read(out ALine: string); overload; override;
     { Reads a line returning it as static string.

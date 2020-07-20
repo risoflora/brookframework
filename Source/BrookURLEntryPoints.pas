@@ -89,7 +89,7 @@ type
     constructor Create(ACollection: TCollection); override;
     { Checks if the entry-point name is valid. }
     procedure Validate; inline;
-    { User-defined data to be stored temporally in the entry-point object. }
+    { User-defined data to be stored temporarily in the entry-point object. }
     property UserData: Pointer read GetUserData write FUserData;
   published
     { Entry-point item name. }

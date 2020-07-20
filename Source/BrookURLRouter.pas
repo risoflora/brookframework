@@ -154,7 +154,7 @@ type
     property RawPattern: string read GetRawPattern;
     { Contains the route path. }
     property Path: string read GetPath;
-    { User-defined data to be stored temporally in the route object. }
+    { User-defined data to be stored temporarily in the route object. }
     property UserData: Pointer read GetUserData;
   published
     { Default route called if URL does not match any registered route. }
@@ -213,7 +213,7 @@ type
     destructor Destroy; override;
     { Gets the default class for route item creation. }
     class function GetRouterClass: TBrookURLRouteClass; virtual;
-    { Creates an enumerator to iterate the routes though @code(for..in). }
+    { Creates an enumerator to iterate the routes through @code(for..in). }
     function GetEnumerator: TBrookURLRoutesEnumerator;
     { Generates a new route pattern. }
     function NewPattern: string; virtual;
@@ -280,7 +280,7 @@ type
     constructor Create(AOwner: TComponent); override;
     { Destroys an instance of @code(TBrookURLRouter). }
     destructor Destroy; override;
-    { Creates an enumerator to iterate the routes though @code(for..in). }
+    { Creates an enumerator to iterate the routes through @code(for..in). }
     function GetEnumerator: TBrookURLRoutesEnumerator;
     { Adds a new item to the routes list.
       @returns(Route item.) }

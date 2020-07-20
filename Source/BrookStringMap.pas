@@ -165,7 +165,7 @@ type
       @param(AName[in] Name of the pair.)
       @returns(@True when map contains the pair, @False otherwise.) }
     function Contains(const AName: string): Boolean; virtual;
-    { Gets a pair by name and return its value.
+    { Gets a pair by name and returns its value.
       @param(AName[in] Name of the pair.)
       @returns(Pair value.) }
     function Get(const AName: string): string; virtual;

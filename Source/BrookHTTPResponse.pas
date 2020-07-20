@@ -117,7 +117,7 @@ type
       @param(AMaxSize[in] Maximum allowed file size. Use zero for no limit.)
       @param(AOffset[in] Offset to start reading from in the file to be sent.)
       @param(AFileName[in] Path of the file to be sent.)
-      @param(ADownloaded[in] If @True it offer the file as download.)
+      @param(ADownloaded[in] If @True it offers the file as download.)
       @param(AStatus[in] HTTP status code.) }
     procedure SendFile(ASize: NativeUInt; AMaxSize, AOffset: UInt64;
       const AFileName: TFileName; ADownloaded: Boolean; AStatus: Word); virtual;
@@ -156,7 +156,7 @@ type
       @param(AContentType[in] Content type.) }
     procedure SendAndRedirect(const AValue, ADestination,
       AContentType: string); overload; virtual;
-    { Offer a file as download.
+    { Offers a file as download.
       @param(AFileName[in] Path of the file to be sent.)
       @param(AStatus[in] HTTP status code.) }
     procedure Download(const AFileName: TFileName;
@@ -166,7 +166,7 @@ type
       @param(AStatus[in] HTTP status code.) }
     procedure Render(const AFileName: TFileName;
       AStatus: Word); overload; virtual;
-    { Offer a file as download.
+    { Offers a file as download.
       @param(AFileName[in] Path of the file to be sent.) }
     procedure Download(const AFileName: TFileName); overload; virtual;
     { Sends a file to be rendered.
@@ -176,7 +176,7 @@ type
       object. }
     procedure Clear; virtual;
     { Determines if the content must be compressed while sending.
-      The compression is done by ZLib library using the DEFLATE compression
+      The compression is done by the ZLib library using the DEFLATE compression
       algorithm. It uses the Gzip format when the content is a file. }
     property Compressed: Boolean read FCompressed write FCompressed;
     { Hash table containing the headers to be sent to the client. }
