@@ -28,7 +28,7 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with Brook framework; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"/>
-    <Version Major="5" Minor="1"/>
+    <Version Major="5" Minor="1" Release="1"/>
     <Files Count="22">
       <Item1>
         <Filename Value="../Source/BrookDefines.inc"/>

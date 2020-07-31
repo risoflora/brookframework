@@ -369,7 +369,7 @@ end;
 
 class function TBrookMediaTypes.IsText(const AType: string): Boolean;
 begin
-  Result := IsValid(AType) and AType.StartsWith('text/');
+  Result := AType.StartsWith('text/') and IsValid(AType);
 end;
 
 class function TBrookMediaTypes.IsExt(const AExt: string): Boolean;
