@@ -508,10 +508,10 @@ begin
   M := TBrookMathExpression.Create(nil);
   try
     M.Open;
+    M.Expression := 'foo+56.78';
     Assert(M.GetVariable('foo').ToString = Double(0).ToString);
     M.SetVariable('foo', 12.34);
     Assert(M.GetVariable('foo').ToString = Double(12.34).ToString);
-    M.Expression := 'foo+56.78';
     Assert(M.Evaluate.ToString = Double(69.12).ToString);
 
     M.Close;
@@ -547,9 +547,9 @@ begin
   M := TBrookMathExpression.Create(nil);
   try
     M.Open;
+    M.Expression := 'foo+bar';
     M.Variables['foo'] := 12.34;
     M['bar'] := 56.78;
-    M.Expression := 'foo+bar';
     Assert(M.Evaluate.ToString = Double(69.12).ToString);
   finally
     M.Free;
@@ -600,7 +600,7 @@ begin
     M.Open;
     Assert(Assigned(M.Extensions));
     M.Expression := 'mysum(1.2, 3.4) + mymult(5.6, 7.8)';
-    Assert(M.Evaluate.ToString = Double(0).ToString);
+    Assert(M.Evaluate.ToString = NaN.ToString);
     M.Extensions.AddStrings(['mysum', 'mymult']);
     Assert(M.Evaluate.ToString = Double(48.28).ToString);
   finally
@@ -666,7 +666,7 @@ end;
 
 procedure Test_MathExpression_Evaluate;
 begin
-  Assert(Evaluate('').ToString = Double(0).ToString);
+  Assert(Evaluate('').ToString = NaN.ToString);
   Assert(Evaluate('1.2+3.4').ToString = Double(4.6).ToString);
   Assert(Evaluate('foo=9.8, bar=7.6, foo + bar').ToString = Double(17.4).ToString);
 end;
