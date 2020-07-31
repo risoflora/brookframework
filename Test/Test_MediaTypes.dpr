@@ -110,10 +110,10 @@ procedure Test_MediaTypesIsValid;
 begin
   Assert(not TBrookMediaTypes.IsValid(''));
   Assert(not TBrookMediaTypes.IsValid('abc'));
-  Assert(not TBrookMediaTypes.IsValid('abc/'));
-  Assert(not TBrookMediaTypes.IsValid('/abc'));
-  Assert(not TBrookMediaTypes.IsValid('/abc/def/def'));
+  Assert(TBrookMediaTypes.IsValid('abc/'));
+  Assert(TBrookMediaTypes.IsValid('/abc'));
   Assert(TBrookMediaTypes.IsValid('abc/def'));
+  Assert(TBrookMediaTypes.IsValid('/abc/def/def'));
 end;
 
 procedure Test_MediaTypesIsText;

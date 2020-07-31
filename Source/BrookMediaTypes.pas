@@ -363,8 +363,7 @@ end;
 
 class function TBrookMediaTypes.IsValid(const AType: string): Boolean;
 begin
-  Result := (Length(AType) > 0) and
-    (Length(AType.Split(['/'], TStringSplitOptions.ExcludeEmpty)) = 2);
+  Result := AType.Length > 3;
 end;
 
 class function TBrookMediaTypes.IsText(const AType: string): Boolean;
