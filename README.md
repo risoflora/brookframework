@@ -122,11 +122,11 @@ It will create a directory named `brookframework` filled with the source code.
 
 Brook framework is totally open source and would not be possible without our [contributors](https://github.com/risoflora/brookframework/blob/master/THANKS). If you want to submit contributions, please fork the project on GitHub and send a pull request. You retain the copyright on your contributions. If you have questions, open a new issue at the [issues page](https://github.com/risoflora/brookframework/issues). For donations to support this project, please click the button below.
 
-[![Support this project via PayPal](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=silvioprog%40gmail%2ecom&lc=US&item_name=brookframework&item_number=brookframework&currency_code=USD&bn=PP%2dDonationsBF%3aproject%2dsupport%2ejpg%3aNonHosted)
+[![Support this project via PayPal](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=silvioprog%40gmail%2ecom&lc=US&item_name=brookframework&item_number=brookframework&currency_code=USD&bn=PP%2dDonationsBF%3aproject%2dsupport%2ejpg%3aNonHosted) [![Support this project via PagSeguro](https://stc.pagseguro.uol.com.br/public/img/botoes/doacoes/120x53-doar.gif)](https://pag.ae/7WgS8EENR)
 
-If you are Brazilian and want to donate in BRL, please use [this link](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=GE9VT768TLP74&item_name=brookframework&currency_code=BRL&source=url) or make an identified [bank deposit](https://drive.google.com/file/d/1CQWoDVLnepbs29enY5CylAw_omNvit5M/view?usp=sharing).
+If you are Brazilian and want to donate using more options in BRL, please make an identified [Nubank deposit](https://drive.google.com/file/d/1CQWoDVLnepbs29enY5CylAw_omNvit5M/view?usp=sharing) or use [this PayPal link](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=GE9VT768TLP74&item_name=brookframework&currency_code=BRL&source=url).
 
-See the name of all donors in [DONORS](https://github.com/risoflora/brookframework/tree/master/DONORS) file.
+See the name of all donors in [DONORS](https://github.com/risoflora/brookframework/tree/master/DONORS) file. :green_heart:
 
 # Support
 

@@ -233,7 +233,7 @@ var
   M: TMarshaller;
 begin
   SgLib.Check;
-  Result := sg_expr_calc(M.ToCString(AExpression), Length(AExpression));
+  Result := sg_expr_calc(M.ToCString(AExpression), M.Length(AExpression));
 end;
 
 { TBrookMathExpressionError }
@@ -483,7 +483,7 @@ begin
     FExtensionsHandle[I] := EX;
   end;
   FExtensionsHandle[FExtensions.Count] := Default(sg_expr_extension);
-  R := sg_expr_compile(FHandle, M.ToCString(AExpression), Length(AExpression),
+  R := sg_expr_compile(FHandle, M.ToCString(AExpression), M.Length(AExpression),
     @FExtensionsHandle[0]);
   FCompiled := R = 0;
   if not FCompiled then
@@ -530,7 +530,7 @@ var
   M: TMarshaller;
 begin
   CheckActive;
-  Result := sg_expr_var(FHandle, M.ToCString(AName), Length(AName));
+  Result := sg_expr_var(FHandle, M.ToCString(AName), M.Length(AName));
 end;
 
 procedure TBrookMathExpression.SetVariable(const AName: string;
@@ -540,7 +540,7 @@ var
 begin
   CheckActive;
   SgLib.CheckLastError(sg_expr_set_var(FHandle, M.ToCString(AName),
-    Length(AName), AValue));
+    M.Length(AName), AValue));
 end;
 
 procedure TBrookMathExpression.Open;

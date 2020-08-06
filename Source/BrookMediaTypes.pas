@@ -534,7 +534,7 @@ begin
   while not FReader.EOF do
   begin
     VLine := Trim(FReader.Read);
-    Delete(VLine, Length(VLine), Length(';'));
+    System.Delete(VLine, Length(VLine), Length(';'));
     if (Length(VLine) > 0) and (VLine[1] <> '#') and (VLine <> 'types ') then
     begin
       VPair := VLine.Split([' '], TStringSplitOptions.ExcludeEmpty);

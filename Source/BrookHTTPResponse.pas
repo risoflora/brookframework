@@ -302,7 +302,7 @@ begin
     CheckZLib(R);
   end
   else
-    R := sg_httpres_sendbinary(FHandle, M.ToCString(AValue), Length(AValue),
+    R := sg_httpres_sendbinary(FHandle, M.ToCString(AValue), M.Length(AValue),
       M.ToCString(AContentType), AStatus);
   CheckAlreadySent(R);
   SgLib.CheckLastError(R);

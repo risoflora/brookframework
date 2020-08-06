@@ -59,6 +59,7 @@ type
   TMarshallerHelper = record helper for TMarshaller
 {$ENDIF}
   public
+    function Length(const S: string): Integer; inline;
     function ToCString(const S: string): MarshaledAString; inline;
     function ToCNullableString(const S: string): MarshaledAString; inline;
   end;
@@ -90,6 +91,12 @@ begin
 end;
 
 { TMarshaller* }
+
+function {$IFDEF FPC}TMarshaller{$ELSE}TMarshallerHelper{$ENDIF}.Length(
+  const S: string): Integer;
+begin
+  Result := {$IFDEF FPC}S.Length{$ELSE}System.Length(UTF8String(S)){$ENDIF};
+end;
 
 function {$IFDEF FPC}TMarshaller{$ELSE}TMarshallerHelper{$ENDIF}.ToCString(
   const S: string): MarshaledAString;
