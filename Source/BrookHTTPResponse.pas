@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -175,6 +175,8 @@ type
     { Clears all headers, cookies, statuses and internal buffers of the response
       object. }
     procedure Clear; virtual;
+    { Checks if the response is empty. }
+    function IsEmpty: Boolean;
     { Determines if the content must be compressed while sending.
       The compression is done by the ZLib library using the DEFLATE compression
       algorithm. It uses the Gzip format when the content is a file. }
@@ -183,6 +185,8 @@ type
     property Headers: TBrookStringMap read FHeaders;
     { Cookies to be sent to the client. }
     property Cookies: TBrookHTTPCookies read FCookies write SetCookies;
+    { Determines if the response is empty. }
+    property Empty: Boolean read IsEmpty;
   end;
 
 implementation
@@ -475,6 +479,12 @@ procedure TBrookHTTPResponse.Clear;
 begin
   SgLib.Check;
   SgLib.CheckLastError(sg_httpres_clear(FHandle));
+end;
+
+function TBrookHTTPResponse.IsEmpty: Boolean;
+begin
+  SgLib.Check;
+  Result := sg_httpres_is_empty(FHandle);
 end;
 
 end.

@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,6 +46,7 @@ type
     WasCompressed: Boolean;
     LastStatus: Word;
     ErrorCode: Integer;
+    Empty: Boolean;
   end;
 
   TFakeStringStream = class(TStringStream)
@@ -273,6 +274,12 @@ begin
   Result := FakeResponse.ErrorCode;
 end;
 
+function fake_httpres_is_empty(res: Psg_httpres): cbool; cdecl;
+begin
+  Assert(res = FakeResponseHandle);
+  Result := FakeResponse.Empty;
+end;
+
 procedure AssignFakeAPI; inline;
 begin
   sg_httpres_headers := fake_httpres_headers;
@@ -286,6 +293,7 @@ begin
   sg_httpres_clear := fake_httpres_clear;
   sg_httpres_zsendfile2 := fake_httpres_zsendfile2;
   sg_httpres_sendfile2 := fake_httpres_sendfile2;
+  sg_httpres_is_empty := fake_httpres_is_empty;
 end;
 
 procedure Test_HTTPResponseCreate;
@@ -721,6 +729,22 @@ begin
   end;
 end;
 
+procedure Test_HTTPResponseIsEmpty;
+var
+  R: TBrookHTTPResponse;
+begin
+  AssignFakeAPI;
+  R := TBrookHTTPResponse.Create(FakeResponseHandle);
+  try
+    FakeResponse.Empty := False;
+    Assert(not R.IsEmpty);
+    FakeResponse.Empty := True;
+    Assert(R.IsEmpty);
+  finally
+    R.Free;
+  end;
+end;
+
 procedure Test_HTTPResponseCompressed;
 var
   R: TBrookHTTPResponse;
@@ -752,6 +776,38 @@ begin
   end;
 end;
 
+procedure Test_HTTPResponseCookies;
+var
+  R: TBrookHTTPResponse;
+begin
+  AssignFakeAPI;
+  R := TBrookHTTPResponse.Create(FakeResponseHandle);
+  try
+    Assert(R.Cookies.Count = 0);
+    R.Cookies.Add;
+    R.Cookies.Add;
+    Assert(R.Cookies.Count = 2);
+  finally
+    R.Free;
+  end;
+end;
+
+procedure Test_HTTPResponseEmpty;
+var
+  R: TBrookHTTPResponse;
+begin
+  AssignFakeAPI;
+  R := TBrookHTTPResponse.Create(FakeResponseHandle);
+  try
+    FakeResponse.Empty := False;
+    Assert(not R.Empty);
+    FakeResponse.Empty := True;
+    Assert(R.Empty);
+  finally
+    R.Free;
+  end;
+end;
+
 begin
 {$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
   ReportMemoryLeaksOnShutdown := True;
@@ -774,8 +830,11 @@ begin
     Test_HTTPResponseDownload;
     Test_HTTPResponseRender;
     Test_HTTPResponseClear;
+    Test_HTTPResponseIsEmpty;
     Test_HTTPResponseCompressed;
     Test_HTTPResponseHeaders;
+    Test_HTTPResponseCookies;
+    Test_HTTPResponseEmpty;
   finally
     TBrookLibraryLoader.Unload;
     FakeResponse.Free;

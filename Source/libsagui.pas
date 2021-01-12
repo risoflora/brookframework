@@ -7,7 +7,7 @@
  *
  * Cross-platform library which helps to develop web servers or frameworks.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,9 +60,9 @@ type
 const
   SG_VERSION_MAJOR = 3;
 
-  SG_VERSION_MINOR = 1;
+  SG_VERSION_MINOR = 2;
 
-  SG_VERSION_PATCH = 3;
+  SG_VERSION_PATCH = 0;
 
   SG_VERSION_HEX = (SG_VERSION_MAJOR shl 16) or (SG_VERSION_MINOR shl 8) or
     SG_VERSION_PATCH;
@@ -430,6 +430,8 @@ var
     downloaded: cbool; status: cuint): cint; cdecl;
 
   sg_httpres_clear: function(res: Psg_httpres): cint; cdecl;
+
+  sg_httpres_is_empty: function(res: Psg_httpres): cbool; cdecl;
 
 var
   sg_httpsrv_new2: function(auth_cb: sg_httpauth_cb; req_cb: sg_httpreq_cb;
@@ -1084,6 +1086,7 @@ begin //FI:C101
     sg_httpres_zsendfile2 := GetProcAddress(GHandle, 'sg_httpres_zsendfile2');
     sg_httpres_zsendfile := GetProcAddress(GHandle, 'sg_httpres_zsendfile');
     sg_httpres_clear := GetProcAddress(GHandle, 'sg_httpres_clear');
+    sg_httpres_is_empty := GetProcAddress(GHandle, 'sg_httpres_is_empty');
 
     sg_httpsrv_new2 := GetProcAddress(GHandle, 'sg_httpsrv_new2');
     sg_httpsrv_new := GetProcAddress(GHandle, 'sg_httpsrv_new');
@@ -1283,6 +1286,7 @@ begin //FI:C101
     sg_httpres_zsendfile2 := nil;
     sg_httpres_zsendfile := nil;
     sg_httpres_clear := nil;
+    sg_httpres_is_empty := nil;
 
     sg_httpsrv_new2 := nil;
     sg_httpsrv_new := nil;
