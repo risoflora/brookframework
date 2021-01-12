@@ -41,7 +41,7 @@ uses
   StrUtils,
   Math,
   Classes,
-  Contnrs,
+  Generics.Collections,
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
@@ -693,15 +693,27 @@ type
 
   ESgUnloadEvent = class(Exception);
 
+  { TSgLibUnloadHolder }
+
+  TSgLibUnloadHolder = class sealed
+  private
+    FEvent: TNotifyEvent;
+    FSender: TObject;
+  public
+    constructor Create(AEvent: TNotifyEvent; ASender: TObject);
+    property Event: TNotifyEvent read FEvent;
+    property Sender: TObject read FSender;
+  end;
+
   { TSgUnloadEvents }
 
   TSgUnloadEvents = class sealed
   private
     FCS: TCriticalSection;
-    FList: TObjectList;
+    FList: TObjectList<TSgLibUnloadHolder>;
   protected
     property CS: TCriticalSection read FCS;
-    property List: TObjectList read FList;
+    property List: TObjectList<TSgLibUnloadHolder> read FList;
   public
     constructor Create(ACS: TCriticalSection); virtual;
     destructor Destroy; override;
@@ -810,17 +822,6 @@ end;
 
 { TSgLibUnloadHolder }
 
-type
-  TSgLibUnloadHolder = class
-  private
-    FEvent: TNotifyEvent;
-    FSender: TObject;
-  public
-    constructor Create(AEvent: TNotifyEvent; ASender: TObject);
-    property Event: TNotifyEvent read FEvent;
-    property Sender: TObject read FSender;
-  end;
-
 constructor TSgLibUnloadHolder.Create(AEvent: TNotifyEvent;
   ASender: TObject);
 begin
@@ -836,7 +837,7 @@ begin
   inherited Create;
   if not Assigned(ACS) then
     raise EArgumentNilException.CreateFmt(SParamIsNil, ['ACS']);
-  FList := TObjectList.Create;
+  FList := TObjectList<TSgLibUnloadHolder>.Create;
   FCS := ACS;
 end;
 
