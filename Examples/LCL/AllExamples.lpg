@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="10">
+    <Targets Count="11">
       <Target0 FileName="HTTPAuth_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
@@ -22,26 +22,30 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target4>
-      <Target5 FileName="MathExpression_Example.lpi">
+      <Target5 FileName="Logger_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target5>
-      <Target6 FileName="MediaTypes_Example.lpi">
+      <Target6 FileName="MathExpression_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target6>
-      <Target7 FileName="String_Example.lpi">
+      <Target7 FileName="MediaTypes_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target7>
-      <Target8 FileName="StringMap_Example.lpi">
+      <Target8 FileName="String_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target8>
-      <Target9 FileName="URLRouter_Example.lpi">
+      <Target9 FileName="StringMap_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target9>
+      <Target10 FileName="URLRouter_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target10>
     </Targets>
   </ProjectGroup>
 </CONFIG>

@@ -18,6 +18,9 @@
         <Projects Include="HTTPUpload_Example.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Logger_Example.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="MathExpression_Example.dproj">
             <Dependencies/>
         </Projects>
@@ -86,6 +89,15 @@
     <Target Name="HTTPUpload_Example:Make">
         <MSBuild Projects="HTTPUpload_Example.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Logger_Example">
+        <MSBuild Projects="Logger_Example.dproj"/>
+    </Target>
+    <Target Name="Logger_Example:Clean">
+        <MSBuild Projects="Logger_Example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Logger_Example:Make">
+        <MSBuild Projects="Logger_Example.dproj" Targets="Make"/>
+    </Target>
     <Target Name="MathExpression_Example">
         <MSBuild Projects="MathExpression_Example.dproj"/>
     </Target>
@@ -132,13 +144,13 @@
         <MSBuild Projects="URLRouter_Example.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="HTTPAuth_Example;HTTPCookie_Example;HTTPServer_Example;HTTPServerSSE_Example;HTTPUpload_Example;MathExpression_Example;MediaTypes_Example;String_Example;StringMap_Example;URLRouter_Example"/>
+        <CallTarget Targets="HTTPAuth_Example;HTTPCookie_Example;HTTPServer_Example;HTTPServerSSE_Example;HTTPUpload_Example;Logger_Example;MathExpression_Example;MediaTypes_Example;String_Example;StringMap_Example;URLRouter_Example"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="HTTPAuth_Example:Clean;HTTPCookie_Example:Clean;HTTPServer_Example:Clean;HTTPServerSSE_Example:Clean;HTTPUpload_Example:Clean;MathExpression_Example:Clean;MediaTypes_Example:Clean;String_Example:Clean;StringMap_Example:Clean;URLRouter_Example:Clean"/>
+        <CallTarget Targets="HTTPAuth_Example:Clean;HTTPCookie_Example:Clean;HTTPServer_Example:Clean;HTTPServerSSE_Example:Clean;HTTPUpload_Example:Clean;Logger_Example:Clean;MathExpression_Example:Clean;MediaTypes_Example:Clean;String_Example:Clean;StringMap_Example:Clean;URLRouter_Example:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="HTTPAuth_Example:Make;HTTPCookie_Example:Make;HTTPServer_Example:Make;HTTPServerSSE_Example:Make;HTTPUpload_Example:Make;MathExpression_Example:Make;MediaTypes_Example:Make;String_Example:Make;StringMap_Example:Make;URLRouter_Example:Make"/>
+        <CallTarget Targets="HTTPAuth_Example:Make;HTTPCookie_Example:Make;HTTPServer_Example:Make;HTTPServerSSE_Example:Make;HTTPUpload_Example:Make;Logger_Example:Make;MathExpression_Example:Make;MediaTypes_Example:Make;String_Example:Make;StringMap_Example:Make;URLRouter_Example:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

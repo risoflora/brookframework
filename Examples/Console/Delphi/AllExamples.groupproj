@@ -18,6 +18,9 @@
         <Projects Include="httpuploads.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="logger.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="mathexpression.dproj">
             <Dependencies/>
         </Projects>
@@ -86,6 +89,15 @@
     <Target Name="httpuploads:Make">
         <MSBuild Projects="httpuploads.dproj" Targets="Make"/>
     </Target>
+    <Target Name="logger">
+        <MSBuild Projects="logger.dproj"/>
+    </Target>
+    <Target Name="logger:Clean">
+        <MSBuild Projects="logger.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="logger:Make">
+        <MSBuild Projects="logger.dproj" Targets="Make"/>
+    </Target>
     <Target Name="mathexpression">
         <MSBuild Projects="mathexpression.dproj"/>
     </Target>
@@ -132,13 +144,13 @@
         <MSBuild Projects="urlrouter.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httpsrvsse;httpuploads;mathexpression;mediatypes;stringbuffer;stringmap;urlrouter"/>
+        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httpsrvsse;httpuploads;logger;mathexpression;mediatypes;stringbuffer;stringmap;urlrouter"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httpsrvsse:Clean;httpuploads:Clean;mathexpression:Clean;mediatypes:Clean;stringbuffer:Clean;stringmap:Clean;urlrouter:Clean"/>
+        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httpsrvsse:Clean;httpuploads:Clean;logger:Clean;mathexpression:Clean;mediatypes:Clean;stringbuffer:Clean;stringmap:Clean;urlrouter:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httpsrvsse:Make;httpuploads:Make;mathexpression:Make;mediatypes:Make;stringbuffer:Make;stringmap:Make;urlrouter:Make"/>
+        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httpsrvsse:Make;httpuploads:Make;logger:Make;mathexpression:Make;mediatypes:Make;stringbuffer:Make;stringmap:Make;urlrouter:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -8,7 +8,7 @@
 #
 # Microframework which helps to develop web Pascal applications.
 #
-# Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+# Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
 #
 # Brook framework is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -54,14 +54,15 @@ pasdoc \
   --define MSWINDOWS \
   --include ../Source \
   ../Source/BrookExtra.pas \
+  ../Source/BrookHandledClasses.pas \
   ../Source/BrookHTTPAuthentication.pas \
   ../Source/BrookHTTPCookies.pas \
   ../Source/BrookHTTPRequest.pas \
   ../Source/BrookHTTPResponse.pas \
   ../Source/BrookHTTPServer.pas \
   ../Source/BrookHTTPUploads.pas \
-  ../Source/BrookHandledClasses.pas \
   ../Source/BrookLibraryLoader.pas \
+  ../Source/BrookLogger.pas \
   ../Source/BrookMathExpression.pas \
   ../Source/BrookMediaTypes.pas \
   ../Source/BrookReader.pas \

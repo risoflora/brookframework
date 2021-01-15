@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 */
 
-body, html, table.container {
+body, html {
   margin: 0;
   padding: 0;
 }
@@ -31,34 +31,58 @@ body {
   background-color: white;
 }
 
-table.container {
+.container {
   width: 100%;
+  height: 100%;
   border-spacing: 0;
 }
-table.container td {
-  vertical-align: top;
-}
 
-td.navigation {
-  width: 200px;
+.navigation {
+  float: left;
+  width: 20em; /* must match .content margin-left */
+  height: 100%;
   color: white;
   background-color: #787878;
+  position: fixed;
   margin: 0;
-  /* padding-bottom is a little larger, to make navigation column have some
-     nice height even when td.content column is very small. */
-  padding: 1em 1em 100px 1em;
+  box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .content, causing errors on narrow screens */
+  padding: 1em;
 }
-td.navigation p { padding: 0; }
-td.navigation h2 { margin-top: 0; font-size: 1.4em; }
+.navigation ul {
+  margin: 0em;
+  padding: 0em;
+}
+.navigation li {
+  list-style-type: none;
+  margin: 0.2em 0em 0em 0em;
+  padding: 0.25em;
+}
+.navigation h2 {
+  text-align: center;
+  margin: 0em;
+  padding: 0.5em;
+}
 
-td.content { padding: 1em; }
-td.content h1 { margin-top: 0; font-size: 1.8em; }
+.content {
+  margin-left: 20em; /* must match .navigation width */
+  box-sizing: border-box; /* without this, you could not have padding here, it would overlap with .navigation, causing errors on narrow screens */
+  padding: 1em;
+}
+.content h1 {
+  margin-top: 0;
+}
+
+.appinfo {
+  float: right;
+  text-align: right;
+  margin-bottom: 1em;
+}
 
 img { border:0px; }
 
 hr {
-    border-bottom: medium none;
-    border-top: thin solid #888;
+  border-bottom: medium none;
+  border-top: thin solid #888;
 }
 
 a:link {color:#C91E0C; text-decoration: none; }
@@ -66,10 +90,10 @@ a:visited {color:#7E5C31; text-decoration: none; }
 a:hover {text-decoration: underline; }
 a:active {text-decoration: underline; }
 
-a.navigation:link { color: white; text-decoration: none; }
-a.navigation:visited { color: white; text-decoration: none; }
-a.navigation:hover { color: white; font-weight: bold; text-decoration: none; }
-a.navigation:active { color: white; text-decoration: none; }
+.navigation a:link { color: white; text-decoration: none; }
+.navigation a:visited { color: white; text-decoration: none; }
+.navigation a:hover { color: white; font-weight: bold; text-decoration: none; }
+.navigation a:active { color: white; text-decoration: none; }
 
 a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }
 a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }
@@ -118,7 +142,28 @@ td.itemunit {white-space:nowrap; }
 td.itemdesc { width:100%; }
 
 div.nodescription { color:red; }
-dl.parameters dt { color:blue; }
+dl.parameters dt {
+  color:blue;
+}
+
+code {
+  font-family: monospace;
+  font-size:1.2em;
+}
+
+/* style for warning and note tag */
+dl.tag.warning {
+  margin-left:-2px;
+  padding-left: 3px;
+  border-left:4px solid;
+  border-color: #FF0000;
+}
+dl.tag.note {
+  margin-left:-2px;
+  padding-left: 3px;
+  border-left:4px solid;
+  border-color: #D0C000;
+}
 
 /* Various browsers have various default styles for <h6>,
    sometimes ugly for our purposes, so it's best to set things
@@ -140,6 +185,13 @@ h6.description_section {
 
 /* Style applied to Pascal code in documentation
    (e.g. produced by @longcode tag) } */
+.longcode {
+  font-family: monospace;
+  font-size: 1.2em;
+  background-color: #eee;
+  padding: 0.5em;
+  border: thin solid #ccc;
+}
 span.pascal_string { color: #000080; }
 span.pascal_keyword { font-weight: bolder; }
 span.pascal_comment { color: #000080; font-style: italic; }
@@ -152,7 +204,7 @@ p.hint_directive { color: red; }
 input#search_text { }
 input#search_submit_button { }
 
-acronym.mispelling { background-color: #ffa; }
+acronym.mispelling { background-color: #f00; }
 
 /* Actually this reduces vertical space between *every* paragraph
    inside list with @itemSpacing(compact).
@@ -189,7 +241,9 @@ table.detail {
 }
 
 .search-form { white-space: nowrap; }
-.search-input, .search-button { display: inline-block; vertical-align: middle; }
+.search-input input { max-width: 80%; } /* this provides some safe space to always fit even on very narrow screens */
+.search-input input, .search-button { display: inline-block; vertical-align: middle; }
+.search-input { display: inline-block; }
 
 /* Do not make extra vertical space at the beginning/end of table cells.
    We need ">" selector, to not change paragraphs inside lists inside
