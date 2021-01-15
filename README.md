@@ -39,6 +39,8 @@ Brook is a cross-platform microframework which helps to develop web Pascal appli
   - Error handling with error kind and position.
 - **Media types:**
   - Resolving media types ([MIME](https://en.wikipedia.org/wiki/MIME)) in any supported platform.
+- **Logging:**
+  - Allowing to generate logs in console or files.
 - **String buffer:**
   - For fast operations involving strings.
 - **String map:**

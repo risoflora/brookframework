@@ -107,20 +107,23 @@ HTTPCookie_Example
 HTTPServer_Example
 HTTPServerSSE_Example
 HTTPUpload_Example
-URLRouter_Example
+Logger_Example
 MathExpression_Example
 MediaTypes_Example
-StringMap_Example
 String_Example
+StringMap_Example
+URLRouter_Example
 hellohttpsrv
 httpauth
 httpcookies
 httpsrvsse
 httpuploads
-urlrouter
+logger
+mathexpression
 mediatypes
 stringbuffer
 stringmap
+urlrouter
 
 # Generated tests
 Test_HTTPAuthentication
@@ -130,6 +133,7 @@ Test_HTTPResponse
 Test_HTTPServer
 Test_HTTPUploads
 Test_LibraryLoader
+Test_libsagui
 Test_Logger
 Test_MathExpression
 Test_MediaTypes
@@ -139,4 +143,3 @@ Test_StringMap
 Test_URLEntryPoints
 Test_URLRouter
 Test_Utility
-Test_libsagui
