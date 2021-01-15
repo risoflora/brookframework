@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="16">
+    <Targets Count="17">
       <Target0 FileName="Test_HTTPAuthentication.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
@@ -34,38 +34,42 @@
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target7>
-      <Target8 FileName="Test_MathExpression.lpi">
+      <Target8 FileName="Test_Logger.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target8>
-      <Target9 FileName="Test_MediaTypes.lpi">
+      <Target9 FileName="Test_MathExpression.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target9>
-      <Target10 FileName="Test_Reader.lpi">
+      <Target10 FileName="Test_MediaTypes.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target10>
-      <Target11 FileName="Test_String.lpi">
+      <Target11 FileName="Test_Reader.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target11>
-      <Target12 FileName="Test_StringMap.lpi">
+      <Target12 FileName="Test_String.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target12>
-      <Target13 FileName="Test_URLEntryPoints.lpi">
+      <Target13 FileName="Test_StringMap.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target13>
-      <Target14 FileName="Test_URLRouter.lpi">
+      <Target14 FileName="Test_URLEntryPoints.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target14>
-      <Target15 FileName="Test_Utility.lpi">
+      <Target15 FileName="Test_URLRouter.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target15>
+      <Target16 FileName="Test_Utility.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target16>
     </Targets>
   </ProjectGroup>
 </CONFIG>

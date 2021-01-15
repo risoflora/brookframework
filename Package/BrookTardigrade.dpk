@@ -68,6 +68,7 @@ contains
   BrookHTTPUploads in '..\Source\BrookHTTPUploads.pas',
   BrookIDEIntegration in 'BrookIDEIntegration.pas',
   BrookLibraryLoader in '..\Source\BrookLibraryLoader.pas',
+  BrookLogger in '..\Source\BrookLogger.pas',
   BrookMathExpression in '..\Source\BrookMathExpression.pas',
   BrookMediaTypes in '..\Source\BrookMediaTypes.pas',
   BrookReader in '..\Source\BrookReader.pas',

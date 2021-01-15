@@ -94,6 +94,9 @@ BrookTardigrade.pas
 # Application bundle for Mac OS
 *.app/
 
+# Log files
+*.log
+
 # Generated documentation
 PasDoc/HTML
 PasDoc/Cache
@@ -127,6 +130,7 @@ Test_HTTPResponse
 Test_HTTPServer
 Test_HTTPUploads
 Test_LibraryLoader
+Test_Logger
 Test_MathExpression
 Test_MediaTypes
 Test_Reader

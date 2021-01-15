@@ -24,6 +24,9 @@
         <Projects Include="Test_LibraryLoader.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Test_Logger.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Test_libsagui.dproj">
             <Dependencies/>
         </Projects>
@@ -122,6 +125,15 @@
     <Target Name="Test_LibraryLoader:Make">
         <MSBuild Projects="Test_LibraryLoader.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Test_Logger">
+        <MSBuild Projects="Test_Logger.dproj"/>
+    </Target>
+    <Target Name="Test_Logger:Clean">
+        <MSBuild Projects="Test_Logger.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Test_Logger:Make">
+        <MSBuild Projects="Test_Logger.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Test_libsagui">
         <MSBuild Projects="Test_libsagui.dproj"/>
     </Target>
@@ -204,13 +216,13 @@
         <MSBuild Projects="Test_Utility.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Test_HTTPAuthentication;Test_HTTPCookies;Test_HTTPRequest;Test_HTTPResponse;Test_HTTPServer;Test_HTTPUploads;Test_LibraryLoader;Test_libsagui;Test_MathExpression;Test_MediaTypes;Test_Reader;Test_String;Test_StringMap;Test_URLEntryPoints;Test_URLRouter;Test_Utility"/>
+        <CallTarget Targets="Test_HTTPAuthentication;Test_HTTPCookies;Test_HTTPRequest;Test_HTTPResponse;Test_HTTPServer;Test_HTTPUploads;Test_LibraryLoader;Test_Logger;Test_libsagui;Test_MathExpression;Test_MediaTypes;Test_Reader;Test_String;Test_StringMap;Test_URLEntryPoints;Test_URLRouter;Test_Utility"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Test_HTTPAuthentication:Clean;Test_HTTPCookies:Clean;Test_HTTPRequest:Clean;Test_HTTPResponse:Clean;Test_HTTPServer:Clean;Test_HTTPUploads:Clean;Test_LibraryLoader:Clean;Test_libsagui:Clean;Test_MathExpression:Clean;Test_MediaTypes:Clean;Test_Reader:Clean;Test_String:Clean;Test_StringMap:Clean;Test_URLEntryPoints:Clean;Test_URLRouter:Clean;Test_Utility:Clean"/>
+        <CallTarget Targets="Test_HTTPAuthentication:Clean;Test_HTTPCookies:Clean;Test_HTTPRequest:Clean;Test_HTTPResponse:Clean;Test_HTTPServer:Clean;Test_HTTPUploads:Clean;Test_LibraryLoader:Clean;Test_Logger:Clean;Test_libsagui:Clean;Test_MathExpression:Clean;Test_MediaTypes:Clean;Test_Reader:Clean;Test_String:Clean;Test_StringMap:Clean;Test_URLEntryPoints:Clean;Test_URLRouter:Clean;Test_Utility:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Test_HTTPAuthentication:Make;Test_HTTPCookies:Make;Test_HTTPRequest:Make;Test_HTTPResponse:Make;Test_HTTPServer:Make;Test_HTTPUploads:Make;Test_LibraryLoader:Make;Test_libsagui:Make;Test_MathExpression:Make;Test_MediaTypes:Make;Test_Reader:Make;Test_String:Make;Test_StringMap:Make;Test_URLEntryPoints:Make;Test_URLRouter:Make;Test_Utility:Make"/>
+        <CallTarget Targets="Test_HTTPAuthentication:Make;Test_HTTPCookies:Make;Test_HTTPRequest:Make;Test_HTTPResponse:Make;Test_HTTPServer:Make;Test_HTTPUploads:Make;Test_LibraryLoader:Make;Test_Logger:Make;Test_libsagui:Make;Test_MathExpression:Make;Test_MediaTypes:Make;Test_Reader:Make;Test_String:Make;Test_StringMap:Make;Test_URLEntryPoints:Make;Test_URLRouter:Make;Test_Utility:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -100,8 +100,8 @@ type
     constructor Create; virtual;
     { Destroys an instance of @code(TBrookMediaTypes). }
     destructor Destroy; override;
-    { Returns the alias name for class registration.
-      @returns(Registration alias name.) }
+    { Returns the alias name for media type source.
+      @returns(Media type source alias.) }
     class function GetRegisterAlias: string; virtual;
     { Returns the description of the media types source.
       @returns(Description of the media types source.) }
