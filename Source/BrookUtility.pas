@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,7 +52,8 @@ const
 {$IFDEF FPC}
     [tkArray..tkObject] - [tkInterfaceRaw] - [tkProcVar] - [tkHelper..tkPointer]
 {$ELSE}
-    [tkClass] - [tkArray..tkInterface] - [tkClassRef..tkMRecord]
+    [tkClass] - [tkArray..tkInterface] -
+      [tkClassRef..{$IF CompilerVersion >= 32.0}tkMRecord{$ELSE}tkProcedure{$ENDIF}]
 {$ENDIF};
 
 type
