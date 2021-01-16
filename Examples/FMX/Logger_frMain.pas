@@ -35,9 +35,10 @@ uses
   FMX.Types,
   FMX.StdCtrls,
   FMX.Controls,
+  FMX.Edit,
   FMX.Controls.Presentation,
   FMX.Forms,
-  BrookLogger, FMX.Edit;
+  BrookLogger;
 
 type
   TfrMain = class(TForm)

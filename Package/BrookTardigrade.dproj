@@ -88,9 +88,8 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=5.1.5.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=5.1.5.0;Comments=</VerInfo_Keys>
-        <VerInfo_MinorVer>1</VerInfo_MinorVer>
-        <VerInfo_Release>5</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=5.2.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=5.2.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_MinorVer>2</VerInfo_MinorVer>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -114,6 +113,7 @@
         <DCCReference Include="..\Source\BrookHTTPUploads.pas"/>
         <DCCReference Include="BrookIDEIntegration.pas"/>
         <DCCReference Include="..\Source\BrookLibraryLoader.pas"/>
+        <DCCReference Include="..\Source\BrookLogger.pas"/>
         <DCCReference Include="..\Source\BrookMathExpression.pas"/>
         <DCCReference Include="..\Source\BrookMediaTypes.pas"/>
         <DCCReference Include="..\Source\BrookReader.pas"/>
