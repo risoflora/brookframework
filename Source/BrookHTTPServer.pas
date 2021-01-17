@@ -469,10 +469,14 @@ begin
   VReq := VSrv.CreateRequest(Areq);
   VRes := VSrv.CreateResponse(Ares);
   try
-    if (VSrv.FNoFavicon and VReq.IsFavicon) or (VRes.IsEmpty) then
+    if VSrv.FNoFavicon and VReq.IsFavicon then
       VRes.SendEmpty
     else
+    begin
       VSrv.HandleRequest(VReq, VRes);
+      if VRes.IsEmpty then
+        VRes.SendEmpty;
+    end;
   finally
     VRes.Free;
     VReq.Free;
