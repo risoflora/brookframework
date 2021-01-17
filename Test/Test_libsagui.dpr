@@ -7,7 +7,7 @@
  *
  * Cross-platform library which helps to develop web servers or frameworks.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -380,11 +380,12 @@ begin
   Assert(not Assigned(sg_httpres_sendstream));
   Assert(not Assigned(sg_httpres_zsendbinary2));
   Assert(not Assigned(sg_httpres_zsendbinary));
-  Assert(not Assigned(sg_httpres_zsendstream));
   Assert(not Assigned(sg_httpres_zsendstream2));
+  Assert(not Assigned(sg_httpres_zsendstream));
   Assert(not Assigned(sg_httpres_zsendfile2));
   Assert(not Assigned(sg_httpres_zsendfile));
   Assert(not Assigned(sg_httpres_clear));
+  Assert(not Assigned(sg_httpres_is_empty));
 
   Assert(not Assigned(sg_httpsrv_new2));
   Assert(not Assigned(sg_httpsrv_new));
@@ -551,11 +552,12 @@ begin
   Assert(Assigned(sg_httpres_sendstream));
   Assert(Assigned(sg_httpres_zsendbinary2));
   Assert(Assigned(sg_httpres_zsendbinary));
-  Assert(Assigned(sg_httpres_zsendstream));
   Assert(Assigned(sg_httpres_zsendstream2));
+  Assert(Assigned(sg_httpres_zsendstream));
   Assert(Assigned(sg_httpres_zsendfile2));
   Assert(Assigned(sg_httpres_zsendfile));
   Assert(Assigned(sg_httpres_clear));
+  Assert(Assigned(sg_httpres_is_empty));
 
   Assert(Assigned(sg_httpsrv_new2));
   Assert(Assigned(sg_httpsrv_new));
