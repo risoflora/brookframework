@@ -53,7 +53,7 @@ const
     [tkArray..tkObject] - [tkInterfaceRaw] - [tkProcVar] - [tkHelper..tkPointer]
 {$ELSE}
     [tkClass] - [tkArray..tkInterface] -
-      [tkClassRef..{$IF CompilerVersion >= 32.0}tkMRecord{$ELSE}tkProcedure{$ENDIF}]
+      [tkClassRef..{$IF CompilerVersion >= 33.0}tkMRecord{$ELSE}tkProcedure{$ENDIF}]
 {$ENDIF};
 
 type
