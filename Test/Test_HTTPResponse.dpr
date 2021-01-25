@@ -342,7 +342,12 @@ begin
   end;
 end;
 
-procedure DoHTTPResponseSendError(const AArgs: array of const);
+procedure DoHTTPResponseSendLibNotLoaded(const AArgs: array of const);
+begin
+  TBrookHTTPResponse(AArgs[0].VObject).Send('fake_val', 'fake_content_type', 200);
+end;
+
+procedure DoHTTPResponseSendZLibError(const AArgs: array of const);
 begin
   TBrookHTTPResponse(AArgs[0].VObject).Send('fake_val', 'fake_content_type', 200);
 end;
@@ -361,7 +366,17 @@ begin
     Assert(FakeResponse.WasCompressed);
     FakeResponse.ErrorCode := -1;
     FakeResponse.ResponseAlreadySent := False;
-    AssertExcept(DoHTTPResponseSendError, EBrookHTTPResponse,
+    TBrookLibraryLoader.Unload;
+    try
+      AssertExcept(DoHTTPResponseSendLibNotLoaded, ESgLibNotLoaded,
+        Format(SSgLibNotLoaded, [IfThen(SgLib.GetLastName = '',
+          SG_LIB_NAME, SgLib.GetLastName)]), [R]);
+      AssignFakeAPI;
+    finally
+      TBrookLibraryLoader.Load;
+      AssignFakeAPI;
+    end;
+    AssertExcept(DoHTTPResponseSendZLibError, EBrookHTTPResponse,
       SBrookZLibError, [R]);
 
     R.Compressed := False;
@@ -369,11 +384,11 @@ begin
     FakeResponse.ResponseAlreadySent := False;
     R.Send('fake_val', 'fake_content_type', 200);
     Assert(not FakeResponse.WasCompressed);
-    AssertExcept(DoHTTPResponseSendError, EBrookHTTPResponse,
+    AssertExcept(DoHTTPResponseSendZLibError, EBrookHTTPResponse,
       SBrookResponseAlreadySent, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := EINVAL;
-    AssertOSExcept(DoHTTPResponseSendError, EINVAL, [R]);
+    AssertOSExcept(DoHTTPResponseSendZLibError, EINVAL, [R]);
   finally
     R.Free;
   end;
@@ -395,7 +410,16 @@ begin
   end;
 end;
 
-procedure DoHTTPResponseSendBinaryError(const AArgs: array of const);
+procedure DoHTTPResponseSendBinaryLibNotLoaded(const AArgs: array of const);
+var
+  B: TBytes;
+begin
+  B := BytesOf('fake_val');
+  TBrookHTTPResponse(AArgs[0].VObject).SendBinary(@B[0], Length(B),
+    'fake_content_type', 200);
+end;
+
+procedure DoHTTPResponseSendBinaryZLibError(const AArgs: array of const);
 var
   B: TBytes;
 begin
@@ -420,7 +444,16 @@ begin
     Assert(FakeResponse.WasCompressed);
     FakeResponse.ErrorCode := -1;
     FakeResponse.ResponseAlreadySent := False;
-    AssertExcept(DoHTTPResponseSendBinaryError, EBrookHTTPResponse,
+    TBrookLibraryLoader.Unload;
+    try
+      AssertExcept(DoHTTPResponseSendBinaryLibNotLoaded, ESgLibNotLoaded,
+        Format(SSgLibNotLoaded, [IfThen(SgLib.GetLastName = '',
+          SG_LIB_NAME, SgLib.GetLastName)]), [R]);
+    finally
+      TBrookLibraryLoader.Load;
+      AssignFakeAPI;
+    end;
+    AssertExcept(DoHTTPResponseSendBinaryZLibError, EBrookHTTPResponse,
       SBrookZLibError, [R]);
 
     R.Compressed := False;
@@ -428,11 +461,11 @@ begin
     FakeResponse.ResponseAlreadySent := False;
     R.SendBinary(@B[0], Length(B), 'fake_content_type', 200);
     Assert(not FakeResponse.WasCompressed);
-    AssertExcept(DoHTTPResponseSendBinaryError, EBrookHTTPResponse,
+    AssertExcept(DoHTTPResponseSendBinaryZLibError, EBrookHTTPResponse,
       SBrookResponseAlreadySent, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := EINVAL;
-    AssertOSExcept(DoHTTPResponseSendBinaryError, EINVAL, [R]);
+    AssertOSExcept(DoHTTPResponseSendBinaryZLibError, EINVAL, [R]);
   finally
     R.Free;
   end;
@@ -456,7 +489,13 @@ begin
   end;
 end;
 
-procedure DoHTTPResponseSendFileError(const AArgs: array of const);
+procedure DoHTTPResponseSendFileLibNotLoaded(const AArgs: array of const);
+begin
+  TBrookHTTPResponse(AArgs[0].VObject).SendFile(123, 456, 789, 'fake_filename',
+    True, 200);
+end;
+
+procedure DoHTTPResponseSendFileZLibError(const AArgs: array of const);
 begin
   TBrookHTTPResponse(AArgs[0].VObject).SendFile(123, 456, 789, 'fake_filename',
     True, 200);
@@ -476,7 +515,17 @@ begin
     Assert(FakeResponse.WasCompressed);
     FakeResponse.ErrorCode := -1;
     FakeResponse.ResponseAlreadySent := False;
-    AssertExcept(DoHTTPResponseSendFileError, EBrookHTTPResponse,
+    TBrookLibraryLoader.Unload;
+    try
+      AssertExcept(DoHTTPResponseSendFileLibNotLoaded, ESgLibNotLoaded,
+        Format(SSgLibNotLoaded, [IfThen(SgLib.GetLastName = '',
+          SG_LIB_NAME, SgLib.GetLastName)]), [R]);
+      AssignFakeAPI;
+    finally
+      TBrookLibraryLoader.Load;
+      AssignFakeAPI;
+    end;
+    AssertExcept(DoHTTPResponseSendFileZLibError, EBrookHTTPResponse,
       SBrookZLibError, [R]);
 
     R.Compressed := False;
@@ -484,21 +533,27 @@ begin
     FakeResponse.ResponseAlreadySent := False;
     R.SendFile(123, 456, 789, 'fake_filename', True, 200);
     Assert(not FakeResponse.WasCompressed);
-    AssertExcept(DoHTTPResponseSendFileError, EBrookHTTPResponse,
+    AssertExcept(DoHTTPResponseSendFileZLibError, EBrookHTTPResponse,
       SBrookResponseAlreadySent, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := ENOENT;
-    AssertExcept(DoHTTPResponseSendFileError, EFileNotFoundException,
+    AssertExcept(DoHTTPResponseSendFileZLibError, EFileNotFoundException,
       SFileNotFound, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := EINVAL;
-    AssertOSExcept(DoHTTPResponseSendFileError, EINVAL, [R]);
+    AssertOSExcept(DoHTTPResponseSendFileZLibError, EINVAL, [R]);
   finally
     R.Free;
   end;
 end;
 
-procedure DoHTTPResponseSendStreamError(const AArgs: array of const);
+procedure DoHTTPResponseSendStreamLibNotLoaded(const AArgs: array of const);
+begin
+  TBrookHTTPResponse(AArgs[0].VObject).SendStream(
+    TFakeStringStream.Create('fake_val'), True, 200);
+end;
+
+procedure DoHTTPResponseSendStreamZLibError(const AArgs: array of const);
 begin
   TBrookHTTPResponse(AArgs[0].VObject).SendStream(
     TFakeStringStream.Create('fake_val'), True, 200);
@@ -518,7 +573,17 @@ begin
     Assert(FakeResponse.WasCompressed);
     FakeResponse.ErrorCode := -1;
     FakeResponse.ResponseAlreadySent := False;
-    AssertExcept(DoHTTPResponseSendStreamError, EBrookHTTPResponse,
+    TBrookLibraryLoader.Unload;
+    try
+      AssertExcept(DoHTTPResponseSendStreamLibNotLoaded, ESgLibNotLoaded,
+        Format(SSgLibNotLoaded, [IfThen(SgLib.GetLastName = '',
+          SG_LIB_NAME, SgLib.GetLastName)]), [R]);
+      AssignFakeAPI;
+    finally
+      TBrookLibraryLoader.Load;
+      AssignFakeAPI;
+    end;
+    AssertExcept(DoHTTPResponseSendStreamZLibError, EBrookHTTPResponse,
       SBrookZLibError, [R]);
 
     R.Compressed := False;
@@ -526,11 +591,11 @@ begin
     FakeResponse.ResponseAlreadySent := False;
     R.SendStream(TFakeStringStream.Create('fake_val'), True, 200);
     Assert(not FakeResponse.WasCompressed);
-    AssertExcept(DoHTTPResponseSendStreamError, EBrookHTTPResponse,
+    AssertExcept(DoHTTPResponseSendStreamZLibError, EBrookHTTPResponse,
       SBrookResponseAlreadySent, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := EINVAL;
-    AssertOSExcept(DoHTTPResponseSendStreamError, EINVAL, [R]);
+    AssertOSExcept(DoHTTPResponseSendStreamZLibError, EINVAL, [R]);
 
     FakeResponse.ErrorCode := 0;
     FakeResponse.ResponseAlreadySent := False;
@@ -612,7 +677,12 @@ begin
   end;
 end;
 
-procedure DoHTTPResponseDownloadError(const AArgs: array of const);
+procedure DoHTTPResponseDownloadLibNotLoaded(const AArgs: array of const);
+begin
+  TBrookHTTPResponse(AArgs[0].VObject).Download('fake_filename');
+end;
+
+procedure DoHTTPResponseDownloadZLibError(const AArgs: array of const);
 begin
   TBrookHTTPResponse(AArgs[0].VObject).Download('fake_filename');
 end;
@@ -631,7 +701,17 @@ begin
     Assert(FakeResponse.WasCompressed);
     FakeResponse.ErrorCode := -1;
     FakeResponse.ResponseAlreadySent := False;
-    AssertExcept(DoHTTPResponseDownloadError, EBrookHTTPResponse,
+    TBrookLibraryLoader.Unload;
+    try
+      AssertExcept(DoHTTPResponseDownloadLibNotLoaded, ESgLibNotLoaded,
+        Format(SSgLibNotLoaded, [IfThen(SgLib.GetLastName = '',
+          SG_LIB_NAME, SgLib.GetLastName)]), [R]);
+      AssignFakeAPI;
+    finally
+      TBrookLibraryLoader.Load;
+      AssignFakeAPI;
+    end;
+    AssertExcept(DoHTTPResponseDownloadZLibError, EBrookHTTPResponse,
       SBrookZLibError, [R]);
 
     R.Compressed := False;
@@ -639,21 +719,26 @@ begin
     FakeResponse.ResponseAlreadySent := False;
     R.Download('fake_filename');
     Assert(not FakeResponse.WasCompressed);
-    AssertExcept(DoHTTPResponseDownloadError, EBrookHTTPResponse,
+    AssertExcept(DoHTTPResponseDownloadZLibError, EBrookHTTPResponse,
       SBrookResponseAlreadySent, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := ENOENT;
-    AssertExcept(DoHTTPResponseDownloadError, EFileNotFoundException,
+    AssertExcept(DoHTTPResponseDownloadZLibError, EFileNotFoundException,
       SFileNotFound, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := EINVAL;
-    AssertOSExcept(DoHTTPResponseDownloadError, EINVAL, [R]);
+    AssertOSExcept(DoHTTPResponseDownloadZLibError, EINVAL, [R]);
   finally
     R.Free;
   end;
 end;
 
-procedure DoHTTPResponseRenderError(const AArgs: array of const);
+procedure DoHTTPResponseRenderLibNotLoaded(const AArgs: array of const);
+begin
+  TBrookHTTPResponse(AArgs[0].VObject).Render('fake_filename');
+end;
+
+procedure DoHTTPResponseRenderZLibError(const AArgs: array of const);
 begin
   TBrookHTTPResponse(AArgs[0].VObject).Render('fake_filename');
 end;
@@ -672,7 +757,17 @@ begin
     Assert(FakeResponse.WasCompressed);
     FakeResponse.ErrorCode := -1;
     FakeResponse.ResponseAlreadySent := False;
-    AssertExcept(DoHTTPResponseRenderError, EBrookHTTPResponse,
+    TBrookLibraryLoader.Unload;
+    try
+      AssertExcept(DoHTTPResponseRenderLibNotLoaded, ESgLibNotLoaded,
+        Format(SSgLibNotLoaded, [IfThen(SgLib.GetLastName = '',
+          SG_LIB_NAME, SgLib.GetLastName)]), [R]);
+      AssignFakeAPI;
+    finally
+      TBrookLibraryLoader.Load;
+      AssignFakeAPI;
+    end;
+    AssertExcept(DoHTTPResponseRenderZLibError, EBrookHTTPResponse,
       SBrookZLibError, [R]);
 
     R.Compressed := False;
@@ -680,15 +775,15 @@ begin
     FakeResponse.ResponseAlreadySent := False;
     R.Render('fake_filename');
     Assert(not FakeResponse.WasCompressed);
-    AssertExcept(DoHTTPResponseRenderError, EBrookHTTPResponse,
+    AssertExcept(DoHTTPResponseRenderZLibError, EBrookHTTPResponse,
       SBrookResponseAlreadySent, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := ENOENT;
-    AssertExcept(DoHTTPResponseRenderError, EFileNotFoundException,
+    AssertExcept(DoHTTPResponseRenderZLibError, EFileNotFoundException,
       SFileNotFound, [R]);
     FakeResponse.ResponseAlreadySent := False;
     FakeResponse.ErrorCode := EINVAL;
-    AssertOSExcept(DoHTTPResponseRenderError, EINVAL, [R]);
+    AssertOSExcept(DoHTTPResponseRenderZLibError, EINVAL, [R]);
   finally
     R.Free;
   end;
@@ -729,6 +824,11 @@ begin
   end;
 end;
 
+procedure DoHTTPResponseIsEmptyNotLoaded(const AArgs: array of const);
+begin
+  TBrookHTTPResponse(AArgs[0].VObject).IsEmpty;
+end;
+
 procedure Test_HTTPResponseIsEmpty;
 var
   R: TBrookHTTPResponse;
@@ -740,6 +840,15 @@ begin
     Assert(not R.IsEmpty);
     FakeResponse.Empty := True;
     Assert(R.IsEmpty);
+    TBrookLibraryLoader.Unload;
+    try
+      AssertExcept(DoHTTPResponseIsEmptyNotLoaded, ESgLibNotLoaded,
+        Format(SSgLibNotLoaded, [IfThen(SgLib.GetLastName = '',
+          SG_LIB_NAME, SgLib.GetLastName)]), [R]);
+      AssignFakeAPI;
+    finally
+      TBrookLibraryLoader.Load;
+    end;
   finally
     R.Free;
   end;

@@ -301,6 +301,7 @@ var
   M: TMarshaller;
   R: cint;
 begin
+  SgLib.Check;
   if FCompressed then
   begin
     R := sg_httpres_zsendbinary(FHandle, M.ToCString(AValue), Length(AValue),
