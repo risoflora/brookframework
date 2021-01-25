@@ -60,11 +60,11 @@ type
     function IsLibraryNameStored: Boolean;
     procedure SetActive(AValue: Boolean);
     procedure SetLibraryName(const AValue: TFileName);
-    procedure InternalOpen; inline;
+    procedure InternalOpen; {$IFNDEF DEBUG}inline;{$ENDIF}
     procedure InternalLibUnloadEvent(ASender: TObject);
   protected
     procedure Loaded; override;
-    procedure CheckInactive; inline;
+    procedure CheckInactive; {$IFNDEF DEBUG}inline;{$ENDIF}
     function GetHandle: Pointer; override;
   public
     { Creates an instance of @code(TBrookLibraryLoader).

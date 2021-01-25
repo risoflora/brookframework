@@ -123,12 +123,14 @@ type
       @param(ASignedValue[in] Signed cookie value.)
       @returns(Unsigned cookie value.) }
     class function Unsign(const ASecret,
-      ASignedValue: string): string; overload; static; inline;
+      ASignedValue: string): string; overload; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Checks if a cookie value is signed.
       @param(ASignedValue[out] Signed cookie value.)
       @returns(@True if cookie value is signed.) }
     class function IsSigned(
-      const ASignedValue: string): Boolean; overload; static; inline;
+      const ASignedValue: string): Boolean; overload; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Checks if a cookie is signed.
       @returns(@True if cookie is signed.) }
     function IsSigned: Boolean; overload; virtual;

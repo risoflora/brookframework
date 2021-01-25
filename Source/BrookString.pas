@@ -50,9 +50,10 @@ type
     function GetContent: TBytes;
     function GetLength: NativeUInt;
     procedure SetText(const AValue: string);
-    function GetText: string; inline;
+    function GetText: string; {$IFNDEF DEBUG}inline;{$ENDIF}
   protected
-    class procedure CheckEncoding(AEncoding: TEncoding); static; inline;
+    class procedure CheckEncoding(AEncoding: TEncoding); static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     function GetHandle: Pointer; override;
   public
     { Creates an instance of @code(TBrookString).

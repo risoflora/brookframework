@@ -107,7 +107,7 @@ begin
   Result := M.ToCString('123.123.123.123');
 end;
 
-procedure AssignFakeAPI; inline;
+procedure AssignFakeAPI; {$IFNDEF DEBUG}inline;{$ENDIF}
 begin
   sg_ip := fake_ip;
 
@@ -119,7 +119,7 @@ begin
   sg_httpreq_client := fake_httpreq_client;
 end;
 
-procedure AssignFakeHeadersAPI; inline;
+procedure AssignFakeHeadersAPI; {$IFNDEF DEBUG}inline;{$ENDIF}
 begin
   sg_httpreq_headers := fake_httpreq_headers;
   sg_httpreq_cookies := fake_httpreq_headers;

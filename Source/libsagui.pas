@@ -371,17 +371,18 @@ var
     const val: Pcchar): cint; cdecl;
 
 function sg_httpres_send(res: Psg_httpres; const val: Pcchar;
-  const content_type: Pcchar; status: cuint): cint; inline;
+  const content_type: Pcchar; status: cuint): cint;
+{$IFNDEF DEBUG}inline;{$ENDIF}
 
 var
   sg_httpres_sendbinary: function(res: Psg_httpres; buf: Pcvoid; size: csize_t;
     const content_type: Pcchar; status: cuint): cint; cdecl;
 
 function sg_httpres_download(res: Psg_httpres;
-  const filename: Pcchar; status: cuint): cint; inline;
+  const filename: Pcchar; status: cuint): cint; {$IFNDEF DEBUG}inline;{$ENDIF}
 
 function sg_httpres_render(res: Psg_httpres;
-  const filename: Pcchar; status: cuint): cint; inline;
+  const filename: Pcchar; status: cuint): cint; {$IFNDEF DEBUG}inline;{$ENDIF}
 
 var
   sg_httpres_sendfile2: function(res: Psg_httpres; size: cuint64_t;
@@ -397,7 +398,8 @@ var
     status: cuint): cint; cdecl;
 
 function sg_httpres_zsend(res: Psg_httpres; const val: Pcchar;
-  const content_type: Pcchar; status: cuint): cint; inline;
+  const content_type: Pcchar; status: cuint): cint;
+{$IFNDEF DEBUG}inline;{$ENDIF}
 
 var
   sg_httpres_zsendbinary2: function(res: Psg_httpres; level: cint; buf: Pcvoid;
@@ -414,10 +416,10 @@ var
     handle: Pcvoid; free_cb: sg_free_cb; status: cuint): cint; cdecl;
 
 function sg_httpres_zdownload(res: Psg_httpres;
-  const filename: Pcchar; status: cuint): cint; inline;
+  const filename: Pcchar; status: cuint): cint; {$IFNDEF DEBUG}inline;{$ENDIF}
 
 function sg_httpres_zrender(res: Psg_httpres;
-  const filename: Pcchar; status: cuint): cint; inline;
+  const filename: Pcchar; status: cuint): cint; {$IFNDEF DEBUG}inline;{$ENDIF}
 
 var
   sg_httpres_zsendfile2: function(res: Psg_httpres; level: cint;
@@ -741,8 +743,10 @@ type
     class procedure Done; static;
     class function GetLastName: string; static;
     class procedure CheckVersion(AVersion: Integer); overload; static;
-    class procedure CheckVersion; overload; static; inline;
-    class procedure CheckLastError(ALastError: Integer); static; inline;
+    class procedure CheckVersion; overload; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
+    class procedure CheckLastError(ALastError: Integer); static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     class function Load(const AName: TFileName): TLibHandle; static;
     class function Unload: TLibHandle; static;
     class function IsLoaded: Boolean; static;
@@ -751,13 +755,16 @@ type
     class property Handle: TLibHandle read GHandle;
   end;
 
-function cpow(const X, Y: cdouble): cdouble; cdecl; inline;
+function cpow(const X, Y: cdouble): cdouble; cdecl;
+{$IFNDEF DEBUG}inline;{$ENDIF}
 
-function cfmod(const X, Y: cdouble): cdouble; cdecl; inline;
+function cfmod(const X, Y: cdouble): cdouble; cdecl;
+{$IFNDEF DEBUG}inline;{$ENDIF}
 
 implementation
 
-function SameNotifyEvent(AN1, AN2: TNotifyEvent): Boolean; inline;
+function SameNotifyEvent(AN1, AN2: TNotifyEvent): Boolean;
+{$IFNDEF DEBUG}inline;{$ENDIF}
 begin
   Result := (TMethod(AN1).Code = TMethod(AN2).Code) and
     (TMethod(AN1).Data = TMethod(AN2).Data);

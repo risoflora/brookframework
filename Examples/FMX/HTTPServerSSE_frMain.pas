@@ -89,7 +89,7 @@ type
     procedure edPortChange(Sender: TObject);
     procedure edPortChangeTracking(Sender: TObject);
   public
-    procedure UpdateControls; inline;
+    procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
 const

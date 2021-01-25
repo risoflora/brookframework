@@ -133,7 +133,7 @@ type
     function IsMethodAllowed(const AMethod: string): Boolean; virtual;
     procedure SendMethodNotAllowed(const AMethod: string;
       AResponse: TBrookHTTPResponse); virtual;
-    procedure CheckMethods; inline;
+    procedure CheckMethods; {$IFNDEF DEBUG}inline;{$ENDIF}
     property Routes: TBrookURLRoutes read FRoutes;
   public
     { Creates an instance of @code(TBrookURLRoute).
@@ -142,7 +142,7 @@ type
     { Frees an instance of @code(TBrookURLRoute). }
     destructor Destroy; override;
     { Checks if the route pattern is valid. }
-    procedure Validate; inline;
+    procedure Validate; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Contains the PCRE2 instance. }
     property PCRE2Handle: Pointer read GetPCRE2Handle;
     { Contains all path segments (a.k.a. path levels). }
@@ -272,8 +272,8 @@ type
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); virtual;
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
-    procedure CheckItems; inline;
-    procedure CheckActive; inline;
+    procedure CheckItems; {$IFNDEF DEBUG}inline;{$ENDIF}
+    procedure CheckActive; {$IFNDEF DEBUG}inline;{$ENDIF}
   public
     { Creates an instance of @code(TBrookURLRouter).
       @param(AOwner[in] Owner component.) }
@@ -284,12 +284,12 @@ type
     function GetEnumerator: TBrookURLRoutesEnumerator;
     { Adds a new item to the routes list.
       @returns(Route item.) }
-    function Add: TBrookURLRoute; inline;
+    function Add: TBrookURLRoute; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Removes an item from the routes list by its pattern.
       @param(APattern[in] Route name.) }
-    procedure Remove(const APattern: string); inline;
+    procedure Remove(const APattern: string); {$IFNDEF DEBUG}inline;{$ENDIF}
     { Clears the routes list. }
-    procedure Clear; inline;
+    procedure Clear; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Enabled the router component. }
     procedure Open;
     { Disables the router component. }

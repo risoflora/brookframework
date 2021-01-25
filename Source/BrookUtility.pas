@@ -116,7 +116,7 @@ type
       @param(AErrorMsg[out] Referenced string to store the error message.)
       @param(AErrorLen[in] Length of the error message.) }
     class procedure StrError(AErrorNum: Integer; out AErrorMsg: string;
-      AErrorLen: Integer); overload; static; inline;
+      AErrorLen: Integer); overload; static; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Returns string describing an error number.
       @param(AErrorNum[in] Error number.)
       @returns(Static string describing the error.) }
@@ -165,24 +165,29 @@ type
       trailing one.
       @param(APath[in] Path as static string.)
       @returns(Fixed path, e.g.: path -> /path and /path/ -> /path) }
-    class function FixPath(const APath: string): string; static; inline;
+    class function FixPath(const APath: string): string; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Extracts and fixes an entry-point by including the leading path delimiter
       and excluding the trailing one.
       @param(APath[in] Path as static string.)
       @returns(Fixed entry-point, e.g.: /foo/bar -> /foo ) }
-    class function FixEntryPoint(const APath: string): string; static; inline;
+    class function FixEntryPoint(const APath: string): string; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Converts a given local time to UTC (Coordinated Universal Time).
       @param(ADateTime[in] Local date/time.)
       @returns(Local time converted to UTC.) }
-    class function DateTimeToUTC(ADateTime: TDateTime): TDateTime; static; inline;
+    class function DateTimeToUTC(ADateTime: TDateTime): TDateTime; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Converts a given local time to GMT (Greenwich Mean Time).
       @param(ADateTime[in] Local date/time.)
       @returns(Local time converted to GMT string.) }
-    class function DateTimeToGMT(ADateTime: TDateTime): string; static; inline;
+    class function DateTimeToGMT(ADateTime: TDateTime): string; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Generates a given string to SHA-1 (Secure Hash Algorithm 1).
       @param(S[in] String to generate the SHA-1.)
       @returns(Generated SHA-1 as static string.) }
-    class function SHA1(const S: string): string; static; inline;
+    class function SHA1(const S: string): string; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
   { HTTP verbs enumeration. }
@@ -202,7 +207,8 @@ type
     { Converts a @code(TBrookHTTPRequestMethod) to string. }
     function ToString: string; inline;
     { Returns a @code(TBrookHTTPRequestMethod) from a string. }
-    function FromString(const AMethod: string): TBrookHTTPRequestMethod; inline;
+    function FromString(const AMethod: string): TBrookHTTPRequestMethod;
+{$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
 implementation

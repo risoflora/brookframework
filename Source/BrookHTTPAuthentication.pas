@@ -70,7 +70,8 @@ type
     FCredentials: TBrookHTTPCredentials;
     FHandle: Psg_httpauth;
   protected
-    class procedure CheckStatus(AStatus: Word); static; inline;
+    class procedure CheckStatus(AStatus: Word); static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     function GetHandle: Pointer; override;
     function CreateCredentials(
       AHandle: Pointer): TBrookHTTPCredentials; virtual;

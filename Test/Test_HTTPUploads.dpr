@@ -130,7 +130,7 @@ begin
   Result := 0;
 end;
 
-procedure AssignFakeAPI; inline;
+procedure AssignFakeAPI; {$IFNDEF DEBUG}inline;{$ENDIF}
 begin
   sg_httpupld_handle := fake_httpupld_handle;
   sg_httpupld_dir := fake_httpupld_dir;

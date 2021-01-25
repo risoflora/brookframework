@@ -106,7 +106,7 @@ begin
   Result := A.ErrorCode;
 end;
 
-procedure AssignFakeAPI; inline;
+procedure AssignFakeAPI; {$IFNDEF DEBUG}inline;{$ENDIF}
 begin
   sg_httpauth_usr := fake_httpauth_usr;
   sg_httpauth_pwd := fake_httpauth_pwd;

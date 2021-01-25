@@ -88,7 +88,7 @@ type
     procedure edPortChangeTracking(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   public
-    procedure UpdateControls; inline;
+    procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
 var

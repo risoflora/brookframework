@@ -78,10 +78,10 @@ type
     FTLSSession: Pointer;
     FHandle: Psg_httpreq;
     function GetIP: string;
-    function GetPaths: TArray<string>; inline;
-    function GetContentType: string; inline;
-    function GetReferer: string; inline;
-    function GetUserAgent: string; inline;
+    function GetPaths: TArray<string>; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function GetContentType: string; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function GetReferer: string; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function GetUserAgent: string; {$IFNDEF DEBUG}inline;{$ENDIF}
   protected
     class procedure DoRequestIsolatedProcCallback(Acls: Pcvoid;
       Areq: Psg_httpreq; Ares: Psg_httpres); cdecl; static;
@@ -112,15 +112,15 @@ type
     destructor Destroy; override;
     { Checks if the HTTP method is @code(POST), @code(PUT), @code(DELETE) or
       @code(OPTIONS). }
-    function IsPost: Boolean; inline;
+    function IsPost: Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Checks if current path refers to @code('/favicon.ico'). }
-    function IsFavicon: Boolean; inline;
+    function IsFavicon: Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Checks if request contains a valid TLS session. }
-    function IsSecure: Boolean; inline;
+    function IsSecure: Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Checks if the HTTP method is @code(HEAD) or @code(GET). }
-    function IsCachable: Boolean; inline;
+    function IsCachable: Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Checks if the request was done by an Ajax client. }
-    function IsXhr: Boolean; inline;
+    function IsXhr: Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Isolates a request from the main event loop to an own dedicated thread,
       bringing it back when the request finishes.
       @param(AProc[in] Procedure to handle requests and responses isolated from

@@ -80,7 +80,7 @@ type
     FFilters: TStringList;
     FOptions: TStringList;
     class function InternalFormat(const ALevel,
-      AMessage: string): string; inline;
+      AMessage: string): string; {$IFNDEF DEBUG}inline;{$ENDIF}
   protected
     class function FormatLog(const ALevel, AMessage: string): string; virtual;
     class function FormatFail(const ALevel: string;
@@ -150,7 +150,7 @@ type
     function RecreateFile(const AFileName: TFileName): TFileStream; virtual;
     procedure UpgradeFileName; virtual;
     procedure UpgradeFile; virtual;
-    procedure WriteLog(const AMsg: string); inline;
+    procedure WriteLog(const AMsg: string); {$IFNDEF DEBUG}inline;{$ENDIF}
     property LastDate: TDate read FLastDate;
     property Handle: TFileStream read FHandle;
   public
@@ -233,9 +233,9 @@ type
     function CreateLevels: TBrookLoggerLevels; virtual;
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
-    procedure CheckActive; inline;
-    procedure CheckInactive; inline;
-    procedure CheckOutputName; inline;
+    procedure CheckActive; {$IFNDEF DEBUG}inline;{$ENDIF}
+    procedure CheckInactive; {$IFNDEF DEBUG}inline;{$ENDIF}
+    procedure CheckOutputName; {$IFNDEF DEBUG}inline;{$ENDIF}
   public
     { Creates an instance of @code(TBrookLogger).
       @param(AOwner[in] Owner component.) }
@@ -243,7 +243,8 @@ type
     { Destroys an instance of @code(TBrookLogger). }
     destructor Destroy; override;
     { Gets an output log class from the classes register. }
-    function GetOutputClass: TBrookLoggerOutputClass; inline;
+    function GetOutputClass: TBrookLoggerOutputClass;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Enabled the logger component. }
     procedure Open;
     { Disables the logger component. }
@@ -251,26 +252,28 @@ type
     { Appends a message to the output log.
       @param(ALevel[in] Log level.)
       @param(AMessage[in] Log message.) }
-    procedure Log(const ALevel, AMessage: string); inline;
+    procedure Log(const ALevel, AMessage: string);
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Appends an exception message to the output log.
       @param(ALevel[in] Log level.)
       @param(AException[in] Log exception.) }
-    procedure Fail(const ALevel: string; AException: Exception); inline;
+    procedure Fail(const ALevel: string; AException: Exception);
+{$IFNDEF DEBUG}inline;{$ENDIF}
     { Appends a message to the output log as information level.
       @param(AMessage[in] Log message.) }
-    procedure Info(const AMessage: string); inline;
+    procedure Info(const AMessage: string); {$IFNDEF DEBUG}inline;{$ENDIF}
     { Appends a message to the output log as hint level.
       @param(AMessage[in] Log message.) }
-    procedure Hint(const AMessage: string); inline;
+    procedure Hint(const AMessage: string); {$IFNDEF DEBUG}inline;{$ENDIF}
     { Appends a message to the output log as warning level.
       @param(AMessage[in] Log message.) }
-    procedure Warn(const AMessage: string); inline;
+    procedure Warn(const AMessage: string); {$IFNDEF DEBUG}inline;{$ENDIF}
     { Appends a message to the output log as debug level.
       @param(AMessage[in] Log message.) }
-    procedure Debug(const AMessage: string); inline;
+    procedure Debug(const AMessage: string); {$IFNDEF DEBUG}inline;{$ENDIF}
     { Appends a message to the output log as error level.
       @param(AMessage[in] Log message.) }
-    procedure Error(AException: Exception); inline;
+    procedure Error(AException: Exception); {$IFNDEF DEBUG}inline;{$ENDIF}
     { Current active log output. }
     property Output: TBrookLoggerOutput read GetOutput;
   published

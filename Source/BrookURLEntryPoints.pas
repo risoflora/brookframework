@@ -88,7 +88,7 @@ type
       @param(ACollection[in] Entry-point list.) }
     constructor Create(ACollection: TCollection); override;
     { Checks if the entry-point name is valid. }
-    procedure Validate; inline;
+    procedure Validate; {$IFNDEF DEBUG}inline;{$ENDIF}
     { User-defined data to be stored temporarily in the entry-point object. }
     property UserData: Pointer read GetUserData write FUserData;
   published
@@ -126,7 +126,7 @@ type
     function GetItem(AIndex: Integer): TBrookURLEntryPoint; virtual;
     procedure SetItem(AIndex: Integer; AValue: TBrookURLEntryPoint); virtual;
     procedure InternalAdd(AEntryPoint: TBrookURLEntryPoint); virtual;
-    procedure CheckPrepared; inline;
+    procedure CheckPrepared; {$IFNDEF DEBUG}inline;{$ENDIF}
   public
     { Creates an instance of @code(TBrookURLEntryPointList).
       @param(AOwner[in] Entry-points persistent.) }
@@ -204,8 +204,8 @@ type
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse); virtual;
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
-    procedure CheckItems; inline;
-    procedure CheckActive; inline;
+    procedure CheckItems; {$IFNDEF DEBUG}inline;{$ENDIF}
+    procedure CheckActive; {$IFNDEF DEBUG}inline;{$ENDIF}
   public
     { Creates an instance of @code(TBrookURLEntryPoints).
       @param(AOwner[in] Owner component.) }
@@ -216,12 +216,12 @@ type
     function GetEnumerator: TBrookURLEntryPointListEnumerator;
     { Adds a new item to the entry-point list.
       @returns(Entry-point item.) }
-    function Add: TBrookURLEntryPoint; inline;
+    function Add: TBrookURLEntryPoint; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Removes an item from the entry-point list by its name.
       @param(AName[in] Entry-point name.) }
-    procedure Remove(const AName: string); inline;
+    procedure Remove(const AName: string); {$IFNDEF DEBUG}inline;{$ENDIF}
     { Clears the entry-point list. }
-    procedure Clear; inline;
+    procedure Clear; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Enabled the entry-point component. }
     procedure Open;
     { Disables the entry-point component. }

@@ -90,7 +90,7 @@ type
     procedure edPortChangeTracking(Sender: TObject);
     procedure BrookHTTPServer1Error(ASender: TObject; AException: Exception);
   public
-    procedure UpdateControls; inline;
+    procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
 var

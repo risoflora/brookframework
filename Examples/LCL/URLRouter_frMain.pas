@@ -85,7 +85,7 @@ type
   protected
     procedure DoError(AData: PtrInt);
   public
-    procedure UpdateControls; inline;
+    procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
 var

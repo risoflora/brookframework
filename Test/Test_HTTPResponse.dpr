@@ -280,7 +280,7 @@ begin
   Result := FakeResponse.Empty;
 end;
 
-procedure AssignFakeAPI; inline;
+procedure AssignFakeAPI; {$IFNDEF DEBUG}inline;{$ENDIF}
 begin
   sg_httpres_headers := fake_httpres_headers;
   sg_httpres_set_cookie := fake_httpres_set_cookie;

@@ -120,7 +120,8 @@ type
     procedure SetValue(const AName, AValue: string);
   protected
     class function CreatePair(
-      Apair: Psg_strmap): TBrookStringPair; static; inline;
+      Apair: Psg_strmap): TBrookStringPair; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     class function DoIterate(Acls: Pcvoid;
       Apair: Psg_strmap): cint; cdecl; static;
     class function DoSort(Acls: Pcvoid; Apair_a: Psg_strmap;

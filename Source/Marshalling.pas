@@ -47,8 +47,9 @@ type
 {$ENDIF}
   public
     class function ToBytes(const S: MarshaledAString;
-      L: NativeUInt): TBytes; static; inline;
-    class function ToString(const S: MarshaledAString): string; static; inline;
+      L: NativeUInt): TBytes; static; {$IFNDEF DEBUG}inline;{$ENDIF}
+    class function ToString(const S: MarshaledAString): string; static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
   { TMarshaller* }
@@ -59,9 +60,11 @@ type
   TMarshallerHelper = record helper for TMarshaller
 {$ENDIF}
   public
-    function Length(const S: string): Integer; inline;
-    function ToCString(const S: string): MarshaledAString; inline;
-    function ToCNullableString(const S: string): MarshaledAString; inline;
+    function Length(const S: string): Integer; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function ToCString(const S: string): MarshaledAString;
+{$IFNDEF DEBUG}inline;{$ENDIF}
+    function ToCNullableString(const S: string): MarshaledAString;
+{$IFNDEF DEBUG}inline;{$ENDIF}
   end;
 
 implementation

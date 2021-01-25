@@ -68,13 +68,15 @@ type
     class function DoStreamRead(Acls: Pcvoid; Aoffset: cuint64_t; Abuf: Pcchar;
       Asize: csize_t): cssize_t; cdecl; static;
     class procedure DoStreamFree(Acls: Pcvoid); cdecl; static;
-    class procedure CheckStatus(AStatus: Word); static; inline;
-    class procedure CheckStream(AStream: TStream); static; inline;
+    class procedure CheckStatus(AStatus: Word); static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
+    class procedure CheckStream(AStream: TStream); static;
+{$IFNDEF DEBUG}inline;{$ENDIF}
     function CreateHeaders(AHandle: Pointer): TBrookStringMap; virtual;
     function CreateCookies(AOwner: TPersistent): TBrookHTTPCookies; virtual;
     function GetHandle: Pointer; override;
-    procedure CheckAlreadySent(Aret: cint); inline;
-    procedure CheckZLib(Aret: cint); inline;
+    procedure CheckAlreadySent(Aret: cint); {$IFNDEF DEBUG}inline;{$ENDIF}
+    procedure CheckZLib(Aret: cint); {$IFNDEF DEBUG}inline;{$ENDIF}
   public
     { Creates an instance of @code(TBrookHTTPResponse).
       @param(AHandle[in] Request handle.) }

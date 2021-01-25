@@ -163,7 +163,7 @@ type
       AError: TBrookMathExpressionError); virtual;
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
-    procedure CheckActive; inline;
+    procedure CheckActive; {$IFNDEF DEBUG}inline;{$ENDIF}
   public
     { Creates an instance of @code(TBrookMathExpression).
       @param(AOwner[in] Owner component.) }
