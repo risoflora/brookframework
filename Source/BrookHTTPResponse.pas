@@ -380,6 +380,8 @@ var
 begin
   CheckStream(AStream);
   CheckStatus(AStatus);
+  if AFreed and (not SgLib.IsLoaded) then
+    AStream.Free;
   SgLib.Check;
   if AFreed then
     FCb := DoStreamFree
