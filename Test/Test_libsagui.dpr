@@ -384,6 +384,7 @@ begin
   Assert(not Assigned(sg_httpres_zsendstream));
   Assert(not Assigned(sg_httpres_zsendfile2));
   Assert(not Assigned(sg_httpres_zsendfile));
+  Assert(not Assigned(sg_httpres_reset));
   Assert(not Assigned(sg_httpres_clear));
   Assert(not Assigned(sg_httpres_is_empty));
 
@@ -556,6 +557,7 @@ begin
   Assert(Assigned(sg_httpres_zsendstream));
   Assert(Assigned(sg_httpres_zsendfile2));
   Assert(Assigned(sg_httpres_zsendfile));
+  Assert(Assigned(sg_httpres_reset));
   Assert(Assigned(sg_httpres_clear));
   Assert(Assigned(sg_httpres_is_empty));
 

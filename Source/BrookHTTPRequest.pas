@@ -346,7 +346,7 @@ end;
 procedure TBrookHTTPRequest.HandleRequestError(ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse; AException: Exception);
 begin
-  AResponse.Clear;
+  AResponse.Reset;
   try
     DoRequestError(Self, ARequest, AResponse, AException);
   except

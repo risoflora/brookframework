@@ -174,7 +174,10 @@ type
     { Sends a file to be rendered.
       @param(AFileName[in] Path of the file to be sent.) }
     procedure Render(const AFileName: TFileName); overload; virtual;
-    { Clears all headers, cookies, statuses and internal buffers of the response
+    { Resets status and internal buffers of the response handle preserving all
+      headers and cookies. }
+    procedure Reset; virtual;
+    { Clears all headers, cookies, status and internal buffers of the response
       object. }
     procedure Clear; virtual;
     { Checks if the response is empty. }
@@ -478,6 +481,12 @@ end;
 procedure TBrookHTTPResponse.Render(const AFileName: TFileName);
 begin
   Render(AFileName, 200);
+end;
+
+procedure TBrookHTTPResponse.Reset;
+begin
+  SgLib.Check;
+  SgLib.CheckLastError(sg_httpres_reset(FHandle));
 end;
 
 procedure TBrookHTTPResponse.Clear;

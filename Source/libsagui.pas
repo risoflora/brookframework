@@ -60,9 +60,9 @@ type
 const
   SG_VERSION_MAJOR = 3;
 
-  SG_VERSION_MINOR = 2;
+  SG_VERSION_MINOR = 3;
 
-  SG_VERSION_PATCH = 2;
+  SG_VERSION_PATCH = 0;
 
   SG_VERSION_HEX = (SG_VERSION_MAJOR shl 16) or (SG_VERSION_MINOR shl 8) or
     SG_VERSION_PATCH;
@@ -430,6 +430,8 @@ var
   sg_httpres_zsendfile: function(res: Psg_httpres; size: cuint64_t;
     max_size: cuint64_t; offset: cuint64_t; const filename: Pcchar;
     downloaded: cbool; status: cuint): cint; cdecl;
+
+  sg_httpres_reset: function(res: Psg_httpres): cint; cdecl;
 
   sg_httpres_clear: function(res: Psg_httpres): cint; cdecl;
 
@@ -1092,6 +1094,7 @@ begin //FI:C101
     sg_httpres_zsendstream2 := GetProcAddress(GHandle, 'sg_httpres_zsendstream2');
     sg_httpres_zsendfile2 := GetProcAddress(GHandle, 'sg_httpres_zsendfile2');
     sg_httpres_zsendfile := GetProcAddress(GHandle, 'sg_httpres_zsendfile');
+    sg_httpres_reset := GetProcAddress(GHandle, 'sg_httpres_reset');
     sg_httpres_clear := GetProcAddress(GHandle, 'sg_httpres_clear');
     sg_httpres_is_empty := GetProcAddress(GHandle, 'sg_httpres_is_empty');
 
@@ -1292,6 +1295,7 @@ begin //FI:C101
     sg_httpres_zsendstream := nil;
     sg_httpres_zsendfile2 := nil;
     sg_httpres_zsendfile := nil;
+    sg_httpres_reset := nil;
     sg_httpres_clear := nil;
     sg_httpres_is_empty := nil;
 

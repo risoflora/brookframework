@@ -521,7 +521,7 @@ procedure TBrookHTTPServer.HandleAuthenticateError(
   AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse; AException: Exception);
 begin
-  AResponse.Clear;
+  AResponse.Reset;
   try
     DoAuthenticateError(Self, AAuthentication, ARequest, AResponse, AException);
   except
@@ -548,7 +548,7 @@ end;
 procedure TBrookHTTPServer.HandleRequestError(ARequest: TBrookHTTPRequest;
   AResponse: TBrookHTTPResponse; AException: Exception);
 begin
-  AResponse.Clear;
+  AResponse.Reset;
   try
     DoRequestError(Self, ARequest, AResponse, AException);
   except
