@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,6 +31,8 @@ uses
   RTLConsts,
   SysUtils,
   DateUtils,
+  Classes,
+  SyncObjs,
 {$IFNDEF FPC}
   IOUtils,
   Hash,
@@ -40,6 +42,164 @@ uses
   BrookLibraryLoader,
   BrookUtility,
   Test;
+
+type
+  TFakeMutex = class(TCriticalSection)
+    Muted: Boolean;
+    procedure Acquire; override;
+    procedure Release; override;
+  end;
+
+  TFakeLocker = class(TBrookLocker)
+  protected
+    function CreateMutex: TCriticalSection; override;
+  public
+    property Mutex;
+  end;
+
+  TFakeLockerThread = class(TThread)
+  private
+    FLocker: TBrookLocker;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(ALocker: TBrookLocker);
+    destructor Destroy; override;
+  end;
+
+{ TFakeMutex }
+
+procedure TFakeMutex.Acquire;
+begin
+  Muted := True;
+end;
+
+procedure TFakeMutex.Release;
+begin
+  Muted := False;
+end;
+
+constructor TFakeLockerThread.Create(ALocker: TBrookLocker);
+begin
+  inherited Create(True);
+  FreeOnTerminate := False;
+  FLocker := ALocker;
+end;
+
+destructor TFakeLockerThread.Destroy;
+begin
+  FLocker.Unlock;
+  inherited;
+end;
+
+procedure TFakeLockerThread.Execute;
+begin
+  FLocker.Lock;
+  Sleep(10);
+end;
+
+{ TFakeLocker }
+
+function TFakeLocker.CreateMutex: TCriticalSection;
+begin
+  Result := TFakeMutex.Create;
+end;
+
+procedure Test_LockerCreate;
+var
+  L: TFakeLocker;
+begin
+  L := TFakeLocker.Create;
+  try
+    Assert(Assigned(L.Mutex));
+    Assert(L.Active);
+  finally
+    L.Free;
+  end;
+end;
+
+procedure Test_LockerLock;
+var
+  L: TFakeLocker;
+  M: TFakeMutex;
+begin
+  L := TFakeLocker.Create;
+  try
+    M := TFakeMutex(L.Mutex);
+    Assert(not M.Muted);
+    L.Lock;
+    Assert(M.Muted);
+    L.Active := False;
+    M.Muted := False;
+    L.Lock;
+    Assert(not M.Muted);
+  finally
+    L.Free;
+  end;
+end;
+
+procedure Test_LockerUnlock;
+var
+  L: TFakeLocker;
+  M: TFakeMutex;
+begin
+  L := TFakeLocker.Create;
+  try
+    M := TFakeMutex(L.Mutex);
+    M.Muted := True;
+    L.Unlock;
+    Assert(not M.Muted);
+    L.Active := False;
+    M.Muted := True;
+    L.Unlock;
+    Assert(M.Muted);
+  finally
+    L.Free;
+  end;
+end;
+
+procedure Test_LockerTryLock;
+var
+  L: TBrookLocker;
+  T: TFakeLockerThread;
+begin
+  L := TBrookLocker.Create;
+  try
+    T := TFakeLockerThread.Create(L);
+    try
+      L.Active := False;
+      Assert(not L.TryLock);
+      L.Active := True;
+
+      Assert(L.TryLock);
+      L.Unlock;
+      T.Start;
+      Sleep(5);
+      Assert(not L.TryLock);
+      T.WaitFor;
+    finally
+      T.Free;
+    end;
+  finally
+    L.Free;
+  end;
+end;
+
+procedure Test_LockerActive;
+var
+  L: TFakeLocker;
+begin
+  L := TFakeLocker.Create;
+  try
+    Assert(L.Active);
+    L.Active := False;
+    Assert(not L.Active);
+    L.Active := True;
+    Assert(L.Active);
+  finally
+    L.Free;
+  end;
+end;
 
 procedure Test_SaguiVersion;
 begin
@@ -284,6 +444,12 @@ begin
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
   TBrookLibraryLoader.Load;
+  Test_LockerCreate;
+  // Test_LockerDestroy - not required
+  Test_LockerLock;
+  Test_LockerUnlock;
+  Test_LockerTryLock;
+  Test_LockerActive;
   Test_SaguiVersion;
   Test_SaguiMalloc;
   Test_SaguiAlloc;

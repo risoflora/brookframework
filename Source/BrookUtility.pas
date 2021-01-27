@@ -36,6 +36,7 @@ uses
   SysUtils,
   DateUtils,
   TypInfo,
+  SyncObjs,
 {$IFDEF FPC}
   SHA1,
   HttpProtocol,
@@ -62,6 +63,30 @@ type
     @param(AException[in] Exception object.) }
   TBrookErrorEvent = procedure(ASender: TObject;
     AException: Exception) of object;
+
+  { Allows to lock other threads from accessing a block of code. }
+  TBrookLocker = class
+  private
+    FMutex: TCriticalSection;
+    FActive: Boolean;
+    procedure SetActive(AValue: Boolean);
+  protected
+    property Mutex: TCriticalSection read FMutex;
+    function CreateMutex: TCriticalSection; virtual;
+  public
+    { Creates an instance of @code(TBrookLocker). }
+    constructor Create; virtual;
+    { Frees an instance of @code(TBrookLocker). }
+    destructor Destroy; override;
+    { Locks all other threads. }
+    procedure Lock; virtual;
+    { Unlocks all other threads. }
+    procedure Unlock; virtual;
+    { Tries to lock all other threads. }
+    function  TryLock: Boolean; virtual;
+    { Activates the locker. (Default: @True) }
+    property Active: Boolean read FActive write SetActive;
+  end;
 
   { Global Sagui object containing general purpose functions. }
   Sagui = record
@@ -212,6 +237,55 @@ type
   end;
 
 implementation
+
+{ TBrookLocker }
+
+constructor TBrookLocker.Create;
+begin
+  inherited Create;
+  FMutex := CreateMutex;
+  FActive := True;
+end;
+
+destructor TBrookLocker.Destroy;
+begin
+  FMutex.Free;
+  inherited Destroy;
+end;
+
+function TBrookLocker.CreateMutex: TCriticalSection;
+begin
+  Result := TCriticalSection.Create;
+end;
+
+procedure TBrookLocker.SetActive(AValue: Boolean);
+begin
+  if FActive = AValue then
+    Exit;
+  FMutex.Acquire;
+  try
+    FActive := AValue;
+  finally
+    FMutex.Release;
+  end;
+end;
+
+procedure TBrookLocker.Lock;
+begin
+  if FActive then
+    FMutex.Acquire;
+end;
+
+procedure TBrookLocker.Unlock;
+begin
+  if FActive then
+    FMutex.Release;
+end;
+
+function TBrookLocker.TryLock: Boolean;
+begin
+  Result := FActive and FMutex.TryEnter;
+end;
 
 { Sagui }
 
