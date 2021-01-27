@@ -236,12 +236,7 @@ procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
   AException: Exception);
 begin
   if AException.Message.TrimRight <> IGNORED_ERROR then
-    TThread.Synchronize(nil,
-      procedure
-      begin
-        TDialogService.MessageDialog(AException.Message, TMsgDlgType.mtError,
-          [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK, 0, nil);
-      end);
+    inherited;
 end;
 
 end.

@@ -88,7 +88,6 @@ type
     procedure BrookHTTPServer1Stop(Sender: TObject);
     procedure edPortChange(Sender: TObject);
     procedure edPortChangeTracking(Sender: TObject);
-    procedure BrookHTTPServer1Error(ASender: TObject; AException: Exception);
   public
     procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
@@ -210,17 +209,6 @@ end;
 procedure TfrMain.edPortChangeTracking(Sender: TObject);
 begin
   UpdateControls;
-end;
-
-procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
-  AException: Exception);
-begin
-  TThread.Synchronize(nil,
-    procedure
-    begin
-      TDialogService.MessageDialog(AException.Message, TMsgDlgType.mtError,
-        [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK, 0, nil);
-    end);
 end;
 
 end.

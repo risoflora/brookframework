@@ -26,9 +26,6 @@
 program Test_URLRouter;
 
 {$I Tests.inc}
-{$IFDEF FPC}
- {$WARN 5024 OFF}
-{$ENDIF}
 
 uses
   SysUtils,

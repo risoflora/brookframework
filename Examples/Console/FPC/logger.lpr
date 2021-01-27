@@ -26,7 +26,6 @@
 program logger;
 
 {$MODE DELPHI}
-{$WARN 5024 OFF}
 
 uses
   SysUtils,

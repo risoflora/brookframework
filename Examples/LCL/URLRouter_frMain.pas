@@ -26,7 +26,6 @@
 unit URLRouter_frMain;
 
 {$MODE DELPHI}
-{$PUSH}{$WARN 5024 OFF}
 
 interface
 
@@ -70,7 +69,6 @@ type
     procedure BrookURLRouter1Routes2Request(ASender: TObject;
       ARoute: TBrookURLRoute; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse);
-    procedure BrookHTTPServer1Error(ASender: TObject; AException: Exception);
     procedure BrookHTTPServer1Request(ASender: TObject;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
     procedure BrookHTTPServer1RequestError(ASender: TObject;
@@ -82,8 +80,6 @@ type
     procedure lbLinkClick(Sender: TObject);
     procedure lbLinkMouseEnter(Sender: TObject);
     procedure lbLinkMouseLeave(Sender: TObject);
-  protected
-    procedure DoError(AData: PtrInt);
   public
     procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
@@ -94,17 +90,6 @@ var
 implementation
 
 {$R *.lfm}
-
-procedure TfrMain.DoError(AData: PtrInt);
-var
-  S: PString absolute AData;
-begin
-  try
-    MessageDlg(S^, mtError, [mbOK], 0);
-  finally
-    DisposeStr(S);
-  end;
-end;
 
 procedure TfrMain.UpdateControls;
 begin
@@ -210,17 +195,5 @@ procedure TfrMain.edPortChange(Sender: TObject);
 begin
   UpdateControls;
 end;
-
-{$PUSH}{$WARN 4055 OFF}
-
-procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
-  AException: Exception);
-begin
-  Application.QueueAsyncCall(DoError, PtrInt(NewStr(AException.Message)));
-end;
-
-{$POP}
-
-{$POP}
 
 end.

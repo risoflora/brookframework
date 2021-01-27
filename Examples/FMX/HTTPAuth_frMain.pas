@@ -71,7 +71,6 @@ type
     procedure BrookHTTPServer1RequestError(ASender: TObject;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
       AException: Exception);
-    procedure BrookHTTPServer1Error(ASender: TObject; AException: Exception);
     function BrookHTTPServer1Authenticate(ASender: TObject;
       AAuthentication: TBrookHTTPAuthentication; ARequest: TBrookHTTPRequest;
       AResponse: TBrookHTTPResponse): Boolean;
@@ -191,17 +190,6 @@ end;
 procedure TfrMain.edPortChangeTracking(Sender: TObject);
 begin
   UpdateControls;
-end;
-
-procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
-  AException: Exception);
-begin
-  TThread.Synchronize(nil,
-    procedure
-    begin
-      TDialogService.MessageDialog(AException.Message, TMsgDlgType.mtError,
-        [TMsgDlgBtn.mbOK], TMsgDlgBtn.mbOK, 0, nil);
-    end);
 end;
 
 end.

@@ -77,7 +77,6 @@ object frMain: TfrMain
   object BrookHTTPServer1: TBrookHTTPServer
     OnRequest = BrookHTTPServer1Request
     OnRequestError = BrookHTTPServer1RequestError
-    OnError = BrookHTTPServer1Error
     OnStart = BrookHTTPServer1Start
     OnStop = BrookHTTPServer1Stop
     Left = 176

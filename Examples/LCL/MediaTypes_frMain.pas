@@ -26,7 +26,6 @@
 unit MediaTypes_frMain;
 
 {$MODE DELPHI}
-{$PUSH}{$WARN 5024 OFF}
 
 interface
 
@@ -64,7 +63,6 @@ type
     lbPort: TLabel;
     procedure acStartExecute(Sender: TObject);
     procedure acStopExecute(Sender: TObject);
-    procedure BrookHTTPServer1Error(ASender: TObject; AException: Exception);
     procedure BrookHTTPServer1Request(ASender: TObject;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
     procedure BrookHTTPServer1RequestError(ASender: TObject;
@@ -77,8 +75,6 @@ type
     procedure lbLinkClick(Sender: TObject);
     procedure lbLinkMouseEnter(Sender: TObject);
     procedure lbLinkMouseLeave(Sender: TObject);
-  protected
-    procedure DoError(AData: PtrInt);
   public
     procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
@@ -93,17 +89,6 @@ implementation
 procedure TfrMain.FormCreate(Sender: TObject);
 begin
   BrookMIME1.FileName := '../Common/mime.types';
-end;
-
-procedure TfrMain.DoError(AData: PtrInt);
-var
-  S: PString absolute AData;
-begin
-  try
-    MessageDlg(S^, mtError, [mbOK], 0);
-  finally
-    DisposeStr(S);
-  end;
 end;
 
 procedure TfrMain.UpdateControls;
@@ -215,17 +200,5 @@ procedure TfrMain.edPortChange(Sender: TObject);
 begin
   UpdateControls;
 end;
-
-{$PUSH}{$WARN 4055 OFF}
-
-procedure TfrMain.BrookHTTPServer1Error(ASender: TObject;
-  AException: Exception);
-begin
-  Application.QueueAsyncCall(DoError, PtrInt(NewStr(AException.Message)));
-end;
-
-{$POP}
-
-{$POP}
 
 end.

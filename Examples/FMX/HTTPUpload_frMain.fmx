@@ -136,7 +136,6 @@ object frMain: TfrMain
     NoFavicon = True
     OnRequest = BrookHTTPServer1Request
     OnRequestError = BrookHTTPServer1RequestError
-    OnError = BrookHTTPServer1Error
     OnStart = BrookHTTPServer1Start
     OnStop = BrookHTTPServer1Stop
     Left = 152
