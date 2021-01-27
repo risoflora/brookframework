@@ -125,6 +125,7 @@ type
   { Fast event-driven HTTP(S) server class. }
   TBrookHTTPServer = class(TBrookHandledComponent)
   private
+    FLocker: TBrookLocker;
     FHandle: Psg_httpsrv;
     FAuthenticated: Boolean;
     FConnectionLimit: Cardinal;
@@ -196,6 +197,7 @@ type
       const Aclient: Pcvoid; Aclosed: Pcbool); cdecl; static;
     class procedure DoErrorCallback(Acls: Pcvoid;
       const Aerr: Pcchar); cdecl; static;
+    function CreateLocker: TBrookLocker; virtual;
     function CreateAuthentication(
       AHandle: Pointer): TBrookHTTPAuthentication; virtual;
     function CreateSecurity: TBrookHTTPServerSecurity; virtual;
@@ -204,13 +206,17 @@ type
     function CreateError(const AMessage: string): Exception; virtual;
     procedure HandleAuthenticateError(AAuthentication: TBrookHTTPAuthentication;
       ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse;
-      AException: Exception);
+      AException: Exception); virtual;
     function HandleAuthenticate(AAuthentication: TBrookHTTPAuthentication;
-      ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse): Boolean;
+      ARequest: TBrookHTTPRequest;
+      AResponse: TBrookHTTPResponse): Boolean; virtual;
     procedure HandleRequestError(ARequest: TBrookHTTPRequest;
-      AResponse: TBrookHTTPResponse; AException: Exception);
+      AResponse: TBrookHTTPResponse; AException: Exception); virtual;
     procedure HandleRequest(ARequest: TBrookHTTPRequest;
-      AResponse: TBrookHTTPResponse);
+      AResponse: TBrookHTTPResponse); virtual;
+    procedure HandleClientConnection(ASender: TObject; const AClient: Pointer;
+      var AClosed: Boolean); virtual;
+    procedure HandleError(ASender: TObject; AException: Exception); virtual;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
     function GetMHDHandle: Pointer; virtual;
@@ -231,6 +237,9 @@ type
     procedure SetActive(AValue: Boolean); virtual;
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
+    procedure Lock; {$IFNDEF DEBUG}inline;{$ENDIF}
+    procedure Unlock; {$IFNDEF DEBUG}inline;{$ENDIF}
+    property Locker: TBrookLocker read FLocker;
   public
     { Creates an instance of @code(TBrookHTTPServer).
       @param(AOwner[in] Owner component.) }
@@ -356,6 +365,7 @@ end;
 constructor TBrookHTTPServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FLocker := CreateLocker;
   FSecurity := CreateSecurity;
   SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
   FPostBufferSize := BROOK_POST_BUFFER_SIZE;
@@ -370,8 +380,19 @@ begin
   finally
     FSecurity.Free;
     SgLib.UnloadEvents.Remove(InternalLibUnloadEvent);
+    FLocker.Free;
     inherited Destroy;
   end;
+end;
+
+procedure TBrookHTTPServer.Lock;
+begin
+  FLocker.Lock;
+end;
+
+procedure TBrookHTTPServer.Unlock;
+begin
+  FLocker.Unlock;
 end;
 
 procedure TBrookHTTPServer.InternalCreateServerHandle;
@@ -405,6 +426,11 @@ begin
     InternalFreeServerHandle;
     SgLib.CheckLastError(Aret);
   end;
+end;
+
+function TBrookHTTPServer.CreateLocker: TBrookLocker;
+begin
+  Result := TBrookLocker.Create;
 end;
 
 function TBrookHTTPServer.CreateAuthentication(
@@ -449,7 +475,12 @@ begin
       Exit(True);
     VAuth := VSrv.CreateAuthentication(Aauth);
     try
-      Result := VSrv.HandleAuthenticate(VAuth, VReq, VRes);
+      VSrv.Lock;
+      try
+        Result := VSrv.HandleAuthenticate(VAuth, VReq, VRes);
+      finally
+        VSrv.Unlock;
+      end;
     finally
       VAuth.Free;
     end;
@@ -474,7 +505,12 @@ begin
       VRes.SendEmpty
     else
     begin
-      VSrv.HandleRequest(VReq, VRes);
+      VSrv.Lock;
+      try
+        VSrv.HandleRequest(VReq, VRes);
+      finally
+        VSrv.Unlock;
+      end;
       if VRes.IsEmpty then
         VRes.SendEmpty;
     end;
@@ -486,8 +522,16 @@ end;
 
 class procedure TBrookHTTPServer.DoClientConnectionCallback(Acls: Pcvoid;
   const Aclient: Pcvoid; Aclosed: Pcbool);
+var
+  VSrv: TBrookHTTPServer;
 begin
-  TBrookHTTPServer(Acls).DoClientConnection(Acls, Aclient, PBoolean(Aclosed)^);
+  VSrv := Acls;
+  VSrv.Lock;
+  try
+    VSrv.HandleClientConnection(VSrv, Aclient, PBoolean(Aclosed)^);
+  finally
+    VSrv.Unlock;
+  end;
 end;
 
 class procedure TBrookHTTPServer.DoErrorCallback(Acls: Pcvoid;
@@ -499,7 +543,12 @@ begin
   VSrv := Acls;
   VExcept := VSrv.CreateError(TMarshal.ToString(Aerr));
   try
-    VSrv.DoError(VSrv, VExcept);
+    VSrv.Lock;
+    try
+      VSrv.HandleError(VSrv, VExcept);
+    finally
+      VSrv.Unlock;
+    end;
   finally
     VExcept.Free;
   end;
@@ -566,6 +615,17 @@ begin
     on E: Exception do
       HandleRequestError(ARequest, AResponse, E);
   end;
+end;
+
+procedure TBrookHTTPServer.HandleClientConnection(ASender: TObject;
+  const AClient: Pointer; var AClosed: Boolean);
+begin
+  DoClientConnection(ASender, AClient, AClosed);
+end;
+
+procedure TBrookHTTPServer.HandleError(ASender: TObject; AException: Exception);
+begin
+  DoError(ASender, AException);
 end;
 
 procedure TBrookHTTPServer.Loaded;
