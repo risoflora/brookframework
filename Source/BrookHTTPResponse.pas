@@ -408,13 +408,13 @@ end;
 
 procedure TBrookHTTPResponse.SendEmpty(const AContentType: string);
 begin
-  Clear;
+  Reset;
   Send('', AContentType, 204);
 end;
 
 procedure TBrookHTTPResponse.SendEmpty;
 begin
-  Clear;
+  Reset;
   Send('', '', 204);
 end;
 
