@@ -403,10 +403,10 @@ var
   UL: TBrookHTTPUploads;
   U: TBrookHTTPUpload;
 begin
-  UL := TBrookHTTPUploads.Create(FakeUploads);
+  UL := TBrookHTTPUploads.Create(nil);
   try
     U := UL.Next;
-    Assert(U.Handle = FakeUploads);
+    Assert(not Assigned(U.Handle));
   finally
     UL.Free;
   end;

@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -307,8 +307,9 @@ function TBrookHTTPUploads.Next: TBrookHTTPUpload;
 begin
   SgLib.Check;
   SgLib.CheckLastError(sg_httpuplds_next(@FCurrent));
-  if Assigned(FCurrent) then
-    Result := TBrookHTTPUpload.Create(FCurrent);
+  if not Assigned(FCurrent) then
+    Exit(Default(TBrookHTTPUpload));
+  Result := TBrookHTTPUpload.Create(FCurrent);
 end;
 
 function TBrookHTTPUploads.GetCount: Integer;
