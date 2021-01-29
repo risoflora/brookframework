@@ -169,7 +169,7 @@ type
     property Items[AIndex: Integer]: TBrookURLEntryPoint read GetItem
       write SetItem; default;
     { @True if entry-points handle is prepared. }
-    property Prepared: Boolean read IsPrepared;
+    property Prepared: Boolean read IsPrepared; //FI:C110
   end;
 
   { Event signature used by @code(TBrookURLEntryPoints) to notify a not found

@@ -64,7 +64,7 @@ type
       @returns(Line read as static string.) }
     function Read: string; overload; virtual; abstract;
     { @True if the reader has reached the End-Of-File. }
-    property EOF: Boolean read IsEOF;
+    property EOF: Boolean read IsEOF; //FI:C110
     { Character encoding determined during reading. }
     property Encoding: TEncoding read GetEncoding write SetEncoding;
   end;
@@ -248,12 +248,13 @@ begin
     SetLength(FBuffer, BROOK_MIN_BUFFER_SIZE);
 end;
 
-constructor TBrookStreamReader.Create(AEncoding: TEncoding; AStream: TStream);
+constructor TBrookStreamReader.Create(AEncoding: TEncoding; //FI:W525
+  AStream: TStream);
 begin
   Create(AEncoding, AStream, BROOK_BUFFER_SIZE, False);
 end;
 
-constructor TBrookStreamReader.Create(AStream: TStream);
+constructor TBrookStreamReader.Create(AStream: TStream); //FI:W525
 begin
   Create(TEncoding.UTF8, AStream);
 end;
@@ -460,13 +461,13 @@ begin
     ABufferSize, True);
 end;
 
-constructor TBrookStringReader.Create(AEncoding: TEncoding;
+constructor TBrookStringReader.Create(AEncoding: TEncoding; //FI:W525
   const AString: string);
 begin
   Create(AEncoding, AString, BROOK_BUFFER_SIZE);
 end;
 
-constructor TBrookStringReader.Create(const AString: string);
+constructor TBrookStringReader.Create(const AString: string); //FI:W525
 begin
   Create(TEncoding.UTF8, AString);
 end;
@@ -492,25 +493,25 @@ begin
     TFileStream.Create(AFileName, AMode, ARights), ABufferSize, True);
 end;
 
-constructor TBrookFileReader.Create(AEncoding: TEncoding;
+constructor TBrookFileReader.Create(AEncoding: TEncoding; //FI:W525
   const AFileName: TFileName; AMode: Word; ABufferSize: Integer);
 begin
   Create(AEncoding, AFileName, AMode, BROOK_FILE_RIGHTS, ABufferSize);
 end;
 
-constructor TBrookFileReader.Create(AEncoding: TEncoding;
+constructor TBrookFileReader.Create(AEncoding: TEncoding; //FI:W525
   const AFileName: TFileName; ABufferSize: Integer);
 begin
   Create(AEncoding, AFileName, fmOpenRead or fmShareDenyWrite, ABufferSize);
 end;
 
-constructor TBrookFileReader.Create(AEncoding: TEncoding;
+constructor TBrookFileReader.Create(AEncoding: TEncoding; //FI:W525
   const AFileName: TFileName);
 begin
   Create(AEncoding, AFileName, BROOK_BUFFER_SIZE);
 end;
 
-constructor TBrookFileReader.Create(const AFileName: TFileName);
+constructor TBrookFileReader.Create(const AFileName: TFileName); //FI:W525
 begin
   Create(TEncoding.UTF8, AFileName);
 end;

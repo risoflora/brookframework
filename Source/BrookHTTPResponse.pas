@@ -191,7 +191,7 @@ type
     { Cookies to be sent to the client. }
     property Cookies: TBrookHTTPCookies read FCookies write SetCookies;
     { Determines if the response is empty. }
-    property Empty: Boolean read IsEmpty;
+    property Empty: Boolean read IsEmpty; //FI:C110
   end;
 
 implementation

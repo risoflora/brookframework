@@ -381,7 +381,8 @@ end;
 {$ENDIF}
 
 class function TBrookURLRoute.DoSegmentsIterCallback(Acls: Pcvoid;
-  Aindex: cuint; const Asegment: Pcchar): cint;
+  Aindex: cuint; //FI:O804
+  const Asegment: Pcchar): cint;
 var
   VSegments: ^TArray<string>;
 begin

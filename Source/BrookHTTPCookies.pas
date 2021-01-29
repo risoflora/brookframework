@@ -380,6 +380,7 @@ begin
   case FSameSite of
     ssStrict: Result := Concat(Result, '; SameSite=Strict');
     ssLax: Result := Concat(Result, '; SameSite=Lax');
+    ssNone: ;
   end;
 end;
 

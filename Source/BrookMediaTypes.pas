@@ -166,7 +166,7 @@ type
     { Default media type identifier returned by @code(Find). }
     property DefaultType: string read FDefaultType write SetDefaultType;
     { @True if the media types cache is prepared. }
-    property Prepared: Boolean read IsPrepared;
+    property Prepared: Boolean read IsPrepared; //FI:C110
   end;
 
   { Class-reference for @code(TBrookMediaTypes). }
@@ -563,7 +563,7 @@ begin
   FParser := CreateParser;
 end;
 
-constructor TBrookMediaTypesPath.Create;
+constructor TBrookMediaTypesPath.Create; //FI:W525
 begin
   Create(GetFileName);
 end;
