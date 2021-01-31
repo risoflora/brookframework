@@ -275,7 +275,7 @@ begin
     Result := VEncoder.EncodeBytesToString(
       THashSHA1.GetHMACAsBytes(AUnsignedValue, ASecret))
   finally
-    VEncoder.Destroy;
+    VEncoder.Free;
   end;
 {$ENDIF};
   VPos := Pos('=', Result);
