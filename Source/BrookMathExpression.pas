@@ -482,7 +482,7 @@ begin
     EX.cls := Self;
     FExtensionsHandle[I] := EX;
   end;
-  FExtensionsHandle[FExtensions.Count] := Default(sg_expr_extension);
+  FillChar(FExtensionsHandle[FExtensions.Count], SizeOf(sg_expr_extension), #0);
   R := sg_expr_compile(FHandle, M.ToCString(AExpression), M.Length(AExpression),
     @FExtensionsHandle[0]);
   FCompiled := R = 0;
