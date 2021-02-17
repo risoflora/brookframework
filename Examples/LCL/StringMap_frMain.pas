@@ -51,7 +51,6 @@ type
     procedure FormDestroy(Sender: TObject);
   private
     FMap: TBrookStringMap;
-    FMapHandle: Pointer;
     procedure DoMapChange(ASender: TObject;
       AOperation: TBrookStringMapOperation);
   end;
@@ -65,7 +64,7 @@ implementation
 
 procedure TfrMain.FormCreate(Sender: TObject);
 begin
-  FMap := TBrookStringMap.Create(@FMapHandle);
+  FMap := TBrookStringMap.Create(nil);
   FMap.OnChange := DoMapChange;
 end;
 

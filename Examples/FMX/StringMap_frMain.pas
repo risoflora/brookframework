@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,7 +60,6 @@ type
       var AValue: TValue);
   private
     FMap: TBrookStringMap;
-    FMapHandle: Pointer;
     FList: TStrings;
     procedure DoMapChange(ASender: TObject;
       AOperation: TBrookStringMapOperation);
@@ -75,7 +74,7 @@ implementation
 
 procedure TfrMain.FormCreate(Sender: TObject);
 begin
-  FMap := TBrookStringMap.Create(@FMapHandle);
+  FMap := TBrookStringMap.Create(nil);
   FList := TStringList.Create;
   FMap.OnChange := DoMapChange;
 end;

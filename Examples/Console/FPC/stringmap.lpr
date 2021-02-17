@@ -53,10 +53,9 @@ begin
 end;
 
 var
-  h: Pointer;
   map: TBrookStringMap;
 begin
-  map := TBrookStringMap.Create(@h);
+  map := TBrookStringMap.Create(nil);
   try
     chat(map, 'Clecio', 'Hello!');
     chat(map, 'Paim', 'Hello. How are you?');

@@ -110,11 +110,9 @@ end;
 
 procedure Test_StringMapOnChange;
 var
-  VMapHandle: Pointer;
   VMap: TLocalStringMap;
 begin
-  VMapHandle := nil;
-  VMap := TLocalStringMap.Create(@VMapHandle);
+  VMap := TLocalStringMap.Create(nil);
   try
     Assert(VMap.Operation = sgmoNone);
     VMap.Add('abc', '123');
@@ -574,7 +572,6 @@ const
   NAME = 'abç';
   VAL = 'déf';
 var
-  VMapHandle: Pointer;
   VMap: TBrookStringMap;
 begin
 {$IF (NOT DEFINED(FPC)) AND DEFINED(DEBUG)}
@@ -584,8 +581,7 @@ begin
   Test_StringMapNameValue;
   Test_StringMapClearOnDestroy;
   Test_StringMapOnChange;
-  VMapHandle := nil;
-  VMap := TBrookStringMap.Create(@VMapHandle);
+  VMap := TBrookStringMap.Create(nil);
   try
     Test_StringMapHandle(VMap);
     Test_StringMapAdd(VMap, NAME, VAL);

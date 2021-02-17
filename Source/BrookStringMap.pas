@@ -114,6 +114,7 @@ type
     FClearOnDestroy: Boolean;
     FNextHandle: Psg_strmap;
     FHandle: PPsg_strmap;
+    FFallbackHandle: Psg_strmap;
     FOnChange: TBrookStringMapChangeEvent;
     function GetCount: Integer;
     function GetValue(const AName: string): string;
@@ -259,9 +260,10 @@ end;
 constructor TBrookStringMap.Create(AHandle: Pointer);
 begin
   inherited Create;
-  if not Assigned(AHandle) then
-    raise EArgumentNilException.CreateFmt(SParamIsNil, ['AHandle']);
-  FHandle := AHandle;
+  if Assigned(AHandle) then
+    FHandle := AHandle
+  else
+    FHandle := @FFallbackHandle;
   FClearOnDestroy := True;
 end;
 
