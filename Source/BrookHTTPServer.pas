@@ -49,7 +49,9 @@ resourcestring
   { Error message @code('Cannot create server handle.'). }
   SBrookCannotCreateServerHandle = 'Cannot create server handle.';
   { Error message @code('TLS is not available.'). }
-  SBrookTLSNotAvailable = 'TLS is not available.';
+  SBrookTLSNotAvailable = Concat(
+    'TLS is not available. Please download the Sagui library with ',
+    'TLS support at: https://github.com/risoflora/libsagui/releases');
   { Error message @code('Private key cannot be empty.'). }
   SBrookEmptyPrivateKey = 'Private key cannot be empty.';
   { Error message @code('Certificate cannot be empty.'). }
