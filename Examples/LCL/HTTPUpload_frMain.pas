@@ -40,6 +40,7 @@ uses
   Forms,
   LCLIntf,
   BrookUtility,
+  BrookStringMap,
   BrookHTTPUploads,
   BrookHTTPRequest,
   BrookHTTPResponse,
@@ -83,6 +84,8 @@ const
     '<legend>Choose the files:</legend>',
     'File 1: <input type="file" name="file1"/><br>',
     'File 2: <input type="file" name="file2"/><br>',
+    'User 1: <input type="text" name="user1"/><br>',
+    'User 2: <input type="text" name="user2"/><br>',
     '<input type="submit"/>',
     '</fieldset>',
     '</form>',
@@ -96,6 +99,8 @@ const
     '</head>',
     '<body>',
     '<strong>Uploaded files:</strong><br>',
+    '%s',
+    '<strong>Users:</strong><br>',
     '%s',
     '</body>',
     '</html>'
@@ -157,20 +162,25 @@ procedure TfrMain.BrookHTTPServer1Request(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
 var
   VUpload: TBrookHTTPUpload;
-  VFile, VList, VError: string;
+  VField: TBrookStringPair;
+  VFile, VFileList, VUsersList, VError: string;
 begin
   if ARequest.IsUploading then
   begin
-    VList := '<ol>';
+    VFileList := '<ol>';
     for VUpload in ARequest.Uploads do
       if VUpload.Save(False, VError) then
-        VList := Concat(VList, '<li><a href="?file=', VUpload.Name, '">',
+        VFileList := Concat(VFileList, '<li><a href="?file=', VUpload.Name, '">',
           VUpload.Name, '</a></li>')
       else
-        VList := Concat(VList, '<li><font color="red">', VUpload.Name,
+        VFileList := Concat(VFileList, '<li><font color="red">', VUpload.Name,
           ' - failed - ', VError, '</font></li>');
-    VList := Concat(VList, '</ol>');
-    AResponse.SendFmt(PAGE_DONE, [VList], CONTENT_TYPE, 200);
+    VFileList := Concat(VFileList, '</ol>');
+    VUsersList := '<ol>';
+    for VField in ARequest.Fields do
+      VUsersList := Concat(VUsersList, '<li>', VField.Value, '</li>');
+    VUsersList := Concat(VUsersList, '</ol>');
+    AResponse.SendFmt(PAGE_DONE, [VFileList, VUsersList], CONTENT_TYPE, 200);
   end
   else
   begin
