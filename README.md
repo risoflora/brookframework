@@ -1,12 +1,17 @@
-[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-lemmon.svg)](https://github.com/risoflora/brookframework/blob/master/LICENSE)
-[![GitHub releases](https://img.shields.io/github/v/release/risoflora/brookframework?color=lemmon)](https://github.com/risoflora/brookframework/releases)
-[![Support this project via PayPal](https://img.shields.io/badge/donate-paypal-brightgreen)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=silvioprog%40gmail%2ecom&lc=US&item_name=brookframework&item_number=brookframework&currency_code=USD&bn=PP%2dDonationsBF%3aproject%2dsupport%2ejpg%3aNonHosted)
+# `Brook framework`
 
-# Overview
+[![Support this project via PayPal][paypal-badge]][1]
+[![GitHub releases][releases-badge]][22]
+[![License: LGPL v2.1][license-badge]](LICENSE)
 
-Brook is a cross-platform microframework which helps to develop web Pascal applications built by [Delphi](<https://en.wikipedia.org/wiki/Delphi_(software)>) or [Lazarus IDE and Free Pascal](<https://en.wikipedia.org/wiki/Lazarus_(IDE)>). Its core has been developed using the [Sagui library](https://risoflora.github.io/libsagui), that's why it is so fast, compact and useful to run on embedded systems.
+## Overview
 
-# Features
+Brook is a cross-platform microframework which helps to develop web Pascal
+applications built by [Delphi][5] or [Lazarus IDE and Free Pascal][6].
+Its core has been developed using the [Sagui library][7], that's why it is so
+fast, compact and useful to run on embedded systems.
+
+## Features
 
 - **Three threading modes:**
   - Event-driven - single-thread + polling.
@@ -14,15 +19,15 @@ Brook is a cross-platform microframework which helps to develop web Pascal appli
   - Polling - pre-allocated threads.
   - Isolated request - request processed outside main thread.
 - **Fast path routing that supports:**
-  - Regular expression with [JIT](https://www.pcre.org/current/doc/html/pcre2jit.html) optimization.
-  - [Binary search](https://en.wikipedia.org/wiki/Binary_search_algorithm) for path entry-points.
+  - Regular expression with [JIT][8] optimization.
+  - [Binary search][9] for path entry-points.
 - **HTTP compression:**
-  - [Deflate](https://en.wikipedia.org/wiki/DEFLATE) - for static strings and streaming.
-  - [Gzip](https://en.wikipedia.org/wiki/Gzip) - for file compression.
+  - [Deflate][10] - for static strings and streaming.
+  - [Gzip][11] - for file compression.
 - **HTTP cookies:**
   - Providing classes which handles server side cookies.
 - **HTTPS support:**
-  - Data encryption through [GnuTLS](https://www.gnutls.org) library.
+  - Data encryption through [GnuTLS][12] library.
 - **Dual stack:**
   - IPv4 and IPv6 on top of a single socket.
 - **Basic authentication:**
@@ -38,7 +43,7 @@ Brook is a cross-platform microframework which helps to develop web Pascal appli
   - Extendable with custom functions.
   - Error handling with error kind and position.
 - **Media types:**
-  - Resolving media types ([MIME](https://en.wikipedia.org/wiki/MIME)) in any supported platform.
+  - Resolving media types ([MIME][13]) in any supported platform.
 - **Logging:**
   - Allowing to generate logs in console or files.
 - **String buffer:**
@@ -48,7 +53,7 @@ Brook is a cross-platform microframework which helps to develop web Pascal appli
 - **And more:**
   - Discover more features by playing with our examples.
 
-# Examples
+## Examples
 
 The example below shows a minimal `hello world` HTTP server:
 
@@ -81,9 +86,28 @@ begin
 end.
 ```
 
-There are other examples available in the [`Examples/`](https://github.com/risoflora/brookframework/tree/master/Examples) directory.
+There are other examples available in the [`Examples`](Examples) directory.
 
-# Targets
+## Downloading
+
+All stable releases are available to download via [GetIt][20], [OPM][21] and
+GitHub [releases page][22].
+
+We strongly recommend you to install Brook using GetIt or OPM, however, if you
+want to download the very latest source from the Git repository, do this:
+
+```bash
+git clone https://github.com/risoflora/brookframework.git
+```
+
+It will create a directory named `brookframework` filled with the source code.
+
+## Documentation
+
+The documentation has been written in [PasDoc][15] and is available in HTML
+format at [brookframework-docs][16].
+
+## Targets
 
 Successfully tested on:
 
@@ -96,40 +120,78 @@ compiled using:
 - Delphi XE family (Rio)
 - Lazarus / Free Pascal (Lazarus 2.0+ / FPC 3.2+)
 
-# Versioning
+## Versioning
 
-Starting from the version 1.0.0, Brook follows the [SemVer](https://semver.org) rules regarding API changes with backwards compatibility across major releases.
+Starting from the version 1.0.0, Brook follows the [SemVer][14] rules regarding
+API changes with backwards compatibility across major releases.
 
-# Licensing
+## Contributing
 
-Brook framework is released under GNU Lesser General Public License v2.1. Check the [LICENSE file](https://github.com/risoflora/brookframework/blob/master/LICENSE) for more details.
+Brook framework is totally open source and would not be possible without our
+[contributors][17]. If you want to submit contributions, please fork the project
+on GitHub and send a pull request. You retain the copyright on your
+contributions.
 
-# Documentation
+## Donations
 
-The documentation has been written in [PasDoc](https://github.com/pasdoc/pasdoc) and is available in HTML format at [brookframework-docs/index.html](https://risoflora.github.io/brookframework-docs/index.html).
+Many open source projects, large and small, receive donations to encourage their
+authors, therefore, it would be not different in Brook.
 
-# Downloading
+All money collected from donations are invested to the purchase of study
+materials. This way, directly or indirectly, all knowledge acquired in the
+studies influence the spread of this project.
 
-All stable releases are available for download at the [releases page](https://github.com/risoflora/brookframework/releases).
+If you want to support this project, please choose one
+of the options below to make a donation.
 
-To download the very latest source from the Git server, do this:
+[![Support this project via PayPal][paypal-gif]][1] [![Support this project via PagSeguro][pagseguro-gif]][2]
 
-```bash
-git clone https://github.com/risoflora/brookframework.git
-```
+(For those who would like to donate in Brazilian BRL, it can be done by a
+[identified bank deposit][3] or via [PayPal Brazil][4].)
 
-It will create a directory named `brookframework` filled with the source code.
+Check the list of [all donors](DONORS) that lovely supported this idea! :heart:
 
-# Contributing
+## Community
 
-Brook framework is totally open source and would not be possible without our [contributors](https://github.com/risoflora/brookframework/blob/master/THANKS). If you want to submit contributions, please fork the project on GitHub and send a pull request. You retain the copyright on your contributions. If you have questions, open a new issue at the [issues page](https://github.com/risoflora/brookframework/issues). For donations to support this project, please click the button below.
+Would you like to ask questions and talk to more Brook users?
 
-[![Support this project via PayPal](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=silvioprog%40gmail%2ecom&lc=US&item_name=brookframework&item_number=brookframework&currency_code=USD&bn=PP%2dDonationsBF%3aproject%2dsupport%2ejpg%3aNonHosted) [![Support this project via PagSeguro](https://stc.pagseguro.uol.com.br/public/img/botoes/doacoes/120x53-doar.gif)](https://pag.ae/7WgS8EENR)
+Join us to the [official group at Telegram][19] and be welcome! :slightly_smiling_face:
 
-If you are Brazilian and want to donate using more options in BRL, please make an identified [Nubank deposit](https://drive.google.com/file/d/1CQWoDVLnepbs29enY5CylAw_omNvit5M/view?usp=sharing) or use [this PayPal link](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=GE9VT768TLP74&item_name=brookframework&currency_code=BRL&source=url).
+## Support
 
-See the name of all donors in [DONORS](https://github.com/risoflora/brookframework/tree/master/DONORS) file. :green_heart:
+This project values being simple, direct and self-explanatory. However, if you
+need some help to integrate Brook to your application, we have the option of a paid
+consulting service. [Contact us][18]!
 
-# Support
+## Licensing
 
-This project is completely self-explanatory, but, if you need a consulting service to integrate it on your project, [contact us](mailto:silvioprog@gmail.com).
+Brook framework is released under GNU Lesser General Public License v2.1. Check
+the [LICENSE file](LICENSE) for more details.
+
+[license-badge]: https://img.shields.io/badge/License-LGPL%20v2.1-lemmon.svg
+[paypal-badge]: https://img.shields.io/badge/donate-paypal-brightgreen
+[paypal-gif]: https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif
+[pagseguro-gif]: https://stc.pagseguro.uol.com.br/public/img/botoes/doacoes/120x53-doar.gif
+[releases-badge]: https://img.shields.io/github/v/release/risoflora/brookframework?color=lemmon
+[1]: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=silvioprog%40gmail%2ecom&lc=US&item_name=brookframework&item_number=brookframework&currency_code=USD&bn=PP%2dDonationsBF%3aproject%2dsupport%2ejpg%3aNonHosted "PayPal link"
+[2]: https://pag.ae/7WgS8EENR "PagSeguro link"
+[3]: https://drive.google.com/file/d/1CQWoDVLnepbs29enY5CylAw_omNvit5M/view?usp=sharing "Nubank link"
+[4]: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=GE9VT768TLP74&item_name=brookframework&currency_code=BRL&source=url
+[5]: https://en.wikipedia.org/wiki/Delphi_(software) "Delphi software"
+[6]: https://en.wikipedia.org/wiki/Lazarus_(IDE) "Lazarus & Free Pascal"
+[7]: https://risoflora.github.io/libsagui "Sagui library"
+[8]: https://www.pcre.org/current/doc/html/pcre2jit.html "PCRE2 JIT"
+[9]: https://en.wikipedia.org/wiki/Binary_search_algorithm "Binary search algorithm"
+[10]: https://en.wikipedia.org/wiki/DEFLATE "DEFLATE compression"
+[11]: https://en.wikipedia.org/wiki/Gzip "Gzip compression"
+[12]: https://www.gnutls.org "GnuTLS library"
+[13]: https://en.wikipedia.org/wiki/MIME "Multipurpose Internet Mail Extensions"
+[14]: https://semver.org "Semantic Versioning"
+[15]: https://github.com/pasdoc/pasdoc "PasDoc documentation tool"
+[16]: https://risoflora.github.io/brookframework-docs/index.html "Brook online documentation"
+[17]: https://github.com/risoflora/brookframework/blob/master/THANKS "Thanks to the people who help to maintain this project"
+[18]: mailto:silvioprog@gmail.com "silvioprog at gmail dot com"
+[19]: https://t.me/brookframework "Official Telegram group"
+[20]: https://getitnow.embarcadero.com/brook-framework "Delphi GetIt"
+[21]: https://wiki.lazarus.freepascal.org/Online_Package_Manager "Lazarus OPM"
+[22]: https://github.com/risoflora/brookframework/releases
