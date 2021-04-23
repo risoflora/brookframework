@@ -241,7 +241,6 @@ type
     procedure DoClose; virtual;
     procedure Lock; {$IFNDEF DEBUG}inline;{$ENDIF}
     procedure Unlock; {$IFNDEF DEBUG}inline;{$ENDIF}
-    property Locker: TBrookLocker read FLocker;
   public
     { Creates an instance of @code(TBrookHTTPServer).
       @param(AOwner[in] Owner component.) }
@@ -267,6 +266,7 @@ type
       thread per connection. }
     property Threaded: Boolean read GetThreaded write SetThreaded
       stored IsThreadedStored default False;
+    property Locker: TBrookLocker read FLocker;
     { Directory to store the uploaded files. }
     property UploadsDir: string read GetUploadsDir write SetUploadsDir
       stored IsUploadsDirStored;
@@ -779,7 +779,10 @@ begin
     CheckInactive;
   FThreaded := AValue;
   if FThreaded then
+  begin
     System.IsMultiThread := True;
+    Locker.Active:=False;
+  end;
 end;
 
 procedure TBrookHTTPServer.SetThreadPoolSize(AValue: Cardinal);
