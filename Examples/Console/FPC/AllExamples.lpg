@@ -1,51 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="11">
-      <Target0 FileName="hellohttpsrv.lpi">
+    <Targets Count="13">
+      <Target0 FileName="CRUDClient\crudclient.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target0>
-      <Target1 FileName="httpauth.lpi">
+      <Target1 FileName="CRUDServer\crudserver.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target1>
-      <Target2 FileName="httpcookies.lpi">
+      <Target2 FileName="hellohttpsrv.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target2>
-      <Target3 FileName="httpsrvsse.lpi">
+      <Target3 FileName="httpauth.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target3>
-      <Target4 FileName="httpuploads.lpi">
+      <Target4 FileName="httpcookies.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target4>
-      <Target5 FileName="logger.lpi">
+      <Target5 FileName="httpsrvsse.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target5>
-      <Target6 FileName="mathexpression.lpi">
+      <Target6 FileName="httpuploads.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target6>
-      <Target7 FileName="mediatypes.lpi">
+      <Target7 FileName="logger.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target7>
-      <Target8 FileName="stringbuffer.lpi">
+      <Target8 FileName="mathexpression.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target8>
-      <Target9 FileName="stringmap.lpi">
+      <Target9 FileName="mediatypes.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target9>
-      <Target10 FileName="urlrouter.lpi">
+      <Target10 FileName="stringbuffer.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target10>
+      <Target11 FileName="stringmap.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target11>
+      <Target12 FileName="urlrouter.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target12>
     </Targets>
   </ProjectGroup>
 </CONFIG>
