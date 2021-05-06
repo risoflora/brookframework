@@ -163,6 +163,14 @@ This project values being simple, direct and self-explanatory. However, if you
 need some help to integrate Brook to your application, we have the option of a paid
 consulting service. [Contact us][18]!
 
+## Projects using Brook
+
+- [Brook Telegram][25] - Telegram plugin for Brook framework. [[MIT][26]]
+- [Aproveita.App][27] - [PWA][24] application for supermarket products. [Comercial]
+
+Would you like to add your project to that list above? Feel free to open a
+[new issue][23] requesting it! :-)
+
 ## Licensing
 
 Brook framework is released under GNU Lesser General Public License v2.1. Check
@@ -195,3 +203,8 @@ the [LICENSE file](LICENSE) for more details.
 [20]: https://getitnow.embarcadero.com/brook-framework "Delphi GetIt"
 [21]: https://wiki.lazarus.freepascal.org/Online_Package_Manager "Lazarus OPM"
 [22]: https://github.com/risoflora/brookframework/releases
+[23]: https://github.com/risoflora/brookframework/issues/new?labels=documentation&template=project_using_brook.md
+[24]: https://en.wikipedia.org/wiki/Progressive_web_application "Progressive web application wiki"
+[25]: https://github.com/Al-Muhandis/brook-telegram "Telegram plugin for Brook framework"
+[26]: https://github.com/Al-Muhandis/brook-telegram/blob/master/LICENSE "Telegram plugin license"
+[27]: https://supermercadosprimavera.com.br "PWA application for supermarket products sales"
