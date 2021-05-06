@@ -155,18 +155,23 @@ Check the list of [all donors](DONORS) that lovely supported this idea! :heart:
 
 Would you like to ask questions and talk to more Brook users?
 
-Join us to the [official group at Telegram][19] and be welcome! :slightly_smiling_face:
+Join us to the [official group at Telegram][19] and be welcome!
+:slightly_smiling_face:
 
 ## Support
 
 This project values being simple, direct and self-explanatory. However, if you
-need some help to integrate Brook to your application, we have the option of a paid
-consulting service. [Contact us][18]!
+need some help to integrate Brook to your application, we have the option of a
+paid consulting service. [Contact us][18]!
 
 ## Projects using Brook
 
 - [Brook Telegram][25] - Telegram plugin for Brook framework. [[MIT][26]]
-- [Aproveita.App][27] - [PWA][24] application for supermarket products. [Comercial]
+- [Aproveita.App][27] - [PWA][24] application for supermarket products
+  sales. [Comercial]
+- [Client Web Portal][28] - Application to manage appointments,
+  update demographics, download previous invoices from the RUBI medical records
+  system. [Commercial]
 
 Would you like to add your project to that list above? Feel free to open a
 [new issue][23] requesting it! :-)
@@ -208,3 +213,4 @@ the [LICENSE file](LICENSE) for more details.
 [25]: https://github.com/Al-Muhandis/brook-telegram "Telegram plugin for Brook framework"
 [26]: https://github.com/Al-Muhandis/brook-telegram/blob/master/LICENSE "Telegram plugin license"
 [27]: https://supermercadosprimavera.com.br "PWA application for supermarket products sales"
+[28]: https://github.com/risoflora/brookframework/issues/29
