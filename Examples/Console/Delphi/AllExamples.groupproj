@@ -3,6 +3,12 @@
         <ProjectGuid>{4B06BA79-AD47-43AE-84FD-2E76EEC02B63}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="CRUDClient\crudclient.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="CRUDServer\crudserver.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="hellohttpsrv.dproj">
             <Dependencies/>
         </Projects>
@@ -44,6 +50,24 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="crudclient">
+        <MSBuild Projects="CRUDClient\crudclient.dproj"/>
+    </Target>
+    <Target Name="crudclient:Clean">
+        <MSBuild Projects="CRUDClient\crudclient.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="crudclient:Make">
+        <MSBuild Projects="CRUDClient\crudclient.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="crudserver">
+        <MSBuild Projects="CRUDServer\crudserver.dproj"/>
+    </Target>
+    <Target Name="crudserver:Clean">
+        <MSBuild Projects="CRUDServer\crudserver.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="crudserver:Make">
+        <MSBuild Projects="CRUDServer\crudserver.dproj" Targets="Make"/>
+    </Target>
     <Target Name="hellohttpsrv">
         <MSBuild Projects="hellohttpsrv.dproj"/>
     </Target>
@@ -144,13 +168,13 @@
         <MSBuild Projects="urlrouter.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="hellohttpsrv;httpauth;httpcookies;httpsrvsse;httpuploads;logger;mathexpression;mediatypes;stringbuffer;stringmap;urlrouter"/>
+        <CallTarget Targets="crudclient;crudserver;hellohttpsrv;httpauth;httpcookies;httpsrvsse;httpuploads;logger;mathexpression;mediatypes;stringbuffer;stringmap;urlrouter"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httpsrvsse:Clean;httpuploads:Clean;logger:Clean;mathexpression:Clean;mediatypes:Clean;stringbuffer:Clean;stringmap:Clean;urlrouter:Clean"/>
+        <CallTarget Targets="crudclient:Clean;crudserver:Clean;hellohttpsrv:Clean;httpauth:Clean;httpcookies:Clean;httpsrvsse:Clean;httpuploads:Clean;logger:Clean;mathexpression:Clean;mediatypes:Clean;stringbuffer:Clean;stringmap:Clean;urlrouter:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httpsrvsse:Make;httpuploads:Make;logger:Make;mathexpression:Make;mediatypes:Make;stringbuffer:Make;stringmap:Make;urlrouter:Make"/>
+        <CallTarget Targets="crudclient:Make;crudserver:Make;hellohttpsrv:Make;httpauth:Make;httpcookies:Make;httpsrvsse:Make;httpuploads:Make;logger:Make;mathexpression:Make;mediatypes:Make;stringbuffer:Make;stringmap:Make;urlrouter:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

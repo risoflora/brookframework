@@ -1,51 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="11">
-      <Target0 FileName="HTTPAuth_Example.lpi">
+    <Targets Count="13">
+      <Target0 FileName="CRUDClient\CRUDClient.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target0>
-      <Target1 FileName="HTTPCookie_Example.lpi">
+      <Target1 FileName="CRUDServer\CRUDServer.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target1>
-      <Target2 FileName="HTTPServer_Example.lpi">
+      <Target2 FileName="HTTPAuth_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target2>
-      <Target3 FileName="HTTPServerSSE_Example.lpi">
+      <Target3 FileName="HTTPCookie_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target3>
-      <Target4 FileName="HTTPUpload_Example.lpi">
+      <Target4 FileName="HTTPServer_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target4>
-      <Target5 FileName="Logger_Example.lpi">
+      <Target5 FileName="HTTPServerSSE_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target5>
-      <Target6 FileName="MathExpression_Example.lpi">
+      <Target6 FileName="HTTPUpload_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target6>
-      <Target7 FileName="MediaTypes_Example.lpi">
+      <Target7 FileName="Logger_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target7>
-      <Target8 FileName="String_Example.lpi">
+      <Target8 FileName="MathExpression_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target8>
-      <Target9 FileName="StringMap_Example.lpi">
+      <Target9 FileName="MediaTypes_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target9>
-      <Target10 FileName="URLRouter_Example.lpi">
+      <Target10 FileName="String_Example.lpi">
         <BuildModes Count="1"/>
         <Mode1 Name="Default"/>
       </Target10>
+      <Target11 FileName="StringMap_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target11>
+      <Target12 FileName="URLRouter_Example.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target12>
     </Targets>
   </ProjectGroup>
 </CONFIG>
