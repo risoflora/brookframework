@@ -1,0 +1,40 @@
+object Persistence: TPersistence
+  OldCreateOrder = False
+  Height = 150
+  HorizontalOffset = 340
+  VerticalOffset = 119
+  Width = 330
+  object SQLConnector: TSQLConnector
+    Connected = False
+    LoginPrompt = False
+    DatabaseName = '../../DB/DataBase.sqlite3'
+    KeepConnection = False
+    Transaction = SQLTransaction
+    ConnectorType = 'SQLite3'
+    Left = 56
+    Top = 40
+  end
+  object SQLTransaction: TSQLTransaction
+    Active = False
+    Database = SQLConnector
+    Left = 160
+    Top = 40
+  end
+  object SQLQuery: TSQLQuery
+    FieldDefs = <>
+    Database = SQLConnector
+    Transaction = SQLTransaction
+    SQL.Strings = (
+      'SELECT * FROM persons'
+    )
+    UpdateSQL.Strings = (
+      'UPDATE persons SET name = :name WHERE id = :id'
+    )
+    DeleteSQL.Strings = (
+      'DELETE FROM persons WHERE id = :OLD_id'
+    )
+    Params = <>
+    Left = 256
+    Top = 40
+  end
+end

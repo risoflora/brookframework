@@ -1,0 +1,12 @@
+object Client: TClient
+  OldCreateOrder = False
+  Height = 150
+  HorizontalOffset = 340
+  VerticalOffset = 119
+  Width = 150
+  object BufDataset: TBufDataset
+    FieldDefs = <>
+    Left = 64
+    Top = 41
+  end
+end

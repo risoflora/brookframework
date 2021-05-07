@@ -1,0 +1,80 @@
+object frMain: TfrMain
+  Left = 340
+  Height = 240
+  Top = 119
+  Width = 320
+  Caption = 'Simple CRUD client example'
+  ClientHeight = 240
+  ClientWidth = 320
+  Position = poDesktopCenter
+  LCLVersion = '2.0.12.0'
+  object DBGrid: TDBGrid
+    Left = 0
+    Height = 181
+    Top = 0
+    Width = 320
+    Align = alClient
+    Color = clWindow
+    Columns = <>
+    DataSource = DataSource
+    TabOrder = 0
+  end
+  object DBNavigator: TDBNavigator
+    Left = 0
+    Height = 25
+    Top = 181
+    Width = 320
+    Align = alBottom
+    BevelOuter = bvNone
+    ChildSizing.EnlargeHorizontal = crsScaleChilds
+    ChildSizing.EnlargeVertical = crsScaleChilds
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 100
+    ClientHeight = 25
+    ClientWidth = 320
+    DataSource = DataSource
+    Options = []
+    TabOrder = 1
+    VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbDelete, nbEdit, nbPost, nbCancel]
+  end
+  object pnBottom: TPanel
+    Left = 0
+    Height = 34
+    Top = 206
+    Width = 320
+    Align = alBottom
+    ClientHeight = 34
+    ClientWidth = 320
+    TabOrder = 2
+    object btLoad: TButton
+      Left = 3
+      Height = 28
+      Top = 3
+      Width = 75
+      Align = alLeft
+      BorderSpacing.Around = 2
+      Caption = 'Load'
+      OnClick = btLoadClick
+      TabOrder = 0
+    end
+    object btSave: TButton
+      Left = 242
+      Height = 28
+      Top = 3
+      Width = 75
+      Align = alRight
+      BorderSpacing.Around = 2
+      Caption = 'Save'
+      Enabled = False
+      OnClick = btSaveClick
+      TabOrder = 1
+    end
+  end
+  object DataSource: TDataSource
+    DataSet = Client.BufDataset
+    Left = 144
+    Top = 72
+  end
+end
