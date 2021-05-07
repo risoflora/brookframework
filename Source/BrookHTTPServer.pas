@@ -127,7 +127,6 @@ type
   { Fast event-driven HTTP(S) server class. }
   TBrookHTTPServer = class(TBrookHandledComponent)
   private
-    FLocker: TBrookLocker;
     FHandle: Psg_httpsrv;
     FAuthenticated: Boolean;
     FConnectionLimit: Cardinal;
@@ -143,6 +142,7 @@ type
     FStreamedAuthenticated: Boolean;
     FThreadPoolSize: Cardinal;
     FUploadsDir: string;
+    FLocker: TBrookLocker;
     FSecurity: TBrookHTTPServerSecurity;
     FOnAuthenticate: TBrookHTTPAuthenticateEvent;
     FOnAuthenticateError: TBrookHTTPAuthenticateErrorEvent;
@@ -177,6 +177,7 @@ type
     procedure SetConnectionLimit(AValue: Cardinal);
     procedure SetConnectionTimeout(AValue: Cardinal);
     procedure SetPayloadLimit(AValue: NativeUInt);
+    procedure SetLocker(AValue: TBrookLocker);
     procedure SetSecurity(AValue: TBrookHTTPServerSecurity);
     procedure SetUploadsLimit(AValue: UInt64);
     procedure SetPort(AValue: UInt16);
@@ -239,8 +240,6 @@ type
     procedure SetActive(AValue: Boolean); virtual;
     procedure DoOpen; virtual;
     procedure DoClose; virtual;
-    procedure Lock; {$IFNDEF DEBUG}inline;{$ENDIF}
-    procedure Unlock; {$IFNDEF DEBUG}inline;{$ENDIF}
   public
     { Creates an instance of @code(TBrookHTTPServer).
       @param(AOwner[in] Owner component.) }
@@ -251,6 +250,10 @@ type
     procedure Open;
     { Stops the HTTP(S) server. }
     procedure Close;
+    { Locks all other requests. }
+    procedure Lock; {$IFNDEF DEBUG}inline;{$ENDIF}
+    { Unlocks all other requests. }
+    procedure Unlock; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Contains the MHD instance. }
     property MHDHandle: Pointer read GetMHDHandle;
   published
@@ -266,7 +269,6 @@ type
       thread per connection. }
     property Threaded: Boolean read GetThreaded write SetThreaded
       stored IsThreadedStored default False;
-    property Locker: TBrookLocker read FLocker;
     { Directory to store the uploaded files. }
     property UploadsDir: string read GetUploadsDir write SetUploadsDir
       stored IsUploadsDirStored;
@@ -293,6 +295,8 @@ type
       by sending an empty content (@code(204)) if path is @code('/favicon.ico'). }
     property NoFavicon: Boolean read FNoFavicon write FNoFavicon
       stored IsNoFaviconStored default False;
+    { Allows to lock other requests from accessing a block of code. }
+    property Locker: TBrookLocker read FLocker write SetLocker;
     { Holds the TLS properties for the HTTPS server. }
     property Security: TBrookHTTPServerSecurity read FSecurity
       write SetSecurity;
@@ -462,7 +466,7 @@ begin
 end;
 
 class function TBrookHTTPServer.DoAuthenticationCallback(Acls: Pcvoid;
-  Aauth: Psg_httpauth; Areq: Psg_httpreq; Ares: Psg_httpres): cbool;
+  Aauth: Psg_httpauth; Areq: Psg_httpreq; Ares: Psg_httpres): cbool; cdecl;
 var
   VSrv: TBrookHTTPServer;
   VAuth: TBrookHTTPAuthentication;
@@ -493,7 +497,7 @@ begin
 end;
 
 class procedure TBrookHTTPServer.DoRequestCallback(Acls: Pcvoid;
-  Areq: Psg_httpreq; Ares: Psg_httpres);
+  Areq: Psg_httpreq; Ares: Psg_httpres); cdecl;
 var
   VSrv: TBrookHTTPServer;
   VReq: TBrookHTTPRequest;
@@ -523,7 +527,7 @@ begin
 end;
 
 class procedure TBrookHTTPServer.DoClientConnectionCallback(Acls: Pcvoid;
-  const Aclient: Pcvoid; Aclosed: Pcbool);
+  const Aclient: Pcvoid; Aclosed: Pcbool); cdecl;
 var
   VSrv: TBrookHTTPServer;
 begin
@@ -537,7 +541,7 @@ begin
 end;
 
 class procedure TBrookHTTPServer.DoErrorCallback(Acls: Pcvoid;
-  const Aerr: Pcchar);
+  const Aerr: Pcchar); cdecl;
 var
   VSrv: TBrookHTTPServer;
   VExcept: Exception;
@@ -756,6 +760,16 @@ begin
   FPayloadLimit := AValue;
 end;
 
+procedure TBrookHTTPServer.SetLocker(AValue: TBrookLocker);
+begin
+  if FLocker = AValue then
+    Exit;
+  if Assigned(AValue) then
+    FLocker.Active := AValue.Active
+  else
+    FLocker.Active := False;
+end;
+
 procedure TBrookHTTPServer.SetSecurity(AValue: TBrookHTTPServerSecurity);
 begin
   if FSecurity = AValue then
@@ -781,7 +795,7 @@ begin
   if FThreaded then
   begin
     System.IsMultiThread := True;
-    Locker.Active:=False;
+    FLocker.Active := False;
   end;
 end;
 

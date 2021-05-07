@@ -35,6 +35,7 @@ uses
   RTLConsts,
   SysUtils,
   DateUtils,
+  Classes,
   TypInfo,
   SyncObjs,
 {$IFDEF FPC}
@@ -65,11 +66,12 @@ type
     AException: Exception) of object;
 
   { Allows to lock other threads from accessing a block of code. }
-  TBrookLocker = class
+  TBrookLocker = class(TPersistent)
   private
     FMutex: TCriticalSection;
     FActive: Boolean;
     procedure SetActive(AValue: Boolean);
+    function IsActiveStored: Boolean;
   protected
     property Mutex: TCriticalSection read FMutex;
     function CreateMutex: TCriticalSection; virtual;
@@ -84,8 +86,9 @@ type
     procedure Unlock; virtual;
     { Tries to lock all other threads. }
     function  TryLock: Boolean; virtual;
+  published
     { Activates the locker. (Default: @True) }
-    property Active: Boolean read FActive write SetActive;
+    property Active: Boolean read FActive write SetActive stored IsActiveStored;
   end;
 
   { Global Sagui object containing general purpose functions. }
@@ -268,6 +271,11 @@ begin
   finally
     FMutex.Release;
   end;
+end;
+
+function TBrookLocker.IsActiveStored: Boolean;
+begin
+  Result := not FActive;
 end;
 
 procedure TBrookLocker.Lock;
