@@ -36,11 +36,17 @@ uses
   BufDataset,
   FPHTTPClient;
 
+function NewGuid: string;
 function ListPersons(const AURL: string): TDataSet;
 procedure SavePersons(const AURL: string; ADataSet: TDataSet);
 function CreatePersonsDataSet: TDataSet;
 
 implementation
+
+function NewGuid: string;
+begin
+  Result := TGuid.NewGuid.ToString(True);
+end;
 
 function ListPersons(const AURL: string): TDataSet;
 var
@@ -83,7 +89,6 @@ begin
   Result := TBufDataset.Create(nil);
   Result.FieldDefs.Add('name', ftString, 100);
   TBufDataset(Result).CreateDataSet;
-  Result.Open;
 end;
 
 end.

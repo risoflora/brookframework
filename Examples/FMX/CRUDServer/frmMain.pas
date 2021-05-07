@@ -23,16 +23,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *)
 
-unit MediaTypes_frMain;
+unit frmMain;
 
 interface
 
 uses
-  System.Types,
   System.SysUtils,
-  System.StrUtils,
-  System.IOUtils,
-  System.Masks,
   System.UITypes,
   System.Classes,
   System.Actions,
@@ -48,15 +44,11 @@ uses
   FMX.Forms,
   FMX.Controls.Presentation,
   BrookHandledClasses,
-  BrookMediaTypes,
   BrookHTTPRequest,
   BrookHTTPResponse,
   BrookHTTPServer,
-  Utility;
-
-const
-  // Allowed file extensions
-  ALLOWED_EXTS = '*.txt;*.html;*.css;*.js;*.png;*.jpeg;*.jpg;*.gif;*.pas;*.dfm;*.dpr';
+  Utility,
+  DMPersistence;
 
 type
   TfrMain = class(TForm)
@@ -70,7 +62,6 @@ type
     acStop: TAction;
     BrookHTTPServer1: TBrookHTTPServer;
     pnTop: TPanel;
-    BrookMIME1: TBrookMIME;
     procedure acStartExecute(Sender: TObject);
     procedure acStopExecute(Sender: TObject);
     procedure lbLinkMouseEnter(Sender: TObject);
@@ -85,7 +76,7 @@ type
     procedure BrookHTTPServer1Stop(Sender: TObject);
     procedure edPortChange(Sender: TObject);
     procedure edPortChangeTracking(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   public
     procedure UpdateControls; {$IFNDEF DEBUG}inline;{$ENDIF}
   end;
@@ -96,32 +87,6 @@ var
 implementation
 
 {$R *.fmx}
-
-// https://stackoverflow.com/a/12726969/3268398
-function MyGetFiles(const APath, AMasks: string): TStringDynArray;
-var
-  VMaskArray: TStringDynArray;
-  VPredicate: TDirectory.TFilterPredicate;
-begin
-  VMaskArray := SplitString(AMasks, ';');
-  VPredicate :=
-    function(const APath: string; const ASearchRec: TSearchRec): Boolean
-    var
-      VMask: string;
-    begin
-      for VMask in VMaskArray do
-        if MatchesMask(ASearchRec.Name, VMask) then
-          Exit(True);
-      Exit(False);
-    end;
-  Result := TDirectory.GetFiles(APath, TSearchOption.soTopDirectoryOnly,
-    VPredicate);
-end;
-
-procedure TfrMain.FormCreate(Sender: TObject);
-begin
-  BrookMIME1.FileName := '../../../Common/mime.types';
-end;
 
 procedure TfrMain.UpdateControls;
 begin
@@ -140,7 +105,6 @@ end;
 
 procedure TfrMain.acStartExecute(Sender: TObject);
 begin
-  BrookMIME1.Open;
   BrookHTTPServer1.Open;
 end;
 
@@ -166,46 +130,11 @@ end;
 
 procedure TfrMain.BrookHTTPServer1Request(ASender: TObject;
   ARequest: TBrookHTTPRequest; AResponse: TBrookHTTPResponse);
-const
-  DIR = '../../';
-var
-  VFileNames: TStringDynArray;
-  VFileName, VFileLinks, VMediaType: string;
-  I: Integer;
 begin
-  // Try to render or download a single file ...
-  if Length(ARequest.Paths) = 1 then
-  begin
-    VFileName := TPath.GetFullPath(TPath.Combine(DIR, ARequest.Paths[0]));
-    if FileExists(VFileName) then
-    begin
-      VMediaType := BrookMIME1.Types.Find(ExtractFileExt(VFileName));
-      if BrookMIME1.Types.IsText(VMediaType) then
-        AResponse.Render(VFileName)
-      else
-        AResponse.Download(VFileName);
-      AResponse.Headers['Content-Type'] := VMediaType;
-    end
-    else
-      AResponse.SendFmt(
-        '<html><head><title>Error</title></head><body>File not found: %s</body></html>',
-        [ExtractFileName(VFileName)], 'text/html; charset=utf-8', 200);
-    Exit;
-  end;
-  // ... otherwise, list all files to the screen.
-  VFileNames := MyGetFiles(DIR, ALLOWED_EXTS);
-  VFileLinks := '<ul style="list-style: none;">';
-  for I := Low(VFileNames) to High(VFileNames) do
-  begin
-    VFileName := TPath.GetFileName(VFileNames[I]);
-    VFileLinks := Concat(VFileLinks, '<li>');
-    VFileLinks := Concat(VFileLinks, '<a href="/', VFileName, '">',
-      VFileName, '</a>');
-    VFileLinks := Concat(VFileLinks, '</li>');
-  end;
-  VFileLinks := Concat(VFileLinks, '</ul>');
-  AResponse.SendFmt('<html><head><title>Media types</title></head><body>%s</body></html>',
-    [VFileLinks], 'text/html; charset=utf-8', 200);
+  if ARequest.Payload.Length > 0 then
+    Persistence.SavePersons(ARequest.Payload.Content)
+  else
+    AResponse.SendStream(Persistence.ListPersons, 200);
 end;
 
 procedure TfrMain.BrookHTTPServer1RequestError(ASender: TObject;
@@ -235,6 +164,12 @@ end;
 procedure TfrMain.edPortChangeTracking(Sender: TObject);
 begin
   UpdateControls;
+end;
+
+procedure TfrMain.FormShow(Sender: TObject);
+begin
+  edPort.Value := 8080;
+  acStart.Execute;
 end;
 
 end.

@@ -1,4 +1,4 @@
-(*   _                     _
+﻿(*   _                     _
  *  | |__  _ __ ___   ___ | | __
  *  | '_ \| '__/ _ \ / _ \| |/ /
  *  | |_) | | | (_) | (_) |   <
@@ -25,19 +25,30 @@
 
 unit DMClient;
 
-{$MODE DELPHI}
-
 interface
 
 uses
-  DB,
-  Classes,
-  BufDataset,
-  FPHTTPClient;
+  System.Classes,
+  Data.DB,
+  FireDAC.Stan.Intf,
+  FireDAC.Stan.Option,
+  FireDAC.Stan.Param,
+  FireDAC.Stan.Error,
+  FireDAC.DatS,
+  FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf,
+  FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client,
+  FireDAC.Stan.StorageBin,
+  System.Net.URLClient,
+  System.Net.HttpClient,
+  System.Net.HttpClientComponent;
 
 type
   TClient = class(TDataModule)
-    BufDataset: TBufDataset;
+    FDMemTable: TFDMemTable;
+    NetHTTPClient: TNetHTTPClient;
+    FDStanStorageBinLink: TFDStanStorageBinLink;
   public
     procedure LoadPersons(const AURL: string);
     procedure SavePersons(const AURL: string);
@@ -48,38 +59,31 @@ var
 
 implementation
 
-{$R *.lfm}
+{%CLASSGROUP 'FMX.Controls.TControl'}
+
+{$R *.dfm}
+
+{ TClient }
 
 procedure TClient.LoadPersons(const AURL: string);
-var
-  VData: TStream;
 begin
-  VData := TBytesStream.Create;
-  try
-    TFPHTTPClient.SimpleGet(AURL, VData);
-    VData.Seek(0, TSeekOrigin.soBeginning);
-    BufDataset.Close;
-    BufDataset.LoadFromStream(VData, dfBinary);
-  finally
-    VData.Free;
-  end;
+  FDMemTable.Close;
+  FDMemTable.LoadFromStream(NetHTTPClient.Get(AURL).ContentStream, sfBinary);
 end;
 
 procedure TClient.SavePersons(const AURL: string);
 var
-  VClient: TFPHTTPClient;
+  VData: TStream;
 begin
-  if BufDataset.State in dsEditModes then
-    BufDataset.Post;
-  VClient := TFPHTTPClient.Create(nil);
-  VClient.RequestBody := TBytesStream.Create;
+  if FDMemTable.State in dsEditModes then
+    FDMemTable.Post;
+  VData := TBytesStream.Create;
   try
-    BufDataset.SaveToStream(VClient.RequestBody, dfBinary);
-    VClient.RequestBody.Seek(0, TSeekOrigin.soBeginning);
-    VClient.Post(AURL);
+    FDMemTable.SaveToStream(VData, sfBinary);
+    VData.Seek(0, TSeekOrigin.soBeginning);
+    NetHTTPClient.Post(AURL, VData);
   finally
-    VClient.RequestBody.Free;
-    VClient.Free;
+    VData.Free;
   end;
 end;
 

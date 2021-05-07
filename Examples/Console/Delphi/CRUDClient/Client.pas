@@ -36,11 +36,17 @@ uses
   FireDAC.Comp.Client,
   FireDAC.Stan.StorageBin;
 
+function NewGuid: string;
 function ListPersons(const AURL: string): TDataSet;
 procedure SavePersons(const AURL: string; ADataSet: TDataSet);
 function CreatePersonsDataSet: TDataSet;
 
 implementation
+
+function NewGuid: string;
+begin
+  Result := TGuid.NewGuid.ToString;
+end;
 
 function CreateDataSet: TFDMemTable;
 begin

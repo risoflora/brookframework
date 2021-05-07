@@ -105,6 +105,7 @@ begin
   try
     VQuery.LoadFromStream(VData, sfBinary);
     VQuery.ApplyUpdates;
+    DBConnection.Commit;
   finally
     VQuery.Destroy;
     VData.Free;

@@ -23,49 +23,71 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *)
 
-program crudclient;
+unit frmMain;
 
-{$IFDEF MSWINDOWS}
- {$APPTYPE CONSOLE}
-{$ENDIF}
+interface
 
 uses
+  System.Classes,
+  System.Rtti,
+  System.Bindings.Outputs,
   Data.DB,
-  Client;
+  Data.Bind.Controls,
+  Data.Bind.EngExt,
+  Data.Bind.Components,
+  Data.Bind.Grid,
+  Data.Bind.DBScope,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Controls.Presentation,
+  FMX.StdCtrls,
+  FMX.Grid,
+  FMX.Grid.Style,
+  FMX.ScrollBox,
+  FMX.Forms,
+  FMX.Layouts,
+  Fmx.Bind.DBEngExt,
+  Fmx.Bind.Grid,
+  Fmx.Bind.Editors,
+  Fmx.Bind.Navigator,
+  DMClient;
 
 const
   URL_SERVER = 'http://localhost:8080';
 
-procedure ListAllPersons;
-begin
-  with ListPersons(URL_SERVER) do
-  try
-    while not EOF do
-    begin
-      WriteLn(FieldByName('id').AsInteger, ' ', FieldByName('name').AsString);
-      Next;
-    end;
-  finally
-    Free;
+type
+  TfrMain = class(TForm)
+    pnBottom: TPanel;
+    btLoad: TButton;
+    btSave: TButton;
+    DataSource: TDataSource;
+    Grid1: TGrid;
+    BindSourceDB: TBindSourceDB;
+    BindingsList: TBindingsList;
+    LinkGridToDataSourceBindSourceDB1: TLinkGridToDataSource;
+    BindNavigator1: TBindNavigator;
+    procedure btLoadClick(Sender: TObject);
+    procedure btSaveClick(Sender: TObject);
   end;
-end;
 
-procedure AddRandomPersons;
 var
-  VDataSet: TDataSet;
-  VField: TField;
+  frMain: TfrMain;
+
+implementation
+
+{$R *.fmx}
+
+procedure TfrMain.btLoadClick(Sender: TObject);
 begin
-  VDataSet := CreatePersonsDataSet;
-  VField := VDataSet.FieldByName('name');
-  VDataSet.Append;
-  VField.AsString := 'Person ' + NewGuid;
-  VDataSet.Append;
-  VField.AsString := 'Person ' + NewGuid;
-  SavePersons(URL_SERVER, VDataSet);
+  Client.LoadPersons(URL_SERVER);
+  btSave.Enabled := DataSource.DataSet.RecordCount > 0;
 end;
 
+procedure TfrMain.btSaveClick(Sender: TObject);
 begin
-  ListAllPersons;
-  AddRandomPersons;
-  ListAllPersons;
+  Client.SavePersons(URL_SERVER);
+end;
+
 end.
+
+

@@ -1,4 +1,4 @@
-(*   _                     _
+﻿(*   _                     _
  *  | |__  _ __ ___   ___ | | __
  *  | '_ \| '__/ _ \ / _ \| |/ /
  *  | |_) | | | (_) | (_) |   <
@@ -74,13 +74,13 @@ implementation
 procedure TfrMain.FormCreate(Sender: TObject);
 begin
   FormatSettings.DecimalSeparator := '.';
-  edExpression.Text := Concat('$(sum, $1 + $2), ', Double(1.2).ToString, ' + ',
-    Double(3.4).ToString, ' + mysum(foo, bar) / mymult(foo, bar) + sum(1.7, 2.46)');
+  edExpression.Text := Concat('$(sum, $1 + $2), ', Double.ToString(1.2), ' + ',
+    Double.ToString(3.4), ' + mysum(foo, bar) / mymult(foo, bar) + sum(1.7, 2.46)');
   BrookMathExpression1.Extensions.AddStrings(['mysum', 'mymult']);
   gdVariables.Cells[0, 0] := 'foo';
   gdVariables.Cells[0, 1] := 'bar';
-  gdVariables.Cells[1, 0] := Double(1.2).ToString;
-  gdVariables.Cells[1, 1] := Double(3.4).ToString;
+  gdVariables.Cells[1, 0] := Double.ToString(1.2);
+  gdVariables.Cells[1, 1] := Double.ToString(3.4);
   ActiveControl := btCalculate;
 end;
 

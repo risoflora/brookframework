@@ -1,0 +1,93 @@
+object frMain: TfrMain
+  Left = 0
+  Top = 0
+  Caption = 'Simple CRUD client example'
+  ClientHeight = 220
+  ClientWidth = 360
+  Position = DesktopCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object pnBottom: TPanel
+    Align = Bottom
+    Padding.Left = 2.000000000000000000
+    Padding.Top = 2.000000000000000000
+    Padding.Right = 2.000000000000000000
+    Padding.Bottom = 2.000000000000000000
+    Position.Y = 184.000000000000000000
+    Size.Width = 360.000000000000000000
+    Size.Height = 36.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object btLoad: TButton
+      Align = Left
+      Position.X = 2.000000000000000000
+      Position.Y = 2.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Load'
+      OnClick = btLoadClick
+    end
+    object btSave: TButton
+      Align = Right
+      Enabled = False
+      Position.X = 278.000000000000000000
+      Position.Y = 2.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Save'
+      OnClick = btSaveClick
+    end
+  end
+  object Grid1: TGrid
+    Align = Client
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 360.000000000000000000
+    Size.Height = 159.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Viewport.Width = 356.000000000000000000
+    Viewport.Height = 134.000000000000000000
+  end
+  object BindNavigator1: TBindNavigator
+    Align = Bottom
+    Position.Y = 159.000000000000000000
+    Size.Width = 360.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    DataSource = BindSourceDB
+    VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbDelete, nbEdit, nbPost, nbCancel]
+    xRadius = 4.000000000000000000
+    yRadius = 4.000000000000000000
+  end
+  object DataSource: TDataSource
+    DataSet = Client.FDMemTable
+    Left = 80
+    Top = 72
+  end
+  object BindSourceDB: TBindSourceDB
+    DataSet = Client.FDMemTable
+    ScopeMappings = <>
+    Left = 176
+    Top = 72
+  end
+  object BindingsList: TBindingsList
+    Methods = <>
+    OutputConverters = <>
+    Left = 276
+    Top = 72
+    object LinkGridToDataSourceBindSourceDB1: TLinkGridToDataSource
+      Category = 'Quick Bindings'
+      DataSource = BindSourceDB
+      GridControl = Grid1
+      Columns = <>
+    end
+  end
+end
