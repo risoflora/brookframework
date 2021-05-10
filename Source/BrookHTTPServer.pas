@@ -1,4 +1,4 @@
-(*  _                     _
+﻿(*  _                     _
  * | |__  _ __ ___   ___ | | __
  * | '_ \| '__/ _ \ / _ \| |/ /
  * | |_) | | | (_) | (_) |   <
@@ -517,7 +517,7 @@ begin
       finally
         VSrv.Unlock;
       end;
-      if VRes.IsEmpty then
+      if VRes.IsEmpty and (not VReq.IsIsolated) then
         VRes.SendEmpty;
     end;
   finally
