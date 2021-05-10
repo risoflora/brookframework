@@ -302,7 +302,8 @@ end;
 
 {$ENDIF}
 
-class function TBrookHTTPRequest.CreateRequest(AHandle: Pointer): TBrookHTTPRequest;
+class function TBrookHTTPRequest.CreateRequest(
+  AHandle: Pointer): TBrookHTTPRequest;
 begin
   Result := TBrookHTTPRequest.Create(AHandle);
 end;
