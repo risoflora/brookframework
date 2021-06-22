@@ -347,8 +347,16 @@ end;
 
 procedure TBrookHTTPResponse.SendBytes(const ABytes: TBytes; ASize: NativeUInt;
   const AContentType: string; AStatus: Word);
+var
+  WorkAround: TBytes;
 begin
-  SendBinary(@ABytes[0], ASize, AContentType, AStatus);
+  if Length(ABytes) > 0 then
+    SendBinary(@ABytes[0], ASize, AContentType, AStatus)
+  else
+  begin
+    SetLength(WorkAround, 1);
+    SendBinary(@WorkAround[0], ASize, AContentType, AStatus)
+  end;
 end;
 
 procedure TBrookHTTPResponse.SendFile(ASize: NativeUInt; AMaxSize,
