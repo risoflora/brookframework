@@ -70,6 +70,7 @@ type
     FCertificate: string;
     FTrust: string;
     FDHParams: string;
+    FPriorities: string;
     function IsActiveStored: Boolean;
   public
     { Copies properties from another security source.
@@ -95,6 +96,8 @@ type
     { Content of the Diffie-Hellman parameters (dh.pem) to be used by the HTTPS
       server for key exchange. }
     property DHParams: string read FDHParams write FDHParams;
+    { Content of the cipher algorithm. Default: @code(NORMAL). }
+    property Priorities: string read FPriorities write FPriorities;
   end;
 
   { Event signature used by HTTP server to handle the clients authentication. }
@@ -338,6 +341,7 @@ begin
     FCertificate := VSource.Certificate;
     FTrust := VSource.Trust;
     FDHParams := VSource.DHParams;
+    FPriorities := VSource.Priorities;
   end
   else
     inherited Assign(ASource);
@@ -364,6 +368,7 @@ begin
   FCertificate := '';
   FTrust := '';
   FDHParams := '';
+  FPriorities := '';
 end;
 
 { TBrookHTTPServer }
@@ -1032,14 +1037,15 @@ begin
   if FSecurity.Active then
   begin
     FSecurity.Validate;
-    if not Assigned(sg_httpsrv_tls_listen2) then
+    if not Assigned(sg_httpsrv_tls_listen3) then
       raise ENotSupportedException.Create(SBrookTLSNotAvailable);
-    FActive := sg_httpsrv_tls_listen2(FHandle,
+    FActive := sg_httpsrv_tls_listen3(FHandle,
       M.ToCNullableString(FSecurity.PrivateKey),
       M.ToCNullableString(FSecurity.PrivatePassword),
       M.ToCNullableString(FSecurity.Certificate),
       M.ToCNullableString(FSecurity.Trust),
-      M.ToCNullableString(FSecurity.DHParams), FPort, FThreaded);
+      M.ToCNullableString(FSecurity.DHParams),
+      M.ToCNullableString(FSecurity.Priorities), FPort, FThreaded);
   end
   else
     FActive := sg_httpsrv_listen(FHandle, FPort, FThreaded);

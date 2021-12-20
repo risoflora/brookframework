@@ -60,9 +60,9 @@ type
 const
   SG_VERSION_MAJOR = 3;
 
-  SG_VERSION_MINOR = 3;
+  SG_VERSION_MINOR = 4;
 
-  SG_VERSION_PATCH = 1;
+  SG_VERSION_PATCH = 0;
 
   SG_VERSION_HEX = (SG_VERSION_MAJOR shl 16) or (SG_VERSION_MINOR shl 8) or //FI:O803
     SG_VERSION_PATCH;
@@ -444,6 +444,11 @@ var
   sg_httpsrv_new: function(cb: sg_httpreq_cb; cls: Pcvoid): Psg_httpsrv; cdecl;
 
   sg_httpsrv_free: procedure(srv: Psg_httpsrv); cdecl;
+
+  sg_httpsrv_tls_listen3: function(srv: Psg_httpsrv; const key: Pcchar;
+    const pwd: Pcchar; const cert: Pcchar; const trust: Pcchar;
+    const dhparams: Pcchar; const priorities: Pcchar; port: cuint16_t;
+    threaded: cbool): cbool; cdecl;
 
   sg_httpsrv_tls_listen2: function(srv: Psg_httpsrv; const key: Pcchar;
     const pwd: Pcchar; const cert: Pcchar; const trust: Pcchar;
@@ -1101,6 +1106,7 @@ begin //FI:C101
     sg_httpsrv_new2 := GetProcAddress(GHandle, 'sg_httpsrv_new2');
     sg_httpsrv_new := GetProcAddress(GHandle, 'sg_httpsrv_new');
     sg_httpsrv_free := GetProcAddress(GHandle, 'sg_httpsrv_free');
+    sg_httpsrv_tls_listen3 := GetProcAddress(GHandle, 'sg_httpsrv_tls_listen3');
     sg_httpsrv_tls_listen2 := GetProcAddress(GHandle, 'sg_httpsrv_tls_listen2');
     sg_httpsrv_tls_listen := GetProcAddress(GHandle, 'sg_httpsrv_tls_listen');
     sg_httpsrv_listen := GetProcAddress(GHandle, 'sg_httpsrv_listen');
@@ -1302,6 +1308,7 @@ begin //FI:C101
     sg_httpsrv_new2 := nil;
     sg_httpsrv_new := nil;
     sg_httpsrv_free := nil;
+    sg_httpsrv_tls_listen3 := nil;
     sg_httpsrv_tls_listen2 := nil;
     sg_httpsrv_tls_listen := nil;
     sg_httpsrv_listen := nil;

@@ -392,6 +392,7 @@ begin
   Assert(not Assigned(sg_httpsrv_new));
   Assert(not Assigned(sg_httpsrv_free));
 {$IFDEF TLS_SUPPORT}
+  Assert(not Assigned(sg_httpsrv_tls_listen3));
   Assert(not Assigned(sg_httpsrv_tls_listen2));
   Assert(not Assigned(sg_httpsrv_tls_listen));
 {$ENDIF}
@@ -565,6 +566,7 @@ begin
   Assert(Assigned(sg_httpsrv_new));
   Assert(Assigned(sg_httpsrv_free));
 {$IFDEF TLS_SUPPORT}
+  Assert(Assigned(sg_httpsrv_tls_listen3));
   Assert(Assigned(sg_httpsrv_tls_listen2));
   Assert(Assigned(sg_httpsrv_tls_listen));
 {$ENDIF}
