@@ -667,7 +667,8 @@ begin
     Exit;
   if R = EALREADY then
     raise EBrookURLRoutes.CreateFmt(SBrookRouteAlreadyExists,
-      [ARoute.GetNamePath, ARoute.Pattern]);
+      [ARoute.GetNamePath, ARoute.Pattern,
+        TMarshal.ToString(sg_route_pattern(H))]);
   if R = EINVAL then
     S := Sagui.StrError(R)
   else
