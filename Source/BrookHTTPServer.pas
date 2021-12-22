@@ -145,7 +145,6 @@ type
     FStreamedAuthenticated: Boolean;
     FThreadPoolSize: Cardinal;
     FUploadsDir: string;
-    FLocker: TBrookLocker;
     FSecurity: TBrookHTTPServerSecurity;
     FOnAuthenticate: TBrookHTTPAuthenticateEvent;
     FOnAuthenticateError: TBrookHTTPAuthenticateErrorEvent;
@@ -180,7 +179,6 @@ type
     procedure SetConnectionLimit(AValue: Cardinal);
     procedure SetConnectionTimeout(AValue: Cardinal);
     procedure SetPayloadLimit(AValue: NativeUInt);
-    procedure SetLocker(AValue: TBrookLocker);
     procedure SetSecurity(AValue: TBrookHTTPServerSecurity);
     procedure SetUploadsLimit(AValue: UInt64);
     procedure SetPort(AValue: UInt16);
@@ -203,7 +201,6 @@ type
       const Aclient: Pcvoid; Aclosed: Pcbool); cdecl; static;
     class procedure DoErrorCallback(Acls: Pcvoid;
       const Aerr: Pcchar); cdecl; static;
-    function CreateLocker: TBrookLocker; virtual;
     function CreateAuthentication(
       AHandle: Pointer): TBrookHTTPAuthentication; virtual;
     function CreateSecurity: TBrookHTTPServerSecurity; virtual;
@@ -253,10 +250,6 @@ type
     procedure Open;
     { Stops the HTTP(S) server. }
     procedure Close;
-    { Locks all other requests. }
-    procedure Lock; {$IFNDEF DEBUG}inline;{$ENDIF}
-    { Unlocks all other requests. }
-    procedure Unlock; {$IFNDEF DEBUG}inline;{$ENDIF}
     { Contains the MHD instance. }
     property MHDHandle: Pointer read GetMHDHandle;
   published
@@ -298,8 +291,6 @@ type
       by sending an empty content (@code(204)) if path is @code('/favicon.ico'). }
     property NoFavicon: Boolean read FNoFavicon write FNoFavicon
       stored IsNoFaviconStored default False;
-    { Allows to lock other requests from accessing a block of code. }
-    property Locker: TBrookLocker read FLocker write SetLocker;
     { Holds the TLS properties for the HTTPS server. }
     property Security: TBrookHTTPServerSecurity read FSecurity
       write SetSecurity;
@@ -376,7 +367,6 @@ end;
 constructor TBrookHTTPServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FLocker := CreateLocker;
   FSecurity := CreateSecurity;
   SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
   FPostBufferSize := BROOK_POST_BUFFER_SIZE;
@@ -391,19 +381,8 @@ begin
   finally
     FSecurity.Free;
     SgLib.UnloadEvents.Remove(InternalLibUnloadEvent);
-    FLocker.Free;
     inherited Destroy;
   end;
-end;
-
-procedure TBrookHTTPServer.Lock;
-begin
-  FLocker.Lock;
-end;
-
-procedure TBrookHTTPServer.Unlock;
-begin
-  FLocker.Unlock;
 end;
 
 procedure TBrookHTTPServer.InternalCreateServerHandle;
@@ -437,11 +416,6 @@ begin
     InternalFreeServerHandle;
     SgLib.CheckLastError(Aret);
   end;
-end;
-
-function TBrookHTTPServer.CreateLocker: TBrookLocker;
-begin
-  Result := TBrookLocker.Create;
 end;
 
 function TBrookHTTPServer.CreateAuthentication(
@@ -486,12 +460,7 @@ begin
       Exit(True);
     VAuth := VSrv.CreateAuthentication(Aauth);
     try
-      VSrv.Lock;
-      try
-        Result := VSrv.HandleAuthenticate(VAuth, VReq, VRes);
-      finally
-        VSrv.Unlock;
-      end;
+      Result := VSrv.HandleAuthenticate(VAuth, VReq, VRes);
     finally
       VAuth.Free;
     end;
@@ -516,12 +485,7 @@ begin
       VRes.SendEmpty
     else
     begin
-      VSrv.Lock;
-      try
-        VSrv.HandleRequest(VReq, VRes);
-      finally
-        VSrv.Unlock;
-      end;
+      VSrv.HandleRequest(VReq, VRes);
       if VRes.IsEmpty and (not VReq.IsIsolated) then
         VRes.SendEmpty;
     end;
@@ -537,12 +501,7 @@ var
   VSrv: TBrookHTTPServer;
 begin
   VSrv := Acls;
-  VSrv.Lock;
-  try
-    VSrv.HandleClientConnection(VSrv, Aclient, PBoolean(Aclosed)^);
-  finally
-    VSrv.Unlock;
-  end;
+  VSrv.HandleClientConnection(VSrv, Aclient, PBoolean(Aclosed)^);
 end;
 
 class procedure TBrookHTTPServer.DoErrorCallback(Acls: Pcvoid;
@@ -554,12 +513,7 @@ begin
   VSrv := Acls;
   VExcept := VSrv.CreateError(TMarshal.ToString(Aerr));
   try
-    VSrv.Lock;
-    try
-      VSrv.HandleError(VSrv, VExcept);
-    finally
-      VSrv.Unlock;
-    end;
+    VSrv.HandleError(VSrv, VExcept);
   finally
     VExcept.Free;
   end;
@@ -765,16 +719,6 @@ begin
   FPayloadLimit := AValue;
 end;
 
-procedure TBrookHTTPServer.SetLocker(AValue: TBrookLocker);
-begin
-  if FLocker = AValue then
-    Exit;
-  if Assigned(AValue) then
-    FLocker.Active := AValue.Active
-  else
-    FLocker.Active := False;
-end;
-
 procedure TBrookHTTPServer.SetSecurity(AValue: TBrookHTTPServerSecurity);
 begin
   if FSecurity = AValue then
@@ -797,11 +741,6 @@ begin
   if not FStreamedActive then
     CheckInactive;
   FThreaded := AValue;
-  if FThreaded then
-  begin
-    System.IsMultiThread := True;
-    FLocker.Active := False;
-  end;
 end;
 
 procedure TBrookHTTPServer.SetThreadPoolSize(AValue: Cardinal);

@@ -248,6 +248,7 @@ type
   { URL router component. }
   TBrookURLRouter = class(TBrookHandledComponent)
   private
+    FLocker: TBrookLocker;
     FRoutes: TBrookURLRoutes;
     FHandle: Psg_router;
     FActive: Boolean;
@@ -263,6 +264,7 @@ type
     procedure SetRoutes(AValue: TBrookURLRoutes);
     procedure InternalLibUnloadEvent(ASender: TObject);
   protected
+    function CreateLocker: TBrookLocker; virtual;
     function CreateRoutes: TBrookURLRoutes; virtual;
     procedure Loaded; override;
     function GetHandle: Pointer; override;
@@ -274,6 +276,9 @@ type
     procedure DoClose; virtual;
     procedure CheckItems; {$IFNDEF DEBUG}inline;{$ENDIF}
     procedure CheckActive; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function DispatchRoute(const APath: string;
+      AUserData: Pointer): Boolean; virtual;
+    property Locker: TBrookLocker read FLocker;
   public
     { Creates an instance of @code(TBrookURLRouter).
       @param(AOwner[in] Owner component.) }
@@ -294,11 +299,6 @@ type
     procedure Open;
     { Disables the router component. }
     procedure Close;
-    { Finds a route and dispatches it to the client.
-      @param(APath[in] Route path.)
-      @param(AUserData[in] User-defined data.) }
-    function DispatchRoute(const APath: string;
-      AUserData: Pointer): Boolean; virtual;
     { Routes a request passing a given path.
       @param(ASender[in] Sender object.)
       @param(APath[in] Route path.)
@@ -339,6 +339,7 @@ type
   { TBrookURLRouteHolder }
 
   TBrookURLRouteHolder = record
+    Locker: TBrookLocker;
     Request: TBrookHTTPRequest;
     Response: TBrookHTTPResponse;
     Sender: TObject;
@@ -552,8 +553,9 @@ procedure TBrookURLRoute.HandleMatch(ARoute: TBrookURLRoute);
 var
   H: TBrookURLRouteHolder;
 begin
-  DoMatch(ARoute);
   H := TBrookURLRouteHolder(ARoute.UserData^);
+  H.Locker.Unlock;
+  DoMatch(ARoute);
   HandleRequest(H.Sender, TBrookURLRoute(ARoute), H.Request, H.Response);
 end;
 
@@ -783,6 +785,7 @@ end;
 constructor TBrookURLRouter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FLocker := CreateLocker;
   FRoutes := CreateRoutes;
   SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
 end;
@@ -791,8 +794,14 @@ destructor TBrookURLRouter.Destroy;
 begin
   SetActive(False);
   FRoutes.Free;
+  FLocker.Free;
   SgLib.UnloadEvents.Remove(InternalLibUnloadEvent);
   inherited Destroy;
+end;
+
+function TBrookURLRouter.CreateLocker: TBrookLocker;
+begin
+  Result := TBrookLocker.Create;
 end;
 
 function TBrookURLRouter.CreateRoutes: TBrookURLRoutes;
@@ -984,11 +993,20 @@ procedure TBrookURLRouter.Route(ASender: TObject; const APath: string;
 var
   H: TBrookURLRouteHolder;
   R: TBrookURLRoute;
+  B: Boolean;
 begin
+  FLocker.Lock;
+  H.Locker := FLocker;
   H.Request := ARequest;
   H.Response := AResponse;
   H.Sender := ASender;
-  if DispatchRoute(APath, @H) then
+  try
+    B := DispatchRoute(APath, @H);
+  except
+    FLocker.Unlock;
+    raise;
+  end;
+  if B then
   begin
     DoRoute(ASender, APath, ARequest, AResponse);
     Exit;
