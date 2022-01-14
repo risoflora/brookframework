@@ -202,7 +202,7 @@ the [LICENSE file](LICENSE) for more details.
 [14]: https://semver.org "Semantic Versioning"
 [15]: https://github.com/pasdoc/pasdoc "PasDoc documentation tool"
 [16]: https://risoflora.github.io/brookframework-docs/index.html "Brook online documentation"
-[17]: https://github.com/risoflora/brookframework/blob/master/THANKS "Thanks to the people who help to maintain this project"
+[17]: https://github.com/risoflora/brookframework/blob/main/THANKS "Thanks to the people who help to maintain this project"
 [18]: mailto:silvioprog@gmail.com "silvioprog at gmail dot com"
 [19]: https://t.me/brookframework "Official Telegram group"
 [20]: https://getitnow.embarcadero.com/brook-framework "Delphi GetIt"
