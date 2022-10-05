@@ -75,10 +75,10 @@ begin
   with THTTPServer.Create(nil) do
   try
     Port := 8080;
+    Open;
     if not Active then
       Exit;
     WriteLn('Server running at http://localhost:', Port);
-    Open;
     ReadLn;
   finally
     Free;
