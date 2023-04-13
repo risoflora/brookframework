@@ -1017,10 +1017,12 @@ begin
     if Assigned(R) then
     begin
       R.HandleRequest(ASender, R, ARequest, AResponse);
+      FLocker.Unlock;
       Exit;
     end;
   end;
   DoNotFound(ASender, APath, ARequest, AResponse);
+  FLocker.Unlock;
 end;
 
 procedure TBrookURLRouter.Route(ASender: TObject;
