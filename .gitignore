@@ -143,3 +143,6 @@ Test_StringMap
 Test_URLEntryPoints
 Test_URLRouter
 Test_Utility
+
+# Temp files
+.DS_Store

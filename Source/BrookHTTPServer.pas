@@ -132,6 +132,8 @@ type
   private
     FHandle: Psg_httpsrv;
     FAuthenticated: Boolean;
+    FHostName: string;
+    FBacklog: Word;
     FConnectionLimit: Cardinal;
     FConnectionTimeout: Cardinal;
     FNoFavicon: Boolean;
@@ -165,6 +167,8 @@ type
     function GetUploadsDir: string;
     function IsActiveStored: Boolean;
     function IsAuthenticatedStored: Boolean;
+    function IsHostNameStored: Boolean;
+    function IsBacklogStored: Boolean;
     function IsConnectionLimitStored: Boolean;
     function IsConnectionTimeoutStored: Boolean;
     function IsNoFaviconStored: Boolean;
@@ -176,6 +180,8 @@ type
     function IsThreadPoolSizeStored: Boolean;
     function IsUploadsDirStored: Boolean;
     procedure SetAuthenticated(AValue: Boolean);
+    procedure SetHostName(const AValue: string);
+    procedure SetBacklog(AValue: Word);
     procedure SetConnectionLimit(AValue: Cardinal);
     procedure SetConnectionTimeout(AValue: Cardinal);
     procedure SetPayloadLimit(AValue: NativeUInt);
@@ -258,9 +264,15 @@ type
     { Enables/disables the basic HTTP authentication. }
     property Authenticated: Boolean read FAuthenticated write SetAuthenticated
       stored IsAuthenticatedStored;
+    { Host name for listening to connections. }
+    property HostName: string read FHostName write SetHostName
+      stored IsHostNameStored;
     { Port for listening to connections. }
     property Port: UInt16 read GetPort write SetPort stored IsPortStored
       default 0;
+    { Maximum length of the queue of pending connections. Default: 511. }
+    property Backlog: Word read FBacklog write SetBacklog stored IsBacklogStored
+      default BROOK_BACKLOG;
     { Enables/disables the threaded model. If @true, the server creates one
       thread per connection. }
     property Threaded: Boolean read GetThreaded write SetThreaded
@@ -369,6 +381,7 @@ begin
   inherited Create(AOwner);
   FSecurity := CreateSecurity;
   SgLib.UnloadEvents.Add(InternalLibUnloadEvent, Self);
+  FBacklog := BROOK_BACKLOG;
   FPostBufferSize := BROOK_POST_BUFFER_SIZE;
   FPayloadLimit := BROOK_PAYLOAD_LIMIT;
   FUploadsLimit := BROOK_UPLOADS_LIMIT;
@@ -884,6 +897,16 @@ begin
   Result := FAuthenticated;
 end;
 
+function TBrookHTTPServer.IsHostNameStored: Boolean;
+begin
+  Result := FHostName <> EmptyStr;
+end;
+
+function TBrookHTTPServer.IsBacklogStored: Boolean;
+begin
+  Result := FBacklog <> BROOK_BACKLOG;
+end;
+
 function TBrookHTTPServer.IsPortStored: Boolean;
 begin
   Result := FPort <> 0;
@@ -918,6 +941,20 @@ begin
   if AValue and (csReading in ComponentState) then
     FStreamedAuthenticated := True;
   FAuthenticated := AValue;
+end;
+
+procedure TBrookHTTPServer.SetHostName(const AValue: string);
+begin
+  if not FStreamedActive then
+    CheckInactive;
+  FHostName := AValue;
+end;
+
+procedure TBrookHTTPServer.SetBacklog(AValue: Word);
+begin
+  if not FStreamedActive then
+    CheckInactive;
+  FBacklog := AValue;
 end;
 
 procedure TBrookHTTPServer.SetActive(AValue: Boolean);
@@ -976,18 +1013,40 @@ begin
   if FSecurity.Active then
   begin
     FSecurity.Validate;
-    if not Assigned(sg_httpsrv_tls_listen3) then
-      raise ENotSupportedException.Create(SBrookTLSNotAvailable);
-    FActive := sg_httpsrv_tls_listen3(FHandle,
-      M.ToCNullableString(FSecurity.PrivateKey),
-      M.ToCNullableString(FSecurity.PrivatePassword),
-      M.ToCNullableString(FSecurity.Certificate),
-      M.ToCNullableString(FSecurity.Trust),
-      M.ToCNullableString(FSecurity.DHParams),
-      M.ToCNullableString(FSecurity.Priorities), FPort, FThreaded);
+    if FHostName <> EmptyStr then
+    begin
+      if not Assigned(sg_httpsrv_tls_listen3) then
+        raise ENotSupportedException.Create(SBrookTLSNotAvailable);
+      FActive := sg_httpsrv_tls_listen3(FHandle,
+        M.ToCNullableString(FSecurity.PrivateKey),
+        M.ToCNullableString(FSecurity.PrivatePassword),
+        M.ToCNullableString(FSecurity.Certificate),
+        M.ToCNullableString(FSecurity.Trust),
+        M.ToCNullableString(FSecurity.DHParams),
+        M.ToCNullableString(FSecurity.Priorities), FPort, FThreaded);
+    end
+    else
+    begin
+      if not Assigned(sg_httpsrv_tls_listen4) then
+        raise ENotSupportedException.Create(SBrookTLSNotAvailable);
+      FActive := sg_httpsrv_tls_listen4(FHandle,
+        M.ToCNullableString(FSecurity.PrivateKey),
+        M.ToCNullableString(FSecurity.PrivatePassword),
+        M.ToCNullableString(FSecurity.Certificate),
+        M.ToCNullableString(FSecurity.Trust),
+        M.ToCNullableString(FSecurity.DHParams),
+        M.ToCNullableString(FSecurity.Priorities), M.ToCString(FHostName),
+        FPort, FBacklog, FThreaded);
+    end;
   end
   else
-    FActive := sg_httpsrv_listen(FHandle, FPort, FThreaded);
+  begin
+    if FHostName <> EmptyStr then
+      FActive := sg_httpsrv_listen2(FHandle, M.ToCString(FHostName), FPort,
+        FBacklog, FThreaded)
+    else
+      FActive := sg_httpsrv_listen(FHandle, FPort, FThreaded);
+  end;
   if not FActive then
     InternalFreeServerHandle
   else
