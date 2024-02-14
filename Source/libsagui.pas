@@ -60,7 +60,7 @@ type
 const
   SG_VERSION_MAJOR = 3;
 
-  SG_VERSION_MINOR = 4;
+  SG_VERSION_MINOR = 5;
 
   SG_VERSION_PATCH = 0;
 
@@ -445,6 +445,11 @@ var
 
   sg_httpsrv_free: procedure(srv: Psg_httpsrv); cdecl;
 
+  sg_httpsrv_tls_listen4: function(srv: Psg_httpsrv; const key: Pcchar;
+    const pwd: Pcchar; const cert: Pcchar; const trust: Pcchar;
+    const dhparams: Pcchar; const priorities: Pcchar; const hostname: Pcchar;
+    port: cuint16_t; backlog: cuint; threaded: cbool): cbool; cdecl;
+
   sg_httpsrv_tls_listen3: function(srv: Psg_httpsrv; const key: Pcchar;
     const pwd: Pcchar; const cert: Pcchar; const trust: Pcchar;
     const dhparams: Pcchar; const priorities: Pcchar; port: cuint16_t;
@@ -456,6 +461,9 @@ var
 
   sg_httpsrv_tls_listen: function(srv: Psg_httpsrv; const key: Pcchar;
     const cert: Pcchar; port: cuint16_t; threaded: cbool): cbool; cdecl;
+
+  sg_httpsrv_listen2: function(srv: Psg_httpsrv; hostname: Pcchar;
+    port: cuint16_t; backlog: cuint; threaded: cbool): cbool; cdecl;
 
   sg_httpsrv_listen: function(srv: Psg_httpsrv; port: cuint16_t;
     threaded: cbool): cbool; cdecl;
@@ -1106,9 +1114,11 @@ begin //FI:C101
     sg_httpsrv_new2 := GetProcAddress(GHandle, 'sg_httpsrv_new2');
     sg_httpsrv_new := GetProcAddress(GHandle, 'sg_httpsrv_new');
     sg_httpsrv_free := GetProcAddress(GHandle, 'sg_httpsrv_free');
+    sg_httpsrv_tls_listen4 := GetProcAddress(GHandle, 'sg_httpsrv_tls_listen4');
     sg_httpsrv_tls_listen3 := GetProcAddress(GHandle, 'sg_httpsrv_tls_listen3');
     sg_httpsrv_tls_listen2 := GetProcAddress(GHandle, 'sg_httpsrv_tls_listen2');
     sg_httpsrv_tls_listen := GetProcAddress(GHandle, 'sg_httpsrv_tls_listen');
+    sg_httpsrv_listen2 := GetProcAddress(GHandle, 'sg_httpsrv_listen2');
     sg_httpsrv_listen := GetProcAddress(GHandle, 'sg_httpsrv_listen');
     sg_httpsrv_shutdown := GetProcAddress(GHandle, 'sg_httpsrv_shutdown');
     sg_httpsrv_port := GetProcAddress(GHandle, 'sg_httpsrv_port');
@@ -1308,9 +1318,11 @@ begin //FI:C101
     sg_httpsrv_new2 := nil;
     sg_httpsrv_new := nil;
     sg_httpsrv_free := nil;
+    sg_httpsrv_tls_listen4 := nil;
     sg_httpsrv_tls_listen3 := nil;
     sg_httpsrv_tls_listen2 := nil;
     sg_httpsrv_tls_listen := nil;
+    sg_httpsrv_listen2 := nil;
     sg_httpsrv_listen := nil;
     sg_httpsrv_shutdown := nil;
     sg_httpsrv_port := nil;

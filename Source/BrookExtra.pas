@@ -39,6 +39,8 @@ const
   { Default upload(s) limit (in bytes). }
   BROOK_UPLOADS_LIMIT = {$IFDEF CPUARM}16777216{~16MB}{$ELSE}67108864{~64MB}{$ENDIF};
 
+  { Default maximum length of the queue of pending connections. }
+  BROOK_BACKLOG = 511;
   { Default minimal buffer size (in bytes). }
   BROOK_MIN_BUFFER_SIZE = 128;
   { Default buffer size (in bytes). }
