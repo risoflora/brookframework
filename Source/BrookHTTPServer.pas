@@ -1015,18 +1015,6 @@ begin
     FSecurity.Validate;
     if FHostName <> EmptyStr then
     begin
-      if not Assigned(sg_httpsrv_tls_listen3) then
-        raise ENotSupportedException.Create(SBrookTLSNotAvailable);
-      FActive := sg_httpsrv_tls_listen3(FHandle,
-        M.ToCNullableString(FSecurity.PrivateKey),
-        M.ToCNullableString(FSecurity.PrivatePassword),
-        M.ToCNullableString(FSecurity.Certificate),
-        M.ToCNullableString(FSecurity.Trust),
-        M.ToCNullableString(FSecurity.DHParams),
-        M.ToCNullableString(FSecurity.Priorities), FPort, FThreaded);
-    end
-    else
-    begin
       if not Assigned(sg_httpsrv_tls_listen4) then
         raise ENotSupportedException.Create(SBrookTLSNotAvailable);
       FActive := sg_httpsrv_tls_listen4(FHandle,
@@ -1037,6 +1025,18 @@ begin
         M.ToCNullableString(FSecurity.DHParams),
         M.ToCNullableString(FSecurity.Priorities), M.ToCString(FHostName),
         FPort, FBacklog, FThreaded);
+    end
+    else
+    begin
+      if not Assigned(sg_httpsrv_tls_listen3) then
+        raise ENotSupportedException.Create(SBrookTLSNotAvailable);
+      FActive := sg_httpsrv_tls_listen3(FHandle,
+        M.ToCNullableString(FSecurity.PrivateKey),
+        M.ToCNullableString(FSecurity.PrivatePassword),
+        M.ToCNullableString(FSecurity.Certificate),
+        M.ToCNullableString(FSecurity.Trust),
+        M.ToCNullableString(FSecurity.DHParams),
+        M.ToCNullableString(FSecurity.Priorities), FPort, FThreaded);
     end;
   end
   else
