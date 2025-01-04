@@ -17,9 +17,9 @@ Options:
 
 Function Build-Project {
     New-Variable -Option Constant -Name VAR -Value @{
-        Src = 'demos'
-        Use = 'packages'
-        Pkg = 'packages\components.txt'
+        Src = 'Examples'
+        Use = 'Packages'
+        Pkg = 'Packages\components.txt'
     }
     If (! (Test-Path -Path $Var.Src)) {
         "$([char]27)[31m.... Source do not find!$([char]27)[0m" | Out-Host
