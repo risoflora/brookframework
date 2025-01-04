@@ -71,7 +71,7 @@ Function Build-Project {
         (Get-ChildItem -Filter '*.lpi' -Recurse -File –Path $Var.Src).FullName |
             Sort-Object |
             ForEach-Object {
-                $Output = (& lazbuild --build-all --recursive --no-write-project --build-mode='release' $_)
+                $Output = (& lazbuild --build-all --recursive --no-write-project $_)
                 $Result = @("$([char]27)[32m.... [$($LastExitCode)] build project $($_)$([char]27)[0m")
                 $exitCode = Switch ($LastExitCode) {
                     0 {
