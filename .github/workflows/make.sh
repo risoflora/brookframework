@@ -19,8 +19,8 @@ function priv_lazbuild
 (
     declare -rA VAR=(
         [src]='Examples'
-        [use]='Packages'
-        [pkg]='Packages/components.txt'
+        [use]='Package'
+        [pkg]='Package/components.txt'
     )
     if ! [[ -d "${VAR[src]}" ]]; then
         printf '\x1b[31m\tSource do not find!\x1b[0m\n'
