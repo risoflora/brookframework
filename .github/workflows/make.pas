@@ -14,9 +14,9 @@ uses
 
 const
   Src: string = 'demos';
-  Use: string = '.';
+  Use: string = 'Package';
   Tst: string = 'testconsole.lpi';
-  Pkg: array of string = ('BGRABitmap');
+  Pkg: array of string = ();
 
 var
   Output, Line: ansistring;
