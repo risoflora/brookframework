@@ -16,7 +16,7 @@ const
   Src: string = 'Examples';
   Use: string = 'Package';
   Tst: string = 'testconsole.lpi';
-  Pkg: array of string = ('PoweredBy', 'EyeCandyControls', 'splashabout', 'DCPcrypt');
+  Pkg: array of string = ('');
 
 var
   Output, Line: ansistring;
