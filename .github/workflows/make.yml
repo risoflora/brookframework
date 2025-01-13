@@ -24,26 +24,28 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       with:
         submodules: true
 
-    - name: Build on Linux
-      if: runner.os == 'Linux'
+    - name: Build
       shell: bash
-      run: bash .github/workflows/make.sh build
+      run: |
+        set -xeuo pipefail
+        sudo bash -c '
+          apt-get update
+          apt-get install -y lazarus lib{gnutls28,curl4-gnutls}-dev
+        ' >/dev/null
+        mkdir -p libsagui/build
+        if pushd libsagui/build; then
+          cmake -DCMAKE_C_COMPILER=clang ..
+          make && sudo make sagui install/strip && sudo ldconfig
+          if popd; then
+            instantfpc -Fu/usr/lib/lazarus/*/components/lazutils \
+              -B '.github/workflows/make.pas'
+            pushd Test && bash RunAllTests.sh
+          fi
+        fi
 
-    - name: Build on Windows
-      if: runner.os == 'Windows'
-      shell: powershell
-      run: pwsh -File .github/workflows/make.ps1 build
-
-    - name: Archive
-      if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v4
-      with:
-        retention-days: 1
-        path: src\bin\*.exe
