@@ -33,5 +33,20 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        sudo bash -c 'apt-get update; apt-get install -y lazarus' >/dev/null
-        instantfpc -Fu/usr/lib/lazarus/*/components/lazutils .github/workflows/make.pas
+        set -xeuo pipefail
+        sudo bash -c '
+          apt-get update
+          apt-get install -y lazarus lib{gnutls28,curl4-gnutls}-dev
+        ' >/dev/null
+        if pushd libsagui; then
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DSG_HTTPS_SUPPORT=ON
+          cmake --build build --config Debug
+          popd
+        fi
+        instantfpc -Fu/usr/lib/lazarus/*/components/lazutils \
+          -B '.github/workflows/make.pas'
+        if pushd Test; then
+          bash RunAllTests.sh
+        fi
+
