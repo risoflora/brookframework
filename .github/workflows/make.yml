@@ -44,7 +44,7 @@ jobs:
           make && sudo make sagui install/strip && sudo ldconfig
           if popd; then
             instantfpc -Fu/usr/lib/lazarus/*/components/lazutils \
-              -B '.github/workflows/make.pas' || true
+              -B '.github/workflows/make.pas'
             pushd Test && bash RunAllTests.sh
           fi
         fi
