@@ -38,10 +38,10 @@ jobs:
           apt-get update
           apt-get install -y lazarus lib{gnutls28,curl4-gnutls}-dev
         ' >/dev/null
-        if pushd libsagui; then
-          cmake -B build \
-            -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DSG_HTTPS_SUPPORT=ON
-          cmake --build build --config Debug
+        mkdir -p libsagui/build
+        if pushd libsagui/build; then
+          cmake -DCMAKE_C_COMPILER=clang ..
+          make && sudo make sagui install/strip && sudo ldconfig
           if popd; then
             instantfpc -Fu/usr/lib/lazarus/*/components/lazutils \
               -B '.github/workflows/make.pas' || true
