@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2020 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2025 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -924,19 +924,19 @@ end;
 
 procedure DoURLRouterNoRoutesDefined(const AArgs: array of const);
 begin
-  TBrookURLRouter(AArgs[0].VObject).DispatchRoute('/route', nil);
+  TFakeURLRouter(AArgs[0].VObject).DispatchRoute('/route', nil);
 end;
 
 procedure DoURLRouterInactiveRouter(const AArgs: array of const);
 begin
-  TBrookURLRouter(AArgs[0].VObject).DispatchRoute('/route', nil);
+  TFakeURLRouter(AArgs[0].VObject).DispatchRoute('/route', nil);
 end;
 
 procedure Test_URLRouterDispatchRoute;
 var
-  R: TBrookURLRouter;
+  R: TFakeURLRouter;
 begin
-  R := TBrookURLRouter.Create(nil);
+  R := TFakeURLRouter.Create(nil);
   try
     R.Routes.Add.Pattern := '/foo';
     R.Open;
