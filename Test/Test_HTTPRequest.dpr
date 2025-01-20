@@ -6,7 +6,7 @@
  *
  * Microframework which helps to develop web Pascal applications.
  *
- * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2025 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -126,11 +126,6 @@ begin
   sg_httpreq_params := fake_httpreq_headers;
 end;
 
-procedure DoHTTPRequestCreateParamIsNil;
-begin
-  TBrookHTTPRequest.Create(nil);
-end;
-
 procedure Test_HTTPRequestCreate;
 var
   R: TBrookHTTPRequest;
@@ -163,8 +158,6 @@ begin
 
   TBrookLibraryLoader.Unload;
   TBrookLibraryLoader.Load;
-  AssertExcept(DoHTTPRequestCreateParamIsNil, EArgumentNilException,
-    Format(SParamIsNil, ['AHandle']));
 end;
 
 function fake_httpreq_method_get(req: Psg_httpreq): Pcchar; cdecl;

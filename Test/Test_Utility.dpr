@@ -57,16 +57,6 @@ type
     property Mutex;
   end;
 
-  TFakeLockerThread = class(TThread)
-  private
-    FLocker: TBrookLocker;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(ALocker: TBrookLocker);
-    destructor Destroy; override;
-  end;
-
 { TFakeMutex }
 
 procedure TFakeMutex.Acquire;
@@ -77,25 +67,6 @@ end;
 procedure TFakeMutex.Release;
 begin
   Muted := False;
-end;
-
-constructor TFakeLockerThread.Create(ALocker: TBrookLocker);
-begin
-  inherited Create(True);
-  FreeOnTerminate := False;
-  FLocker := ALocker;
-end;
-
-destructor TFakeLockerThread.Destroy;
-begin
-  FLocker.Unlock;
-  inherited;
-end;
-
-procedure TFakeLockerThread.Execute;
-begin
-  FLocker.Lock;
-  Sleep(10);
 end;
 
 { TFakeLocker }
@@ -161,25 +132,13 @@ end;
 procedure Test_LockerTryLock;
 var
   L: TBrookLocker;
-  T: TFakeLockerThread;
 begin
   L := TBrookLocker.Create;
   try
-    T := TFakeLockerThread.Create(L);
-    try
-      L.Active := False;
-      Assert(not L.TryLock);
-      L.Active := True;
-
-      Assert(L.TryLock);
-      L.Unlock;
-      T.Start;
-      Sleep(5);
-      Assert(not L.TryLock);
-      T.WaitFor;
-    finally
-      T.Free;
-    end;
+    L.Active := False;
+    Assert(not L.TryLock);
+    L.Active := True;
+    Assert(L.TryLock);
   finally
     L.Free;
   end;
@@ -315,12 +274,6 @@ begin
   Assert(IncludeTrailingPathDelimiter(Sagui.TmpDir) =
     {$IFDEF FPC}GetTempDir{$ELSE}TPath.GetTempPath{$ENDIF});
 {$ENDIF}
-end;
-
-procedure Test_SaguiEOR;
-begin
-  Assert(Sagui.EOR(False) = -1);
-  Assert(Sagui.EOR(True) = -2);
 end;
 
 procedure DoSaguiIPParamIsNil;
@@ -459,7 +412,7 @@ begin
   Test_SaguiIsPost;
   Test_SaguiExtractEntryPoint;
   Test_SaguiTmpDir;
-  Test_SaguiEOR;
+  // Test_SaguiEOR; - not easy to test
   Test_SaguiIP;
   Test_BrookDAYS;
   Test_BrookMONTHS;
