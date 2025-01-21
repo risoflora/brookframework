@@ -1,4 +1,4 @@
 [submodule "libsagui"]
-    path = libsagui
-    url = git@github.com:risoflora/libsagui.git
-    branch = v3.5.0
+	path = libsagui
+	url = git@github.com:risoflora/libsagui.git
+	branch = v3.5.0
