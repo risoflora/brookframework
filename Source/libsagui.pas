@@ -7,7 +7,7 @@
  *
  * Cross-platform library which helps to develop web servers or frameworks.
  *
- * Copyright (c) 2012-2021 Silvio Clecio <silvioprog@gmail.com>
+ * Copyright (c) 2012-2025 Silvio Clecio <silvioprog@gmail.com>
  *
  * Brook framework is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,7 +62,7 @@ const
 
   SG_VERSION_MINOR = 5;
 
-  SG_VERSION_PATCH = 0;
+  SG_VERSION_PATCH = 1;
 
   SG_VERSION_HEX = (SG_VERSION_MAJOR shl 16) or (SG_VERSION_MINOR shl 8) or //FI:O803
     SG_VERSION_PATCH;
