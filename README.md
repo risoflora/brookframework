@@ -107,6 +107,8 @@ It will create a directory named `brookframework` filled with the source code.
 The documentation has been written in [PasDoc][15] and is available in HTML
 format at [brookframework-docs][16].
 
+Some tutorials are available at [Tutorials for the Brook framework][29].
+
 ## Targets
 
 Successfully tested on:
@@ -214,3 +216,4 @@ the [LICENSE file](LICENSE) for more details.
 [26]: https://github.com/Al-Muhandis/brook-telegram/blob/master/LICENSE "Telegram plugin license"
 [27]: https://supermercadosprimavera.com.br "PWA application for supermarket products sales"
 [28]: https://github.com/risoflora/brookframework/issues/29
+[29]: https://github.com/DomenicoMammola/brookframework_tutorials
