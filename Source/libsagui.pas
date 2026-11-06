@@ -32,6 +32,11 @@ unit libsagui;
  {$MODE DELPHI}
  {$PACKRECORDS C}
 {$ENDIF}
+{$IFNDEF FPC}
+  {$IF CompilerVersion > 23}
+    {$LEGACYIFEND ON}
+  {$IFEND}
+{$ENDIF}
 
 interface
 
@@ -79,8 +84,8 @@ const
     'dylib'
  {$ELSE}
     'so'
- {$ENDIF};
-{$ENDIF}
+ {$IFEND};
+{$IFEND}
 
   SG_LIB_NAME = Concat(
 {$IFDEF MSWINDOWS}
@@ -103,7 +108,7 @@ resourcestring
 
 type
   cchar = Byte;
-  Pcchar = MarshaledAString;
+  Pcchar = {$IF Defined(FPC) or (CompilerVersion > 29)}MarshaledAString{$ELSE}PAnsiChar{$IFEND};
   cbool = Boolean;
   Pcbool = ^Boolean;
   cuint16_t = UInt16;
@@ -758,10 +763,12 @@ type
     class procedure Done; static;
     class function GetLastName: string; static;
     class procedure CheckVersion(AVersion: Integer); overload; static;
+    // XE2 stops with an internal error (URW1147) when these two are inlined into
+    // another unit
     class procedure CheckVersion; overload; static;
-{$IFNDEF DEBUG}inline;{$ENDIF}
+{$IF NOT DEFINED(DEBUG) AND (DEFINED(FPC) OR (CompilerVersion > 23))}inline;{$IFEND}
     class procedure CheckLastError(ALastError: Integer); static;
-{$IFNDEF DEBUG}inline;{$ENDIF}
+{$IF NOT DEFINED(DEBUG) AND (DEFINED(FPC) OR (CompilerVersion > 23))}inline;{$IFEND}
     class function Load(const AName: TFileName): TLibHandle; static;
     class function Unload: TLibHandle; static;
     class function IsLoaded: Boolean; static;
@@ -998,9 +1005,13 @@ begin
   SetString(S, @P[0], Length(Pcchar(@P[0])));
   SetCodePage(RawByteString(S), CP_UTF8, False);
 {$ELSE}
+  {$IF CompilerVersion < 30}
+  S := UTF8ToString(PAnsiChar(@P[0]));
+  {$ELSE}
   S := TMarshal.ReadStringAsUtf8(TPtrWrapper.Create(@P[0]));
+  {$IFEND}
 {$ENDIF}
-  E := EOSError.Create(S.TrimRight);
+  E := EOSError.Create(TrimRight(S));
   E.ErrorCode := ALastError;
   raise E;
 end;
